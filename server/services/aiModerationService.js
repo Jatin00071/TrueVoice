@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 const HF_API_KEY = process.env.HUGGINGFACE_API_KEY;
-const HF_MODEL_URL = 'https://api-inference.huggingface.co/models/unitary/multilingual-toxic-xlm-roberta';
+const HF_MODEL_URL = 'https://router.huggingface.co/hf-inference/models/unitary/multilingual-toxic-xlm-roberta';
 const TOXICITY_THRESHOLD = 0.75;
 
 let anthropicClient = null;
@@ -91,75 +91,209 @@ async function analyzeComment(commentText) {
 }
 
 function fallbackKeywordCheck(text) {
-  const normalized = String(text || '')
-    .toLowerCase()
-    .replace(/[@!]/g, 'a')
-    .replace(/[3]/g, 'e')
-    .replace(/[0]/g, 'o')
-    .replace(/[1]/g, 'i')
-    .replace(/\*/g, '');
+  // Step 1 - aggressive normalization
+  let normalized = String(text || '').toLowerCase();
 
-  const toxicWords = [
+  // Remove spaces between letters of same word
+  // catches "f u c k", "f.u.c.k", "f-u-c-k"
+  normalized = normalized.replace(/(\w)\s+(\w)/g, '$1$2');
+  normalized = normalized.replace(/(\w)[.\-_,]+(\w)/g, '$1$2');
+
+  // Leetspeak substitutions
+  normalized = normalized
+    .replace(/[@4]/g, 'a')
+    .replace(/[3]/g, 'e')
+    .replace(/[!1|]/g, 'i')
+    .replace(/[0]/g, 'o')
+    .replace(/[5$]/g, 's')
+    .replace(/[7]/g, 't')
+    .replace(/[uüú]/g, 'u')
+    .replace(/[+]/g, 't')
+    .replace(/[\/\\]/g, 'i')
+    .replace(/[*]/g, '')
+    .replace(/[^a-z\s]/g, '');
+
+  // Step 2 - collapse repeated characters
+  // catches "fuuuck", "shhiiit", "aaasshole"
+  normalized = normalized.replace(/(.)\1{2,}/g, '$1$1');
+
+  // Step 3 - remove all spaces for compound check
+  const compact = normalized.replace(/\s+/g, '');
+
+  console.log('[Moderation] Normalized text:', normalized.slice(0, 60));
+
+  // Step 4 - check word list against BOTH
+  // normalized (with spaces) and compact (no spaces)
+  const toxicPatterns = [
+    // -- English base words --
     'fuck',
+    'fuk',
+    'fck',
+    'phuck',
+    'fvck',
+    'fuc',
     'shit',
-    'bastard',
+    'sht',
+    'shyt',
+    'shiit',
     'bitch',
+    'biitch',
+    'btch',
+    'b1tch',
+    'bastard',
+    'bstrd',
     'asshole',
-    'kill yourself',
+    'ahole',
+    'ashole',
+    'cunt',
+    'cnt',
+    'whore',
+    'whor',
+    'slut',
+    'sloot',
+    'dick',
+    'dik',
+    'dck',
+    'cock',
+    'cok',
+    'pussy',
+    'pusi',
+    'pussi',
+    'nigga',
+    'nigger',
+    'niga',
     'kys',
-    'die loser',
+    'killyourself',
+    'kill yourself',
+    'retard',
+    'rtard',
     'idiot',
     'moron',
-    'retard',
-    'cunt',
-    'whore',
-    'slut',
+
+    // -- Hindi base words --
     'bhenchod',
+    'bhen chod',
+    'bhenchod',
+    'bhencho',
+    'bnchd',
+    'bc',
     'madarchod',
+    'madar chod',
+    'mdrchd',
+    'mc',
     'chutiya',
+    'chutia',
+    'chutiye',
+    'chotiya',
     'gaandu',
+    'gandu',
+    'gaand',
     'randi',
+    'raand',
+    'haraami',
+    'harami',
     'haraami',
     'kamina',
-    'saala',
+    'kamine',
     'bsdk',
+    'bsdke',
     'lodu',
-    'harami',
-    'maderchod',
-    'bhenchodd',
-    'teri maa',
-    'teri bhen',
-    'kutte',
-    'suar',
+    'lund',
+    'lavda',
+    'chut',
+    'chodna',
+    'chodne',
+    'saala',
+    'sala',
     'ullu',
     'gadha',
     'gadhe',
-    'kutti',
-    'gandu',
-    'tatti',
-    'maa di',
-    'panche',
+    'kutte',
     'kutta',
-    'bc',
-    'mc ',
-    ' mc',
+    'kutti',
+    'maderchod',
+    'mkc',
     'bkl',
+
+    // -- Punjabi --
+    'teri maa',
+    'teri bhen',
+    'tere maa',
+    'suar',
+    'suaar',
+    'panche',
+    'pendu',
+    'kamine',
+    'kameene',
+    'tatti',
+    'taati',
+    'veshya',
+
+    // -- Common Hinglish abbreviations --
+    ' bc ',
+    ' mc ',
+    ' bk ',
+    ' bkl ',
     'mkl',
-    'chut',
-    'lund',
-    'bur'
+    'mklc',
+    'bhk'
   ];
 
-  const found = toxicWords.find((word) => normalized.includes(word.toLowerCase()));
+  // Check both normalized and compact versions
+  for (const pattern of toxicPatterns) {
+    const cleanPattern = pattern.toLowerCase().replace(/\s+/g, '');
 
-  if (found) {
-    console.log(`[Fallback] Toxic word detected: "${found}"`);
-    return {
-      isToxic: true,
-      score: 9,
-      category: 'abuse',
-      reason: 'Abusive language detected'
-    };
+    // Check in compact (catches "f u c k" -> "fuck")
+    if (compact.includes(cleanPattern)) {
+      console.log(`[Moderation] Keyword blocked (compact): "${pattern}"`);
+      return {
+        isToxic: true,
+        score: 9,
+        category: 'abuse',
+        reason: 'Abusive language detected'
+      };
+    }
+
+    // Check in normalized (catches normal spacing)
+    if (normalized.includes(pattern.toLowerCase())) {
+      console.log(`[Moderation] Keyword blocked (normal): "${pattern}"`);
+      return {
+        isToxic: true,
+        score: 9,
+        category: 'abuse',
+        reason: 'Abusive language detected'
+      };
+    }
+  }
+
+  // Step 5 - regex patterns for common bypass attempts
+  const regexPatterns = [
+    /f+u+c+k+/i, // fuuuck, fck, fcuk
+    /f[\W_]*u[\W_]*c[\W_]*k/i, // f*u*c*k, f.u.c.k
+    /s+h+i+t+/i, // shiit, shiiit
+    /b+i+t+c+h+/i, // biitch
+    /a+s+s+h+o+l+e+/i, // aasshole
+    /c+u+n+t+/i,
+    /d+i+c+k+/i,
+    /c+o+c+k+/i,
+    /b+[h]?[e3]+n+[c]+h+[o0]+d+/i, // bhenchod variations
+    /m+[a@]+d+[a@]+r+[c]+h+[o0]+d+/i, // madarchod variations
+    /ch+[u]+t+[i]+[y]+[a@]+/i, // chutiya variations
+    /g+[a@]+[a@]+n+d+[u]+/i, // gaandu variations
+    /r+[a@]+n+d+[i1]+/i, // randi variations
+    /l+[o0]+d+[u]+/i // lodu variations
+  ];
+
+  for (const regex of regexPatterns) {
+    if (regex.test(text) || regex.test(normalized) || regex.test(compact)) {
+      console.log(`[Moderation] Regex pattern blocked: ${regex}`);
+      return {
+        isToxic: true,
+        score: 9,
+        category: 'abuse',
+        reason: 'Abusive language detected'
+      };
+    }
   }
 
   return { isToxic: false, score: 0, category: 'clean', reason: null };
