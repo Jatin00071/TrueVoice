@@ -1,16 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { addComment, createPost, deletePost, getFeed, likePost } from '../api/postApi.js';
+import { addComment, deletePost, getFeed, likePost } from '../api/postApi.js';
 import api from '../api/axiosInstance.js';
 import { useAuthContext } from '../hooks/useAuth.js';
 import styles from './Feed.module.css';
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
-}
 
 function formatRelativeTime(value) {
   if (!value) return 'Now';
@@ -80,14 +73,6 @@ function Feed() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [content, setContent] = useState('');
-  const [mediaFile, setMediaFile] = useState(null);
-  const [mediaPreview, setMediaPreview] = useState('');
-  const [shieldEnabled, setShieldEnabled] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-  const [infoMessage, setInfoMessage] = useState('');
-  const [showComposerError, setShowComposerError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [shieldReports, setShieldReports] = useState({});
   const [activeCommentPostId, setActiveCommentPostId] = useState(null);
   const [commentDrafts, setCommentDrafts] = useState({});
@@ -96,37 +81,7 @@ function Feed() {
   const [likeBusyPostId, setLikeBusyPostId] = useState(null);
   const [deleteBusyPostId, setDeleteBusyPostId] = useState(null);
   const [socketToast, setSocketToast] = useState(null);
-  const composerRef = useRef(null);
-  const fileInputRef = useRef(null);
   const toastTimerRef = useRef(null);
-
-  useEffect(() => {
-    if (!mediaFile) {
-      setMediaPreview('');
-      return undefined;
-    }
-
-    const objectUrl = URL.createObjectURL(mediaFile);
-    setMediaPreview(objectUrl);
-
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [mediaFile]);
-
-  useEffect(() => {
-    if (!infoMessage) {
-      return undefined;
-    }
-
-    const timer = window.setTimeout(() => {
-      setInfoMessage('');
-    }, 4000);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [infoMessage]);
 
   const loadFeed = async ({ nextCursor = null, append = false } = {}) => {
     const setLoadingState = append ? setIsLoadingMore : setIsLoading;
@@ -194,17 +149,6 @@ function Feed() {
       active = false;
     };
   }, [posts, user]);
-
-  useEffect(() => {
-    const openComposer = () => {
-      composerRef.current?.focus();
-    };
-
-    window.addEventListener('tv:openComposer', openComposer);
-    return () => {
-      window.removeEventListener('tv:openComposer', openComposer);
-    };
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -316,103 +260,6 @@ function Feed() {
         return next;
       });
     }, delay);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (isSubmitting) {
-      return;
-    }
-
-    const trimmed = content.trim();
-
-    if (!trimmed && !mediaFile) {
-      setShowComposerError(true);
-      setSubmitError('Write something or attach an image before posting.');
-      return;
-    }
-
-    setShowComposerError(false);
-    setIsSubmitting(true);
-    setSubmitError('');
-    setInfoMessage('');
-
-    try {
-      const formData = new FormData();
-      if (trimmed) {
-        formData.append('content', trimmed);
-      }
-      if (mediaFile) {
-        formData.append('media', mediaFile);
-      }
-      formData.append('shieldEnabled', String(shieldEnabled));
-      const data = await createPost(formData);
-
-      if (data?.removed) {
-        setSubmitError(`Post not published: ${data.message}`);
-        return;
-      }
-
-      const payload = data?.data || data;
-      const createdPost = payload?.post || null;
-
-      if (createdPost) {
-        setPosts((current) => [createdPost, ...current]);
-      } else {
-        await loadFeed();
-      }
-
-      if (payload?.isDuplicate || data?.isDuplicate) {
-        setInfoMessage(
-          data?.message ||
-            (getOriginalOwnerUsername(createdPost)
-              ? `This is @${getOriginalOwnerUsername(createdPost)}'s post.`
-              : 'This post was shared with credit to the original creator.')
-        );
-      }
-
-      setContent('');
-      setMediaFile(null);
-      setShieldEnabled(false);
-      setShowComposerError(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    } catch (err) {
-      setSubmitError(getErrorMessage(err, 'Your post could not be published.'));
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleFileChange = (event) => {
-    const nextFile = event.target.files?.[0] || null;
-
-    if (!nextFile) {
-      setShowComposerError(false);
-      setSubmitError('');
-      setMediaFile(null);
-      return;
-    }
-
-    if (!nextFile.type.startsWith('image/')) {
-      setSubmitError('Only image uploads are enabled in the composer right now.');
-      event.target.value = '';
-      return;
-    }
-
-    setShowComposerError(false);
-    setSubmitError('');
-    setMediaFile(nextFile);
-  };
-
-  const clearSelectedMedia = () => {
-    setShowComposerError(false);
-    setSubmitError('');
-    setMediaFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const handleLike = async (postId) => {
@@ -548,98 +395,11 @@ function Feed() {
         <span className={styles.feedBadge}>Chronological</span>
       </div>
 
-      <p className={styles.greeting}>
-        {getGreeting()} {'\u2014'} here's what's new
-      </p>
-
-      <form className={styles.composer} onSubmit={handleSubmit}>
-        <label className={styles.composerLabel} htmlFor="post-content">
-          Share an update
-        </label>
-        <textarea
-          id="post-content"
-          ref={composerRef}
-          className={[
-            styles.textarea,
-            content.trim() ? styles.textareaActive : '',
-            showComposerError && !content.trim() && !mediaFile ? styles.textareaError : ''
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          placeholder="What's on your mind?"
-          value={content}
-          onChange={(event) => {
-            setContent(event.target.value);
-            setShowComposerError(false);
-            setSubmitError('');
-          }}
-          rows={4}
-          aria-invalid={showComposerError && !content.trim() && !mediaFile}
-        />
-        <div className={styles.uploadRow}>
-          <input
-            ref={fileInputRef}
-            id="post-media"
-            className={styles.fileInput}
-            type="file"
-            accept="image/png,image/jpeg,image/gif"
-            onChange={handleFileChange}
-          />
-          <label className={styles.uploadButton} htmlFor="post-media">
-            Add photo
-          </label>
-          {mediaFile ? (
-            <button
-              type="button"
-              className={styles.clearMediaButton}
-              onClick={clearSelectedMedia}
-              aria-label="Remove selected image"
-            >
-              Remove
-            </button>
-          ) : null}
-          <span className={styles.uploadMeta}>
-            {mediaFile ? mediaFile.name : 'JPG, PNG, or GIF up to 10MB'}
-          </span>
-        </div>
-        {mediaPreview ? (
-          <div className={styles.previewWrap}>
-            <img className={styles.previewImage} src={mediaPreview} alt="Selected post media preview" />
-          </div>
-        ) : null}
-        <div className={styles.shieldToggleRow}>
-          <div className={styles.shieldToggleInfo}>
-            <span className={styles.shieldToggleIcon}>{'\uD83D\uDEE1'}</span>
-            <div>
-              <span className={styles.shieldToggleLabel}>Shield Mode</span>
-              <span className={styles.shieldToggleDesc}>Auto-activates if abuse is detected</span>
-            </div>
-          </div>
-          <button
-            type="button"
-            className={`${styles.shieldToggleBtn} ${shieldEnabled ? styles.shieldOn : ''}`}
-            onClick={() => setShieldEnabled((value) => !value)}
-            aria-label="Toggle Shield Mode"
-            role="switch"
-            aria-checked={shieldEnabled}
-          >
-            <span className={styles.shieldToggleKnob} />
-          </button>
-        </div>
-        <div className={styles.composerFooter}>
-          <p className={styles.composerHint}>Posts keep their original credit whenever they are reshared.</p>
-          <button type="submit" className={styles.submitButton} aria-label="Publish post" disabled={isSubmitting}>
-            {isSubmitting ? 'Posting...' : 'Post'}
-          </button>
-        </div>
-        {socketToast ? (
-          <p className={socketToast.tone === 'warning' ? styles.messageError : styles.infoMessage}>
-            {socketToast.message}
-          </p>
-        ) : null}
-        {infoMessage ? <p className={styles.infoMessage}>{infoMessage}</p> : null}
-        {submitError ? <p className={styles.messageError}>{submitError}</p> : null}
-      </form>
+      {socketToast ? (
+        <p className={socketToast.tone === 'warning' ? styles.messageError : styles.infoMessage}>
+          {socketToast.message}
+        </p>
+      ) : null}
 
       {isLoading ? <p className={styles.status}>Loading your feed...</p> : null}
 
