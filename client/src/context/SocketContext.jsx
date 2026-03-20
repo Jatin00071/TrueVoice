@@ -13,7 +13,7 @@ export function SocketProvider({ children }) {
       return;
     }
 
-    const nextSocket = io('http://localhost:5000', {
+    const nextSocket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
       auth: { token: accessToken }
     });
 

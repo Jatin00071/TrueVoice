@@ -42,7 +42,7 @@ function resolveAssetUrl(value) {
   if (value.startsWith('http') || value.startsWith('data:') || value.startsWith('blob:')) {
     return value;
   }
-  return `http://localhost:5000${value}`;
+  return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${value}`;
 }
 
 function getMediaUrl(post) {
