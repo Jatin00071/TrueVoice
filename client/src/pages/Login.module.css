@@ -1,0 +1,504 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background:
+    radial-gradient(circle at top left, rgba(244, 162, 97, 0.16), transparent 28%),
+    radial-gradient(circle at right, rgba(45, 106, 79, 0.08), transparent 26%),
+    var(--paper);
+}
+
+.leftPanel {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 24%, rgba(230, 57, 70, 0.2), transparent 22%),
+    radial-gradient(circle at 70% 70%, rgba(244, 162, 97, 0.2), transparent 18%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 26%),
+    var(--ink);
+  color: white;
+}
+
+.brandBlock {
+  position: relative;
+  z-index: 1;
+  max-width: 460px;
+  padding: 56px;
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-size: 60px;
+  font-weight: 700;
+  color: white;
+}
+
+.brandTagline {
+  margin-top: 14px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 320px;
+}
+
+.decorCircle1,
+.decorCircle2 {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.decorCircle1 {
+  width: 320px;
+  height: 320px;
+  top: 16%;
+  left: 10%;
+  background: rgba(230, 57, 70, 0.18);
+}
+
+.decorCircle2 {
+  width: 220px;
+  height: 220px;
+  bottom: 18%;
+  left: 28%;
+  background: rgba(244, 162, 97, 0.2);
+}
+
+.decorLine {
+  position: absolute;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.decorLineOne {
+  top: 24%;
+  left: 16%;
+  width: 52%;
+}
+
+.decorLineTwo {
+  top: 48%;
+  left: 22%;
+  width: 38%;
+}
+
+.decorLineThree {
+  top: 72%;
+  left: 14%;
+  width: 46%;
+}
+
+.rightPanel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top right, rgba(244, 162, 97, 0.08), transparent 26%),
+    var(--paper);
+  min-height: 100vh;
+  padding: 40px 24px;
+}
+
+.formCard {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.48), transparent 24%),
+    var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 36px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(18px);
+}
+
+.formTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.formSubtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.successMsg {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(45, 106, 79, 0.08);
+  border: 1px solid rgba(45, 106, 79, 0.18);
+  font-size: 13px;
+  color: var(--sage);
+}
+
+.form {
+  margin-top: 20px;
+}
+
+.loginToggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px;
+  background: rgba(232, 237, 242, 0.4);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.toggleTab {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 200ms ease;
+  border-radius: 999px;
+}
+
+.toggleTabActive {
+  background: var(--ink);
+  color: white;
+  box-shadow: 0 10px 22px rgba(26, 26, 46, 0.18);
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.78);
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.input:focus {
+  border-color: var(--ink);
+}
+
+.passwordWrapper {
+  position: relative;
+}
+
+.passwordWrapper .input {
+  padding-right: 60px;
+}
+
+.pwToggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.pwToggle:hover {
+  color: var(--ink);
+}
+
+.submitBtn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--ink), rgba(26, 26, 46, 0.9));
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms ease;
+  box-shadow: 0 16px 30px rgba(26, 26, 46, 0.16);
+}
+
+.submitBtn:hover {
+  background: var(--accent);
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.switchText {
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.switchLink {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.errorMsg {
+  margin-bottom: 14px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: rgba(230, 57, 70, 0.06);
+  border: 1px solid rgba(230, 57, 70, 0.14);
+  font-size: 13px;
+  color: var(--accent);
+}
+
+@media (min-width: 900px) {
+  .page {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .leftPanel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+:global([data-theme="dark"]) .page {
+  background: #000000;
+}
+
+:global([data-theme="dark"]) .leftPanel {
+  background: #000000;
+  border-right: 1px solid #1a1a1a;
+}
+
+:global([data-theme="dark"]) .brandName {
+  color: #F0F0F0;
+}
+
+:global([data-theme="dark"]) .brandTagline {
+  color: #888888;
+}
+
+:global([data-theme="dark"]) .decorCircle1 {
+  background: rgba(255, 69, 84, 0.15);
+}
+
+:global([data-theme="dark"]) .decorCircle2 {
+  background: rgba(244, 162, 97, 0.12);
+}
+
+:global([data-theme="dark"]) .decorLine {
+  background: #1a1a1a;
+}
+
+:global([data-theme="dark"]) .rightPanel {
+  background: #000000;
+}
+
+:global([data-theme="dark"]) .formCard {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
+    #0D0D0D;
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+:global([data-theme="dark"]) .formTitle {
+  color: #F0F0F0;
+}
+
+:global([data-theme="dark"]) .formSubtitle {
+  color: #888888;
+}
+
+:global([data-theme="dark"]) .fieldLabel {
+  color: #888888;
+}
+
+:global([data-theme="dark"]) .input {
+  background: #111111;
+  border-color: #222222;
+  color: #F0F0F0;
+}
+
+:global([data-theme="dark"]) .input::placeholder {
+  color: #444444;
+}
+
+:global([data-theme="dark"]) .input:focus {
+  border-color: #444444;
+  outline: none;
+}
+
+:global([data-theme="dark"]) .pwToggle {
+  color: #555555;
+}
+
+:global([data-theme="dark"]) .pwToggle:hover {
+  color: #F0F0F0;
+}
+
+:global([data-theme="dark"]) .submitBtn {
+  background: #F0F0F0;
+  color: #000000;
+}
+
+:global([data-theme="dark"]) .submitBtn:hover {
+  background: #FF4554;
+  color: #ffffff;
+}
+
+:global([data-theme="dark"]) .submitBtn:disabled {
+  opacity: 0.4;
+}
+
+:global([data-theme="dark"]) .switchText {
+  color: #888888;
+}
+
+:global([data-theme="dark"]) .switchLink {
+  color: #FF4554;
+}
+
+:global([data-theme="dark"]) .errorMsg {
+  color: #FF4554;
+}
+
+:global([data-theme="dark"]) .leftPanel {
+  background: #000000;
+  border-right: 1px solid #1a1a1a;
+}
+
+:global([data-theme='dark']) .brandName {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .brandTagline {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .decorCircle1 {
+  background: rgba(255, 69, 84, 0.15);
+}
+
+:global([data-theme='dark']) .decorCircle2 {
+  background: rgba(244, 162, 97, 0.12);
+}
+
+:global([data-theme='dark']) .decorLine {
+  background: #1a1a1a;
+}
+
+:global([data-theme='dark']) .rightPanel {
+  background: #000000;
+}
+
+:global([data-theme='dark']) .formCard {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
+    #0d0d0d;
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+:global([data-theme='dark']) .formTitle {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .formSubtitle {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .fieldLabel {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .input {
+  background: #111111;
+  border-color: #222222;
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .input::placeholder {
+  color: #444444;
+}
+
+:global([data-theme='dark']) .input:focus {
+  border-color: #444444;
+  outline: none;
+}
+
+:global([data-theme='dark']) .pwToggle {
+  color: #555555;
+}
+
+:global([data-theme='dark']) .pwToggle:hover {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .submitBtn {
+  background: #f0f0f0;
+  color: #000000;
+}
+
+:global([data-theme='dark']) .submitBtn:hover {
+  background: #ff4554;
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .submitBtn:disabled {
+  opacity: 0.4;
+}
+
+:global([data-theme='dark']) .switchText {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .switchLink {
+  color: #ff4554;
+}
+
+:global([data-theme='dark']) .errorMsg {
+  color: #ff4554;
+}
+
+:global([data-theme='dark']) .loginToggle {
+  border-color: #222222;
+  background: #111111;
+}
+
+:global([data-theme='dark']) .toggleTab {
+  color: #555555;
+}
+
+:global([data-theme='dark']) .toggleTabActive {
+  background: #f0f0f0;
+  color: #000000;
+}
+
+:global([data-theme='dark']) .successMsg {
+  background: rgba(76, 175, 130, 0.08);
+  border-color: rgba(76, 175, 130, 0.18);
+}
+
+:global([data-theme='dark']) .errorMsg {
+  background: rgba(255, 69, 84, 0.06);
+  border-color: rgba(255, 69, 84, 0.16);
+}

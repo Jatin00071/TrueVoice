@@ -1,0 +1,94 @@
+.nav {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--surface-strong);
+  border: 1px solid rgba(212, 197, 169, 0.72);
+  border-radius: 26px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(16px);
+  z-index: 20;
+}
+
+.item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  height: 100%;
+  margin: 6px;
+  border-radius: 20px;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.active {
+  color: var(--accent);
+  background: rgba(230, 57, 70, 0.08);
+}
+
+.active .icon {
+  background: rgba(230, 57, 70, 0.12);
+}
+
+.item:hover {
+  color: var(--ink);
+}
+
+@media (min-width: 768px) {
+  .nav {
+    display: none;
+  }
+}
+
+:global([data-theme='dark']) .nav {
+  background: #000000;
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .item {
+  color: #555555;
+}
+
+:global([data-theme='dark']) .icon {
+  background: #111111;
+}
+
+:global([data-theme='dark']) .active {
+  color: #ff4554;
+  background: rgba(255, 69, 84, 0.12);
+}
+
+:global([data-theme='dark']) .active .icon {
+  background: rgba(255, 69, 84, 0.16);
+}
+
+:global([data-theme='dark']) .item:hover {
+  color: #f0f0f0;
+}

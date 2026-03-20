@@ -1,0 +1,248 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 16px 24px;
+}
+
+.logoArea {
+  padding: 24px 16px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.logoText {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: all 200ms ease;
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.navLink:hover {
+  background: var(--mist);
+  color: var(--ink);
+}
+
+.navLinkActive {
+  background: rgba(230, 57, 70, 0.08);
+  color: var(--accent);
+  font-weight: 600;
+  border: none;
+  outline: none;
+}
+
+.navLinkActive:hover {
+  background: rgba(230, 57, 70, 0.12);
+  color: var(--accent);
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.label {
+  line-height: 1.2;
+}
+
+.createButton {
+  margin: 10px 0 6px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--ink), rgba(26, 26, 46, 0.9));
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms ease, transform 200ms ease;
+}
+
+.createButton:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+}
+
+.createPlus {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.createLabel {
+  line-height: 1;
+}
+
+.badge {
+  margin-left: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.me {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  text-decoration: none;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+.me:hover {
+  background: var(--mist);
+}
+
+.meActive {
+  background: rgba(230, 57, 70, 0.08);
+  border-color: transparent;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(244, 162, 97, 0.92), rgba(230, 57, 70, 0.16));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-weight: 600;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meInfo {
+  min-width: 0;
+}
+
+.meName {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.meHandle {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+:global([data-theme='dark']) .logoText {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .navLink:hover {
+  background: #111111;
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .navLinkActive {
+  background: rgba(255, 69, 84, 0.12);
+  color: #ff4554;
+  border: none;
+  outline: none;
+}
+
+:global([data-theme='dark']) .logoArea,
+:global([data-theme='dark']) .me {
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .createButton {
+  background: #f0f0f0;
+  color: #000000;
+}
+
+:global([data-theme='dark']) .createButton:hover {
+  background: #ff4554;
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .me {
+  background: #0d0d0d;
+}
+
+:global([data-theme='dark']) .me:hover {
+  background: #111111;
+}
+
+:global([data-theme='dark']) .meActive {
+  background: rgba(255, 69, 84, 0.12);
+}
+
+:global([data-theme='dark']) .meName {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .meHandle {
+  color: #888888;
+}

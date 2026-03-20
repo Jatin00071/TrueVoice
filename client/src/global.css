@@ -1,0 +1,256 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@600;700;800&display=swap');
+
+:root {
+  --ink: #1a1a2e;
+  --paper: #f5f0e8;
+  --accent: #e63946;
+  --gold: #f4a261;
+  --sage: #2d6a4f;
+  --mist: #e8edf2;
+  --border: #d4c5a9;
+  --muted: #6b6b6b;
+  --card-bg: #fefcf8;
+  --shadow: 0 1px 4px rgba(26, 26, 46, 0.08);
+  --shadow-lg: 0 18px 48px rgba(26, 26, 46, 0.12);
+  --radius: 14px;
+  --radius-lg: 24px;
+  --surface: rgba(254, 252, 248, 0.88);
+  --surface-strong: rgba(255, 252, 245, 0.96);
+  --surface-muted: rgba(232, 237, 242, 0.68);
+  --font-body: 'Inter', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+[data-theme='dark'] {
+  --ink: #f0f0f0;
+  --paper: #000000;
+  --accent: #ff4554;
+  --gold: #f4a261;
+  --sage: #4caf82;
+  --mist: #111111;
+  --border: #222222;
+  --muted: #888888;
+  --card-bg: #0d0d0d;
+  --shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.72);
+  --surface: rgba(13, 13, 13, 0.92);
+  --surface-strong: rgba(0, 0, 0, 0.96);
+  --surface-muted: rgba(17, 17, 17, 0.84);
+}
+
+[data-fontsize='large'] {
+  font-size: 18px;
+}
+
+html {
+  min-height: 100%;
+  background: var(--paper);
+  scrollbar-color: rgba(107, 107, 107, 0.35) transparent;
+  scrollbar-width: thin;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(244, 162, 97, 0.24), transparent 24%),
+    radial-gradient(circle at 82% 10%, rgba(45, 106, 79, 0.13), transparent 20%),
+    radial-gradient(circle at 50% 100%, rgba(26, 26, 46, 0.06), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.38), transparent 22%),
+    var(--paper);
+  color: var(--ink);
+  transition: background 220ms ease, color 220ms ease;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+[data-theme='dark'] body {
+  background:
+    radial-gradient(circle at 10% 8%, rgba(255, 69, 84, 0.1), transparent 22%),
+    radial-gradient(circle at 84% 10%, rgba(76, 175, 130, 0.07), transparent 18%),
+    radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.02), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 20%),
+    var(--paper);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(107, 107, 107, 0.24);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 107, 107, 0.4);
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(230, 57, 70, 0.18);
+  color: var(--ink);
+}
+
+[data-theme='dark'] ::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #222222;
+  border-radius: 3px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}
+
+[data-theme='dark'] ::selection {
+  background: rgba(255, 69, 84, 0.3);
+  color: #f0f0f0;
+}
+
+/* Focus ring */
+:where(button, [role='button'], a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.4);
+  }
+  60% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shieldDrop {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 80px;
+    opacity: 1;
+  }
+}
+
+@keyframes sealPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes nodeAppear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bellBounce {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-15deg);
+  }
+  40% {
+    transform: rotate(15deg);
+  }
+  60% {
+    transform: rotate(-8deg);
+  }
+  80% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

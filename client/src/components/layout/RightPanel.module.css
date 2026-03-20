@@ -1,0 +1,407 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 24px;
+}
+
+.section {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 26%),
+    var(--surface);
+  border-radius: 22px;
+  box-shadow: var(--shadow-lg);
+  padding: 18px;
+  border: 1px solid rgba(212, 197, 169, 0.72);
+  backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 18px;
+  width: 72px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  opacity: 0.72;
+}
+
+.sectionTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.heading {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.placeholder {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.inlineLink,
+.signal,
+.statusPill,
+.followChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.inlineLink {
+  color: var(--sage);
+  background: rgba(45, 106, 79, 0.08);
+}
+
+.signal {
+  color: var(--accent);
+  background: rgba(230, 57, 70, 0.08);
+}
+
+.statusPill {
+  color: #8b5c1f;
+  background: rgba(244, 162, 97, 0.16);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.personCard,
+.storyCard {
+  border-radius: 18px;
+  border: 1px solid rgba(212, 197, 169, 0.6);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.personCard {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+
+.personCard:hover,
+.storyCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 197, 169, 0.82);
+}
+
+.personAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(244, 162, 97, 0.92), rgba(230, 57, 70, 0.16));
+  font-weight: 700;
+}
+
+.personBody {
+  min-width: 0;
+}
+
+.personName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.personMeta {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.personNote {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.followChip {
+  color: var(--ink);
+  background: rgba(232, 237, 242, 0.78);
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.storyCard {
+  padding: 12px;
+}
+
+.storyTitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.storyMeta {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.activityBanner {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(212, 197, 169, 0.6);
+  background: linear-gradient(135deg, rgba(244, 162, 97, 0.1), rgba(255, 255, 255, 0.18));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bannerLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.bannerTitle {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.metricStrip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.metric {
+  border-radius: 16px;
+  border: 1px solid rgba(212, 197, 169, 0.6);
+  padding: 12px;
+  background: rgba(232, 237, 242, 0.34);
+}
+
+.metricValue {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.metricLabel {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+@media (min-width: 1024px) {
+  .panel {
+    gap: 26px;
+    padding-right: 8px;
+  }
+
+  .section {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    backdrop-filter: none;
+  }
+
+  .section::before {
+    display: none;
+  }
+
+  .sectionTop {
+    margin-bottom: 14px;
+  }
+
+  .personCard,
+  .storyCard {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .personCard {
+    padding: 6px 0;
+  }
+
+  .storyCard {
+    padding: 2px 0 6px;
+  }
+
+  .personCard:hover,
+  .storyCard:hover {
+    transform: none;
+    border-color: transparent;
+  }
+
+  .personAvatar {
+    border-radius: 50%;
+  }
+
+  .followChip {
+    padding: 0;
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .followChip:hover {
+    transform: translateX(1px);
+  }
+
+  .activityBanner {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .metric {
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 767px) {
+  .panel {
+    display: none;
+  }
+}
+
+:global([data-theme='dark']) .panel {
+  background: #000000;
+}
+
+:global([data-theme='dark']) .section {
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+:global([data-theme='dark']) .section::before {
+  background: linear-gradient(90deg, #ff4554, transparent);
+}
+
+:global([data-theme='dark']) .heading {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .storyCard {
+  background: #111111;
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .storyCard:hover {
+  background: #161616;
+}
+
+:global([data-theme='dark']) .storyTitle {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .storyMeta,
+:global([data-theme='dark']) .bannerLabel,
+:global([data-theme='dark']) .placeholder,
+:global([data-theme='dark']) .metricLabel {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .signal {
+  background: rgba(255, 69, 84, 0.15);
+  color: #ff4554;
+}
+
+:global([data-theme='dark']) .inlineLink {
+  color: #4caf82;
+  background: rgba(76, 175, 130, 0.08);
+}
+
+:global([data-theme='dark']) .personCard {
+  background: #111111;
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .personCard:hover,
+:global([data-theme='dark']) .storyCard:hover {
+  background: #161616;
+}
+
+:global([data-theme='dark']) .personName,
+:global([data-theme='dark']) .bannerTitle,
+:global([data-theme='dark']) .metricValue {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .personMeta,
+:global([data-theme='dark']) .personNote {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .followChip {
+  border: 1px solid #333333;
+  color: #f0f0f0;
+  background: transparent;
+}
+
+:global([data-theme='dark']) .followChip:hover {
+  background: #f0f0f0;
+  color: #000000;
+}
+
+:global([data-theme='dark']) .metric {
+  background: #111111;
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .activityBanner {
+  background: linear-gradient(135deg, rgba(255, 69, 84, 0.08), rgba(17, 17, 17, 0.94));
+  border-color: #1a1a1a;
+}
+
+@media (min-width: 1024px) {
+  :global([data-theme='dark']) .section {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  :global([data-theme='dark']) .personCard,
+  :global([data-theme='dark']) .storyCard {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  :global([data-theme='dark']) .personCard:hover,
+  :global([data-theme='dark']) .storyCard:hover {
+    background: transparent;
+  }
+
+  :global([data-theme='dark']) .followChip {
+    border: none;
+    color: #8ea2ff;
+  }
+}

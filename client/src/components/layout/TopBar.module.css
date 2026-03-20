@@ -1,0 +1,119 @@
+.bar {
+  position: sticky;
+  top: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 12px 0;
+  padding: 12px 14px;
+  background: var(--surface-strong);
+  border: 1px solid rgba(212, 197, 169, 0.72);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(16px);
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.logoMark {
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(244, 162, 97, 0.96), rgba(230, 57, 70, 0.18));
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.pageMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pageTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profileLink {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 999px;
+}
+
+@media (max-width: 420px) {
+  .logo {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bar {
+    display: none;
+  }
+}
+
+:global([data-theme='dark']) .bar {
+  background: #000000;
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .logoMark {
+  color: #f0f0f0;
+  background: linear-gradient(135deg, rgba(255, 69, 84, 0.22), rgba(244, 162, 97, 0.14));
+}
+
+:global([data-theme='dark']) .logo {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .eyebrow {
+  color: #555555;
+}
+
+:global([data-theme='dark']) .pageTitle {
+  color: #f0f0f0;
+}

@@ -1,0 +1,450 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-bottom: 24px;
+}
+
+.bar,
+.section,
+.searchWrap {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 28%),
+    var(--surface);
+  border: 1px solid rgba(212, 197, 169, 0.72);
+  border-radius: 22px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(16px);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 0 18px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgba(244, 162, 97, 0.16);
+  color: #9b5c22;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.searchWrap {
+  display: block;
+  padding: 16px 18px;
+}
+
+.searchLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.searchInput {
+  width: 100%;
+  border: 1px solid rgba(212, 197, 169, 0.82);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.36);
+  color: var(--ink);
+  padding: 12px 16px;
+  font: inherit;
+}
+
+.section {
+  padding: 18px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.retryButton {
+  border: 1px solid rgba(212, 197, 169, 0.72);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.34);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.status,
+.error {
+  font-size: 14px;
+}
+
+.error {
+  color: var(--accent);
+}
+
+.userList,
+.postList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.userCard,
+.postCard {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(212, 197, 169, 0.68);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.userCard:hover,
+.postCard:hover {
+  transform: translateY(-2px);
+}
+
+.postCard {
+  flex-direction: column;
+}
+
+.avatar,
+.avatarSmall {
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(230, 57, 70, 0.14), rgba(244, 162, 97, 0.22));
+}
+
+.avatarSmall {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  background: rgba(45, 106, 79, 0.12);
+}
+
+.userName {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.userMeta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.timestamp {
+  font-family: var(--font-mono);
+}
+
+.postHeader {
+  display: flex;
+  gap: 10px;
+}
+
+.postContent {
+  white-space: pre-wrap;
+  font-size: 15px;
+}
+
+.mediaWrap {
+  margin-top: 10px;
+}
+
+.media {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  border-radius: 18px;
+  border: 1px solid rgba(212, 197, 169, 0.72);
+  background: var(--mist);
+  object-fit: cover;
+}
+
+.postFooter {
+  display: flex;
+  gap: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(212, 197, 169, 0.72);
+  color: var(--muted);
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.actionButton,
+.detailLink,
+.commentSubmit,
+.commentDetailLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.actionButton {
+  border: 1px solid rgba(212, 197, 169, 0.72);
+  background: rgba(255, 255, 255, 0.36);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.actionButtonLiked {
+  border-color: rgba(230, 57, 70, 0.24);
+  background: rgba(230, 57, 70, 0.08);
+  color: var(--accent);
+}
+
+.actionButtonComment {
+  border-color: rgba(244, 162, 97, 0.28);
+  background: rgba(244, 162, 97, 0.12);
+  color: #9b5c22;
+}
+
+.actionButtonDanger {
+  border-color: rgba(230, 57, 70, 0.22);
+  background: rgba(230, 57, 70, 0.06);
+  color: var(--accent);
+}
+
+.detailLink,
+.commentDetailLink {
+  border: 1px solid rgba(45, 106, 79, 0.18);
+  background: rgba(45, 106, 79, 0.08);
+  color: var(--sage);
+}
+
+.commentBox {
+  padding-top: 14px;
+  border-top: 1px solid rgba(212, 197, 169, 0.72);
+}
+
+.commentLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.commentInput {
+  width: 100%;
+  border: 1px solid rgba(212, 197, 169, 0.82);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.34);
+  color: var(--ink);
+  padding: 12px 14px;
+  resize: vertical;
+  font: inherit;
+}
+
+.commentActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.commentSubmit {
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  cursor: pointer;
+}
+
+.commentMsg {
+  font-size: 12px;
+  margin-top: 6px;
+  font-family: var(--font-body);
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.warning {
+  background: rgba(244, 162, 97, 0.12);
+  color: var(--gold);
+}
+
+.info {
+  background: rgba(45, 106, 79, 0.1);
+  color: var(--sage);
+}
+
+.error.commentMsg {
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--accent);
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 0 12px 80px;
+  }
+
+  .commentActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+:global([data-theme='dark']) .bar,
+:global([data-theme='dark']) .section,
+:global([data-theme='dark']) .searchWrap {
+  background: #0d0d0d;
+  border-color: #1a1a1a;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+:global([data-theme='dark']) .title {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .badge {
+  background: rgba(244, 162, 97, 0.14);
+  color: #f4a261;
+}
+
+:global([data-theme='dark']) .searchLabel,
+:global([data-theme='dark']) .userName {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .searchInput {
+  background: #111111;
+  border-color: #222222;
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .searchInput::placeholder {
+  color: #555555;
+}
+
+:global([data-theme='dark']) .searchInput:focus {
+  border-color: #444444;
+  outline: none;
+}
+
+:global([data-theme='dark']) .sectionTitle,
+:global([data-theme='dark']) .userMeta,
+:global([data-theme='dark']) .timestamp,
+:global([data-theme='dark']) .status {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .retryButton {
+  border-color: #333333;
+  background: #111111;
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .userCard,
+:global([data-theme='dark']) .postCard {
+  background: #111111;
+  border-color: #1a1a1a;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+}
+
+:global([data-theme='dark']) .userCard:hover,
+:global([data-theme='dark']) .postCard:hover {
+  background: #161616;
+}
+
+:global([data-theme='dark']) .avatarSmall {
+  background: rgba(76, 175, 130, 0.14);
+}
+
+:global([data-theme='dark']) .postContent {
+  color: #e0e0e0;
+}
+
+:global([data-theme='dark']) .media,
+:global([data-theme='dark']) .postFooter,
+:global([data-theme='dark']) .commentBox {
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .actionButton {
+  color: #888888;
+  background: transparent;
+  border-color: #333333;
+}
+
+:global([data-theme='dark']) .actionButton:hover {
+  background: #111111;
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .actionButtonLiked {
+  color: #ff4554;
+}
+
+:global([data-theme='dark']) .detailLink,
+:global([data-theme='dark']) .commentDetailLink {
+  background: rgba(76, 175, 130, 0.08);
+  border-color: rgba(76, 175, 130, 0.2);
+  color: #4caf82;
+}
+
+:global([data-theme='dark']) .commentLabel {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .commentInput {
+  background: #111111;
+  border-color: #222222;
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .commentInput::placeholder {
+  color: #555555;
+}
+
+:global([data-theme='dark']) .commentInput:focus {
+  border-color: #444444;
+  outline: none;
+}
+
+:global([data-theme='dark']) .commentSubmit {
+  background: #f0f0f0;
+  color: #000000;
+}
+
+:global([data-theme='dark']) .commentSubmit:hover {
+  background: #ff4554;
+  color: #ffffff;
+}

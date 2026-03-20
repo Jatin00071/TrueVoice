@@ -1,0 +1,551 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+.header,
+.stats,
+.section,
+.messageCard {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 28%),
+    var(--surface);
+  border: 1px solid rgba(212, 197, 169, 0.72);
+  border-radius: 22px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(16px);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 34px 26px;
+  background:
+    radial-gradient(circle at top right, rgba(244, 162, 97, 0.16), transparent 26%),
+    linear-gradient(135deg, rgba(232, 237, 242, 0.88), rgba(244, 162, 97, 0.08));
+}
+
+.nameSection {
+  margin-bottom: 16px;
+}
+
+.displayName {
+  font-family: 'Playfair Display', serif;
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.username {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.bio {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.6;
+  max-width: 480px;
+  margin-bottom: 0;
+}
+
+.headerSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border: 3px solid var(--gold);
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(244, 162, 97, 0.12));
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.primaryAction,
+.secondaryAction {
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryAction {
+  border: none;
+  background: linear-gradient(135deg, var(--ink), rgba(26, 26, 46, 0.9));
+  color: #fff;
+  box-shadow: 0 14px 30px rgba(26, 26, 46, 0.18);
+}
+
+.secondaryAction {
+  border: 1px solid rgba(212, 197, 169, 0.72);
+  background: rgba(255, 255, 255, 0.34);
+  color: var(--ink);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 18px 24px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.statLabel {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.sage {
+  color: var(--sage);
+}
+
+.section {
+  padding: 20px;
+}
+
+.editForm {
+  margin-top: 16px;
+  padding: 20px;
+  background: var(--mist);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.editAvatarRow {
+  margin-bottom: 16px;
+}
+
+.editAvatarClick {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.avatarEditOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.editAvatarClick:hover .avatarEditOverlay {
+  opacity: 1;
+}
+
+.editField {
+  margin-bottom: 14px;
+}
+
+.editLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 6px;
+  font-family: var(--font-body);
+}
+
+.editCharCount {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+.editInput {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--card-bg);
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.editInput:focus {
+  border-color: var(--ink);
+}
+
+.editTextarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--card-bg);
+  resize: vertical;
+  line-height: 1.6;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.editTextarea:focus {
+  border-color: var(--ink);
+}
+
+.editError {
+  font-size: 13px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.editActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.cancelEditBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.cancelEditBtn:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.saveEditBtn {
+  background: var(--ink);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.saveEditBtn:hover {
+  background: var(--accent);
+}
+
+.saveEditBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.postsGrid {
+  columns: 2;
+  column-gap: 12px;
+  padding: 20px;
+}
+
+@media (max-width: 600px) {
+  .postsGrid {
+    columns: 1;
+  }
+}
+
+.postMiniCard {
+  break-inside: avoid;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 200ms ease;
+}
+
+.postMiniCard:hover {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.miniCardImage {
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.miniCardMedia {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 300ms ease;
+}
+
+.postMiniCard:hover .miniCardMedia {
+  transform: scale(1.03);
+}
+
+.miniCardBody {
+  padding: 10px 12px;
+}
+
+.miniPostContent {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.miniPostTime {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.sectionTitle {
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.messageCard {
+  padding: 18px;
+}
+
+.status,
+.error {
+  font-size: 14px;
+}
+
+.error {
+  color: var(--accent);
+}
+
+.masonry {
+  columns: 2;
+  column-gap: 12px;
+}
+
+.postCard {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 16px;
+  border: 1px solid rgba(212, 197, 169, 0.68);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.postCard:hover {
+  transform: translateY(-2px);
+}
+
+.postAuthor {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.postCopy {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.postMeta {
+  margin-top: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 0 12px 80px;
+  }
+
+  .header {
+    flex-direction: column-reverse;
+    padding: 24px 18px;
+  }
+
+  .displayNameOwn {
+    font-size: 38px;
+  }
+
+  .headerSide {
+    align-items: flex-start;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 16px 18px;
+  }
+
+  .masonry {
+    columns: 1;
+  }
+}
+
+:global([data-theme='dark']) .profilePage {
+  background: #000000;
+}
+
+:global([data-theme='dark']) .header {
+  background: #0d0d0d;
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .displayName {
+  color: #F0F0F0;
+}
+
+:global([data-theme='dark']) .username {
+  color: #555555;
+}
+
+:global([data-theme='dark']) .bio {
+  color: #AAAAAA;
+}
+
+:global([data-theme='dark']) .stats {
+  background: #000000;
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .statValue {
+  color: #F0F0F0;
+}
+
+:global([data-theme='dark']) .statLabel,
+:global([data-theme='dark']) .sectionTitle,
+:global([data-theme='dark']) .postMeta,
+:global([data-theme='dark']) .miniPostTime {
+  color: #555555;
+}
+
+:global([data-theme='dark']) .sage {
+  color: #4CAF82;
+}
+
+:global([data-theme='dark']) .secondaryAction {
+  border-color: #333333;
+  color: #f0f0f0;
+  background: transparent;
+}
+
+:global([data-theme='dark']) .secondaryAction:hover {
+  background: #f0f0f0;
+  color: #000000;
+}
+
+:global([data-theme='dark']) .editForm {
+  background: #111111;
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .editInput,
+:global([data-theme='dark']) .editTextarea {
+  background: #0D0D0D;
+  border-color: #222222;
+  color: #F0F0F0;
+}
+
+:global([data-theme='dark']) .editInput:focus,
+:global([data-theme='dark']) .editTextarea:focus {
+  border-color: #444444;
+}
+
+:global([data-theme='dark']) .editLabel {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .saveEditBtn {
+  background: #F0F0F0;
+  color: #000000;
+}
+
+:global([data-theme='dark']) .saveEditBtn:hover {
+  background: #FF4554;
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .cancelEditBtn {
+  border-color: #222222;
+  color: #555555;
+}
+
+:global([data-theme='dark']) .cancelEditBtn:hover {
+  border-color: #444444;
+  color: #888888;
+}
+
+:global([data-theme='dark']) .postMiniCard {
+  background: #0d0d0d;
+  border-color: #1a1a1a;
+}
+
+:global([data-theme='dark']) .postMiniCard:hover {
+  border-color: #333333;
+}
+
+:global([data-theme='dark']) .miniPostContent {
+  color: #E0E0E0;
+}
+
+:global([data-theme='dark']) .postCard,
+:global([data-theme='dark']) .section,
+:global([data-theme='dark']) .messageCard {
+  background: #0d0d0d;
+  border-color: #1a1a1a;
+}
