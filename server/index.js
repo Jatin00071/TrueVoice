@@ -72,7 +72,7 @@ app.use(
     optionsSuccessStatus: 204
   })
 );
-app.options('/:path*', cors());
+app.options('*', cors());
 
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
