@@ -44,6 +44,27 @@ async function toggleFollow(req, res) {
   res.json(result);
 }
 
+async function listFollowRequests(req, res) {
+  const result = await userService.listFollowRequests(Number(req.params.id), req.query.limit || 50);
+  return res.status(200).json(result);
+}
+
+async function approveFollowRequest(req, res) {
+  const result = await userService.approveFollowRequest(
+    Number(req.params.id),
+    Number(req.params.requesterId)
+  );
+  return res.status(200).json(result);
+}
+
+async function rejectFollowRequest(req, res) {
+  const result = await userService.rejectFollowRequest(
+    Number(req.params.id),
+    Number(req.params.requesterId)
+  );
+  return res.status(200).json(result);
+}
+
 async function updateNotifPrefs(req, res) {
   const result = await userService.updateNotifPrefs(req.auth.userId, req.body);
   return res.status(200).json({
@@ -94,6 +115,9 @@ module.exports = {
   followers,
   following,
   toggleFollow,
+  listFollowRequests,
+  approveFollowRequest,
+  rejectFollowRequest,
   updateNotifPrefs,
   updatePrivacy,
   remove

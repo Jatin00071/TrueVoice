@@ -145,3 +145,13 @@ ALTER TABLE notifications
     'like','comment','follow',
     'shield_activated','content_reshared','post_removed'
   ) NOT NULL;
+
+CREATE TABLE IF NOT EXISTS follow_requests (
+  requester_id INT UNSIGNED NOT NULL,
+  recipient_id INT UNSIGNED NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (requester_id, recipient_id),
+  FOREIGN KEY (requester_id) REFERENCES users(id),
+  FOREIGN KEY (recipient_id) REFERENCES users(id),
+  INDEX idx_recipient (recipient_id, created_at)
+);

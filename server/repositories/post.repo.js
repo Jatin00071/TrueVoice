@@ -142,7 +142,11 @@ async function discover({ userId = null, limit = 20 }) {
             EXISTS(SELECT 1 FROM likes vl WHERE vl.post_id = p.id AND vl.user_id = ?) AS viewer_has_liked`
     : `,
             0 AS viewer_has_liked`;
-  const params = userId ? [userId] : [];
+  const privacyJoin = userId ? 'LEFT JOIN follows f ON f.following_id = p.user_id AND f.follower_id = ?' : '';
+  // Private accounts should only be visible to followers (approved), or the author themself.
+  const privacyWhere = userId ? 'AND (u.is_private = 0 OR p.user_id = ? OR f.follower_id IS NOT NULL)' : '';
+
+  const params = userId ? [userId, userId, userId] : [];
   const rows = await query(
     `SELECT p.id, p.user_id, p.content, p.media_url, p.media_type, p.is_reshare, p.original_post_id,
             p.shield_enabled, p.shield_active, p.post_flagged, p.post_flag_reason,
@@ -156,9 +160,11 @@ async function discover({ userId = null, limit = 20 }) {
             (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.deleted_at IS NULL AND c.status='approved') AS comment_count
      FROM posts p
      JOIN users u ON u.id = p.user_id
+     ${privacyJoin}
      LEFT JOIN posts op ON p.original_post_id = op.id
      LEFT JOIN users ou ON op.user_id = ou.id
      WHERE p.deleted_at IS NULL
+       ${privacyWhere}
      ORDER BY p.created_at DESC
      LIMIT ${safeLimit}`,
     params

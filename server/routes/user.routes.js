@@ -32,5 +32,23 @@ router.delete('/:id', requireAuth, requireOwner('id'), asyncHandler(userControll
 router.get('/:id/followers', requireAuth, asyncHandler(userController.followers));
 router.get('/:id/following', requireAuth, asyncHandler(userController.following));
 router.post('/:id/follow', requireAuth, asyncHandler(userController.toggleFollow));
+router.get(
+  '/:id/follow-requests',
+  requireAuth,
+  requireOwner('id'),
+  asyncHandler(userController.listFollowRequests)
+);
+router.post(
+  '/:id/follow-requests/:requesterId/approve',
+  requireAuth,
+  requireOwner('id'),
+  asyncHandler(userController.approveFollowRequest)
+);
+router.post(
+  '/:id/follow-requests/:requesterId/reject',
+  requireAuth,
+  requireOwner('id'),
+  asyncHandler(userController.rejectFollowRequest)
+);
 
 module.exports = router;

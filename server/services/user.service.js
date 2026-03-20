@@ -76,6 +76,23 @@ async function toggleFollow(authUserId, targetId) {
   return result;
 }
 
+async function listFollowRequests(ownerId, limit = 50) {
+  const items = await followRepo.listFollowRequests(ownerId, limit);
+  return { items };
+}
+
+async function approveFollowRequest(ownerId, requesterId) {
+  const result = await followRepo.approveFollowRequest(ownerId, requesterId);
+  // Notify the private account owner that the follow was approved.
+  await notificationService.create({ type: 'follow', recipientId: ownerId, senderId: requesterId });
+  return result;
+}
+
+async function rejectFollowRequest(ownerId, requesterId) {
+  const result = await followRepo.rejectFollowRequest(ownerId, requesterId);
+  return result;
+}
+
 async function updateNotifPrefs(userId, prefs) {
   const allowed = ['notif_likes', 'notif_comments', 'notif_follows', 'notif_shield', 'notif_reshares'];
   const filtered = {};
@@ -113,6 +130,9 @@ module.exports = {
   followers,
   following,
   toggleFollow,
+  listFollowRequests,
+  approveFollowRequest,
+  rejectFollowRequest,
   updateNotifPrefs,
   remove
 };
