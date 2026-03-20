@@ -1,14 +1,25 @@
 import axios from 'axios';
 import { getAuthContext } from '../context/authStore.js';
 
-const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL || 'https://truevoice-9qth.onrender.com'}/api/v1`
+const BASE_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api/v1`
+  : 'https://truevoice-9qth.onrender.com/api/v1';
+
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  timeout: 15000,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
+
+console.log('[Axios] Base URL:', BASE_URL);
 
 let isRefreshing = false;
 let refreshQueue = [];
 
-api.interceptors.request.use((config) => {
+axiosInstance.interceptors.request.use((config) => {
   const auth = getAuthContext();
   if (auth?.accessToken) {
     config.headers.Authorization = `Bearer ${auth.accessToken}`;
@@ -16,7 +27,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-api.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config ?? {};
@@ -39,7 +50,7 @@ api.interceptors.response.use(
         })
           .then((token) => {
             original.headers.Authorization = `Bearer ${token}`;
-            return api(original);
+            return axiosInstance(original);
           })
           .catch((err) => Promise.reject(err));
       }
@@ -56,7 +67,7 @@ api.interceptors.response.use(
 
         original.headers = original.headers ?? {};
         original.headers.Authorization = `Bearer ${token}`;
-        return api(original);
+        return axiosInstance(original);
       } catch (e) {
         refreshQueue.forEach((p) => p.reject(e));
         refreshQueue = [];
@@ -70,4 +81,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default axiosInstance;
