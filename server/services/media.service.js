@@ -1,5 +1,5 @@
 const path = require('path');
-const fs = require('fs/promises');
+const fs = require('fs');
 const crypto = require('crypto');
 
 async function store(file) {
@@ -13,13 +13,18 @@ async function store(file) {
   })();
 
   const name = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${ext}`;
-  const uploadDir = path.join(__dirname, '..', 'uploads');
-  await fs.mkdir(uploadDir, { recursive: true });
+  const uploadDir = process.env.NODE_ENV === 'production'
+    ? '/tmp/uploads'
+    : path.join(__dirname, '..', 'uploads');
+
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
   const abs = path.join(uploadDir, name);
-  await fs.writeFile(abs, file.buffer);
+  await fs.promises.writeFile(abs, file.buffer);
 
   return `/uploads/${name}`;
 }
 
 module.exports = { store };
-

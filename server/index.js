@@ -30,6 +30,15 @@ const cronService = require('./services/cron.service');
 const { notFound, errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
+const PORT = process.env.PORT || 5000;
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000'
+].filter(Boolean);
+const uploadStaticDir = process.env.NODE_ENV === 'production'
+  ? '/tmp/uploads'
+  : path.join(__dirname, 'uploads');
 
 app.use(
   helmet({
@@ -37,20 +46,34 @@ app.use(
   })
 );
 
-const corsOrigin = process.env.CLIENT_URL;
 app.use(
   cors({
-    origin: corsOrigin,
-    credentials: true
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
 
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(uploadStaticDir));
 
-app.get('/health', (req, res) => res.json({ ok: true }));
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    service: 'TrueVoice API',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+});
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
@@ -64,11 +87,14 @@ app.use(notFound);
 app.use(errorHandler);
 
 const server = http.createServer(app);
-socketManager.init(server, { corsOrigin });
+socketManager.init(server, { corsOrigin: allowedOrigins });
 cronService.start();
 
-const port = Number(process.env.PORT || 5000);
-server.listen(port, () => {
+server.listen(PORT, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
-  console.log(`TrueVoice backend listening on :${port}`);
+  console.log(`[Server] TrueVoice running on port ${PORT}`);
+  // eslint-disable-next-line no-console
+  console.log(`[Server] Environment: ${process.env.NODE_ENV}`);
+  // eslint-disable-next-line no-console
+  console.log(`[Server] Client URL: ${process.env.CLIENT_URL}`);
 });

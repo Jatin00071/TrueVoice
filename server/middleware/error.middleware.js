@@ -20,16 +20,19 @@ function notFound(req, res, next) {
 
 function errorHandler(err, req, res, next) {
   const normalized = normalizeError(err);
+  const statusCode = normalized.statusCode || 500;
+  const isDev = process.env.NODE_ENV === 'development';
 
-  const isProd = process.env.NODE_ENV === 'production';
-  if (!isProd && err && err.stack) {
-    // dev only: log stack server-side, never return it
-    // eslint-disable-next-line no-console
-    console.error(err.stack);
-  }
+  // eslint-disable-next-line no-console
+  console.error(`[Error] ${statusCode}:`, normalized.message);
+  if (isDev && err && err.stack) console.error(err.stack);
 
-  res.status(normalized.statusCode).json(normalized);
+  res.status(statusCode).json({
+    error: true,
+    message: normalized.message || 'Internal server error',
+    code: normalized.code || 'INTERNAL_ERROR',
+    ...(isDev && err && err.stack ? { stack: err.stack } : {})
+  });
 }
 
 module.exports = { notFound, errorHandler, normalizeError };
-

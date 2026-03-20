@@ -13,6 +13,7 @@ function requireEnv(name) {
 
 const pool = mysql.createPool({
   host: requireEnv('DB_HOST'),
+  port: parseInt(process.env.DB_PORT || '3306', 10),
   user: requireEnv('DB_USER'),
   password: process.env.DB_PASSWORD || '',
   database: requireEnv('DB_NAME'),
@@ -51,4 +52,3 @@ module.exports = {
   query,
   withTransaction
 };
-
