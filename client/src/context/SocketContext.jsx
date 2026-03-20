@@ -13,9 +13,17 @@ export function SocketProvider({ children }) {
       return;
     }
 
-    const nextSocket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
-      auth: { token: accessToken }
-    });
+    const nextSocket = io(
+      import.meta.env.VITE_SOCKET_URL || 'https://truevoice-9qth.onrender.com',
+      {
+        auth: { token: accessToken },
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        withCredentials: true
+      }
+    );
 
     const showToast = (message, tone = 'info', duration = 5000) => {
       if (!message) {

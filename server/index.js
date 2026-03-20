@@ -32,10 +32,12 @@ const { notFound, errorHandler } = require('./middleware/error.middleware');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  'https://true-voice-psi.vercel.app',
   'http://localhost:5173',
-  'http://localhost:3000'
-].filter(Boolean);
+  'http://localhost:3000',
+  'http://localhost:5174',
+  process.env.CLIENT_URL
+].filter(Boolean).filter((value, index, array) => array.indexOf(value) === index);
 const uploadStaticDir = process.env.NODE_ENV === 'production'
   ? '/tmp/uploads'
   : path.join(__dirname, 'uploads');
@@ -53,13 +55,23 @@ app.use(
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
+      console.log('[CORS] Blocked origin:', origin);
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin'
+    ],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   })
 );
+app.options('*', cors());
 
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
