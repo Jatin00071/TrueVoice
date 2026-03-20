@@ -32,10 +32,10 @@ async function assertPostOwner(postId, userId) {
   return post;
 }
 
-async function processComment(userId, postId, commentText) {
+async function processComment(userId, postId, content) {
   const result = {
-    allowed: false,
-    status: 'rejected',
+    allowed: true,
+    status: 'approved',
     deletedByShield: false,
     toxicityCategory: null
   };
@@ -45,44 +45,170 @@ async function processComment(userId, postId, commentText) {
     throw { error: true, code: 'NOT_FOUND', message: 'Post not found', statusCode: 404 };
   }
 
-  const analysis = await aiModerationService.analyzeComment(commentText);
-
-  console.log(
-    `[Shield] Comment analysis - score: ${analysis.score}, toxic: ${analysis.isToxic}, category: ${analysis.category}`
-  );
-
-  if (analysis.isToxic) {
-    result.status = 'rejected';
-    result.deletedByShield = true;
-    result.toxicityCategory = analysis.category;
-
-    await incrementShieldDeleteCount(postId);
-    await updateDailyReport(postId, analysis.category);
-    await checkAndAutoActivateShield(post, 1);
-
+  const isOwner = userId === post.user_id;
+  if (isOwner) {
     return result;
   }
 
-  if (post.shield_active) {
-    const followRows = await query(
-      `SELECT 1
-       FROM follows
-       WHERE follower_id = ? AND following_id = ?
-       LIMIT 1`,
-      [userId, post.user_id]
+  const followRows = await query(
+    `SELECT 1
+     FROM follows
+     WHERE follower_id = ? AND following_id = ?
+     LIMIT 1`,
+    [userId, post.user_id]
+  );
+  const isFollower = followRows.length > 0;
+
+  const analysis = await aiModerationService.analyzeComment(content);
+
+  console.log(
+    `[Shield] Comment analysis - toxic: ${analysis.isToxic},`,
+    `shield active: ${!!post.shield_active},`,
+    `follower: ${isFollower}`
+  );
+
+  if (analysis.isToxic) {
+    const countRows = await query(
+      `SELECT COUNT(*) AS toxic_count
+       FROM comments
+       WHERE post_id = ?
+         AND deleted_by_shield = 1
+         AND created_at > NOW() - INTERVAL ? MINUTE`,
+      [postId, TOXIC_VELOCITY_WINDOW_MINUTES]
     );
 
-    const isFollower = followRows.length > 0;
-    const isOwner = userId === post.user_id;
+    const recentToxicCount = Number(countRows[0]?.toxic_count || 0);
 
+    console.log(
+      `[Shield] Recent toxic count for post ${postId}:`,
+      `${recentToxicCount} in last ${TOXIC_VELOCITY_WINDOW_MINUTES} min`
+    );
+
+    if (!post.shield_active && recentToxicCount < TOXIC_VELOCITY_THRESHOLD) {
+      console.log(
+        '[Shield] Toxic comment allowed through',
+        `(${recentToxicCount + 1}/${TOXIC_VELOCITY_THRESHOLD} - threshold not yet reached)`
+      );
+
+      result.allowed = true;
+      result.status = 'approved';
+      result.deletedByShield = true;
+      result.toxicityCategory = analysis.category;
+
+      if (recentToxicCount + 1 >= TOXIC_VELOCITY_THRESHOLD) {
+        console.log(
+          '[Shield] Threshold reached!',
+          `Activating shield on post ${postId}`
+        );
+        await activateShieldFromVelocity(post, recentToxicCount + 1);
+      }
+
+      return result;
+    }
+
+    if (post.shield_active || recentToxicCount >= TOXIC_VELOCITY_THRESHOLD) {
+      console.log(
+        '[Shield] Threshold reached or shield active',
+        '- deleting toxic comment'
+      );
+
+      result.allowed = false;
+      result.status = 'rejected';
+      result.deletedByShield = true;
+      result.toxicityCategory = analysis.category;
+
+      await incrementShieldDeleteCount(postId);
+      await updateDailyReport(postId, analysis.category);
+
+      if (!post.shield_active) {
+        await activateShieldFromVelocity(post, recentToxicCount + 1);
+      }
+
+      return result;
+    }
+  }
+
+  if (post.shield_active && !isFollower) {
     result.allowed = true;
-    result.status = isFollower || isOwner ? 'approved' : 'pending';
+    result.status = 'pending';
     return result;
   }
 
   result.allowed = true;
   result.status = 'approved';
   return result;
+}
+
+async function activateShieldFromVelocity(post, toxicCount) {
+  await query(
+    `UPDATE posts
+     SET shield_active = 1,
+         shield_activated_at = NOW()
+     WHERE id = ?`,
+    [post.id]
+  );
+
+  await query(
+    `INSERT INTO shield_events
+     (post_id, trigger_type, comment_count_at_trigger)
+     VALUES (?, 'auto', ?)`,
+    [post.id, toxicCount]
+  );
+
+  if (post.content && post.content.trim().length >= 5) {
+    try {
+      const postAnalysis = await aiModerationService.analyzePost(
+        post.content,
+        post.media_url
+      );
+
+      if (postAnalysis.isFlagged) {
+        await query(
+          `UPDATE posts
+           SET post_flagged = 1,
+               post_flag_reason = ?,
+               deleted_at = NOW()
+           WHERE id = ?`,
+          [postAnalysis.reason, post.id]
+        );
+
+        await notificationService.create({
+          type: 'post_removed',
+          recipientId: post.user_id,
+          senderId: post.user_id,
+          postId: post.id
+        });
+
+        socketManager.emit(post.user_id, 'post:removed', {
+          postId: post.id,
+          reason: postAnalysis.reason
+        });
+
+        console.log(`[Shield] Post ${post.id} removed after re-analysis`);
+        return;
+      }
+    } catch (err) {
+      console.log('[Shield] Post re-analysis skipped:', err.message);
+    }
+  }
+
+  await notificationService.create({
+    type: 'shield_activated',
+    recipientId: post.user_id,
+    senderId: post.user_id,
+    postId: post.id
+  });
+
+  socketManager.emit(post.user_id, 'shield:activated', {
+    postId: post.id,
+    toxicCount,
+    message: `Shield activated - ${toxicCount} abusive comments detected`
+  });
+
+  console.log(
+    `[Shield] Activated on post ${post.id}`,
+    `after ${toxicCount} toxic comments`
+  );
 }
 
 async function checkAndAutoActivateShield(post, pendingToxicIncrement = 0) {
@@ -105,138 +231,7 @@ async function checkAndAutoActivateShield(post, pendingToxicIncrement = 0) {
     return;
   }
 
-  if (toxicCount >= TOXIC_VELOCITY_THRESHOLD && !post.shield_active) {
-    await query(
-      `UPDATE posts
-       SET shield_active = 1,
-           shield_activated_at = NOW()
-       WHERE id = ?`,
-      [post.id]
-    );
-
-    await query(
-      `INSERT INTO shield_events
-       (post_id, trigger_type, comment_count_at_trigger)
-       VALUES (?, 'auto', ?)`,
-      [post.id, toxicCount]
-    );
-
-    console.log(
-      `[Shield] Auto-activated on post ${post.id}`,
-      `- ${toxicCount} toxic comments in last`,
-      `${TOXIC_VELOCITY_WINDOW_MINUTES} minutes`
-    );
-
-    if (post.content && post.content.trim().length >= 5) {
-      console.log(
-        `[Shield] Re-analyzing post ${post.id} content`,
-        'after abuse spike...'
-      );
-
-      try {
-        const postReanalysis = await aiModerationService.analyzePost(
-          post.content,
-          post.media_url
-        );
-
-        console.log(
-          '[Shield] Post re-analysis result - flagged:',
-          `${postReanalysis.isFlagged},`,
-          `category: ${postReanalysis.category}`
-        );
-
-        if (postReanalysis.isFlagged) {
-          await query(
-            `UPDATE posts
-             SET post_flagged = 1,
-                 post_flag_reason = ?,
-                 deleted_at = NOW()
-             WHERE id = ?`,
-            [postReanalysis.reason, post.id]
-          );
-
-          console.log(
-            `[Shield] Post ${post.id} removed after re-analysis`,
-            `- ${postReanalysis.category}: ${postReanalysis.reason}`
-          );
-
-          await notificationService.create({
-            type: 'post_removed',
-            recipientId: post.user_id,
-            senderId: post.user_id,
-            postId: post.id
-          });
-
-          socketManager.emit(post.user_id, 'post:removed', {
-            postId: post.id,
-            reason: postReanalysis.reason,
-            category: postReanalysis.category,
-            message: 'Your post was removed after our AI detected it'
-          });
-
-          return;
-        }
-
-        await notificationService.create({
-          type: 'shield_activated',
-          recipientId: post.user_id,
-          senderId: post.user_id,
-          postId: post.id
-        });
-
-        socketManager.emit(post.user_id, 'shield:activated', {
-          postId: post.id,
-          toxicCount,
-          postChecked: true,
-          postClean: true,
-          message:
-            `Shield activated - ${toxicCount} abusive comments auto-deleted. ` +
-            'Your post was also reviewed and is clean.'
-        });
-      } catch (reanalysisError) {
-        console.error(
-          '[Shield] Post re-analysis failed:',
-          reanalysisError.message,
-          '- proceeding with shield activation only'
-        );
-
-        await notificationService.create({
-          type: 'shield_activated',
-          recipientId: post.user_id,
-          senderId: post.user_id,
-          postId: post.id
-        });
-
-        socketManager.emit(post.user_id, 'shield:activated', {
-          postId: post.id,
-          toxicCount,
-          postChecked: false,
-          message:
-            `Shield activated - ${toxicCount} abusive comments were auto-deleted in the last ` +
-            `${TOXIC_VELOCITY_WINDOW_MINUTES} minutes.`
-        });
-      }
-    } else {
-      console.log(
-        `[Shield] Post ${post.id} has no text content`,
-        '- skipping re-analysis'
-      );
-
-      await notificationService.create({
-        type: 'shield_activated',
-        recipientId: post.user_id,
-        senderId: post.user_id,
-        postId: post.id
-      });
-
-      socketManager.emit(post.user_id, 'shield:activated', {
-        postId: post.id,
-        toxicCount,
-        postChecked: false,
-        message: `Shield activated - ${toxicCount} abusive comments auto-deleted.`
-      });
-    }
-  }
+  await activateShieldFromVelocity(post, toxicCount);
 }
 
 async function incrementShieldDeleteCount(postId) {

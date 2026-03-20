@@ -12,16 +12,50 @@ async function createComment(userId, postId, content) {
       postId,
       content,
       status: 'rejected',
-      flaggedReason: shieldResult.toxicityCategory || 'ai_moderation',
+      flaggedReason: shieldResult.toxicityCategory || 'shield',
       deletedByShield: 1,
       toxicityCategory: shieldResult.toxicityCategory || null
     });
 
-    console.log(`[Comment] Auto-deleted toxic comment - category: ${shieldResult.toxicityCategory}`);
+    console.log('[Comment] Toxic comment blocked by shield');
+
     return {
       comment,
       wasDeleted: true,
       message: 'Your comment was removed by our content moderation system.'
+    };
+  }
+
+  if (shieldResult.deletedByShield && shieldResult.status === 'approved') {
+    const comment = await commentRepo.insert({
+      userId,
+      postId,
+      content,
+      status: 'approved',
+      flaggedReason: shieldResult.toxicityCategory,
+      deletedByShield: 1,
+      toxicityCategory: shieldResult.toxicityCategory || null
+    });
+
+    console.log(
+      '[Comment] Toxic comment allowed through',
+      '(counting toward threshold)'
+    );
+
+    const post = await postRepo.findById(postId);
+    if (post && post.user_id !== userId) {
+      await notificationService.create({
+        type: 'comment',
+        recipientId: post.user_id,
+        senderId: userId,
+        postId
+      });
+    }
+
+    return {
+      comment,
+      wasDeleted: false,
+      thresholdWarning: true
     };
   }
 
@@ -31,7 +65,8 @@ async function createComment(userId, postId, content) {
     content,
     status: shieldResult.status,
     flaggedReason: null,
-    deletedByShield: 0
+    deletedByShield: 0,
+    toxicityCategory: null
   });
 
   if (shieldResult.status === 'approved') {
