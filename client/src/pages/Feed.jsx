@@ -392,7 +392,6 @@ function Feed() {
     <section className={styles.page}>
       <div className={styles.feedTopbar}>
         <span className={styles.feedLogo}>TrueVoice</span>
-        <span className={styles.feedBadge}>Chronological</span>
       </div>
 
       {socketToast ? (
