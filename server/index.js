@@ -18,6 +18,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth.routes');
+const mediaRoutes = require('./routes/media.routes');
 const userRoutes = require('./routes/user.routes');
 const postRoutes = require('./routes/post.routes');
 const commentRoutes = require('./routes/comment.routes');
@@ -78,6 +79,7 @@ app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/uploads', express.static(uploadStaticDir));
+app.use('/media', mediaRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({

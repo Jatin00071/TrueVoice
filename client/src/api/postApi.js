@@ -1,9 +1,7 @@
 import api from './axiosInstance.js';
 
 export async function createPost(formData) {
-  const res = await api.post('/posts', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  });
+  const res = await api.post('/posts', formData);
   return res.data;
 }
 
@@ -66,4 +64,3 @@ export async function approveComment(postId, commentId) {
   const res = await api.post(`/posts/${postId}/comments/${commentId}/approve`);
   return res.data;
 }
-

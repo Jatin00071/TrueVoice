@@ -20,6 +20,15 @@ let isRefreshing = false;
 let refreshQueue = [];
 
 axiosInstance.interceptors.request.use((config) => {
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    if (config.headers?.['Content-Type']) {
+      delete config.headers['Content-Type'];
+    }
+    if (config.headers?.['content-type']) {
+      delete config.headers['content-type'];
+    }
+  }
+
   const auth = getAuthContext();
   if (auth?.accessToken) {
     config.headers.Authorization = `Bearer ${auth.accessToken}`;

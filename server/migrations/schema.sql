@@ -159,3 +159,12 @@ CREATE TABLE IF NOT EXISTS follow_requests (
   FOREIGN KEY (recipient_id) REFERENCES users(id),
   INDEX idx_recipient (recipient_id, created_at)
 );
+
+CREATE TABLE IF NOT EXISTS media_assets (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  mime_type VARCHAR(100) NOT NULL,
+  original_name VARCHAR(255) DEFAULT NULL,
+  byte_size INT UNSIGNED NOT NULL,
+  data LONGBLOB NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

@@ -6,7 +6,10 @@ export async function getProfile(id) {
 }
 
 export async function updateProfile(id, payload) {
-  const res = await api.put(`/users/${id}`, payload);
+  const config = payload instanceof FormData
+    ? { headers: { 'Content-Type': undefined } }
+    : undefined;
+  const res = await api.put(`/users/${id}`, payload, config);
   return res.data;
 }
 
