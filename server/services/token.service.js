@@ -40,6 +40,20 @@ function signEmailVerificationToken(payload) {
   );
 }
 
+function signPasswordResetToken(payload) {
+  const secret = process.env.JWT_PASSWORD_RESET_SECRET || process.env.JWT_EMAIL_SECRET || process.env.JWT_SECRET;
+  if (!secret) throw { error: true, message: 'JWT password reset secret not configured', code: 'JWT_CONFIG', statusCode: 500 };
+
+  return jwt.sign(
+    {
+      ...payload,
+      purpose: 'password_reset'
+    },
+    secret,
+    { expiresIn: process.env.PASSWORD_RESET_EXPIRY || '30m' }
+  );
+}
+
 function verifyAccessToken(token) {
   try {
     return jwt.verify(token, process.env.JWT_SECRET);
@@ -73,6 +87,26 @@ function verifyEmailVerificationToken(token) {
   }
 }
 
+function verifyPasswordResetToken(token) {
+  try {
+    const payload = jwt.verify(
+      token,
+      process.env.JWT_PASSWORD_RESET_SECRET || process.env.JWT_EMAIL_SECRET || process.env.JWT_SECRET
+    );
+    if (payload?.purpose !== 'password_reset') {
+      throw new Error('Invalid password reset token purpose');
+    }
+    return payload;
+  } catch (e) {
+    throw {
+      error: true,
+      message: 'Invalid or expired password reset link',
+      code: 'PASSWORD_RESET_INVALID',
+      statusCode: 400
+    };
+  }
+}
+
 function accessTokenExpiryMs() {
   return msFromJwtExpiry(process.env.JWT_EXPIRY || '15m');
 }
@@ -81,8 +115,10 @@ module.exports = {
   signAccessToken,
   signRefreshToken,
   signEmailVerificationToken,
+  signPasswordResetToken,
   verifyAccessToken,
   verifyRefreshToken,
   verifyEmailVerificationToken,
+  verifyPasswordResetToken,
   accessTokenExpiryMs
 };

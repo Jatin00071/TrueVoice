@@ -13,6 +13,8 @@ function Login() {
   const location = useLocation();
   const initialNotice = location.state?.verified
     ? 'Email verified. You can sign in now.'
+    : location.state?.passwordReset
+      ? location.state.message || 'Password reset successful. You can sign in now.'
     : location.state?.message
       ? location.state.message
       : location.state?.needsVerification
@@ -155,9 +157,14 @@ function Login() {
             </div>
 
             <div className={styles.field}>
-              <label className={styles.fieldLabel} htmlFor="login-password">
-                Password
-              </label>
+              <div className={styles.fieldHeader}>
+                <label className={styles.fieldLabel} htmlFor="login-password">
+                  Password
+                </label>
+                <Link to="/forgot-password" className={styles.inlineLink}>
+                  Forgot password?
+                </Link>
+              </div>
               <div className={styles.passwordWrapper}>
                 <input
                   id="login-password"

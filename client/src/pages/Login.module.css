@@ -181,6 +181,24 @@
   color: var(--ink);
 }
 
+.fieldHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.fieldHeader .fieldLabel {
+  margin-bottom: 0;
+}
+
+.inlineLink {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
 .input {
   width: 100%;
   border: 1px solid var(--border);
@@ -503,6 +521,10 @@
 }
 
 :global([data-theme='dark']) .switchLink {
+  color: #ff4554;
+}
+
+:global([data-theme='dark']) .inlineLink {
   color: #ff4554;
 }
 

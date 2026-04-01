@@ -61,4 +61,26 @@ async function resendVerification(req, res) {
   res.json(result);
 }
 
-module.exports = { register, login, refresh, logout, changePassword, verifyEmail, resendVerification };
+async function forgotPassword(req, res) {
+  const { email, username, identifier } = req.body || {};
+  const result = await authService.forgotPassword({ email, username, identifier });
+  res.json(result);
+}
+
+async function resetPassword(req, res) {
+  const { token, newPassword } = req.body || {};
+  const result = await authService.resetPassword({ token, newPassword });
+  res.json(result);
+}
+
+module.exports = {
+  register,
+  login,
+  refresh,
+  logout,
+  changePassword,
+  verifyEmail,
+  resendVerification,
+  forgotPassword,
+  resetPassword
+};

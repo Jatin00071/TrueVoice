@@ -4,7 +4,7 @@ const { toSqlLimit } = require('../utils/sql');
 function stripSensitive(u) {
   if (!u) return u;
   // eslint-disable-next-line no-unused-vars
-  const { password_hash, refresh_token_hash, verification_token, ...rest } = u;
+  const { password_hash, refresh_token_hash, verification_token, password_reset_token, ...rest } = u;
   return rest;
 }
 
@@ -110,6 +110,16 @@ async function findAuthById(id) {
   return rows[0] || null;
 }
 
+async function findPasswordResetAuthById(id) {
+  const rows = await query(
+    `SELECT id, username, email, password_hash, display_name, password_reset_token
+     FROM users
+     WHERE id = ?`,
+    [id]
+  );
+  return rows[0] || null;
+}
+
 async function findByVerificationToken(token) {
   const rows = await query(
     `SELECT id, username, email, display_name, is_verified, verification_token
@@ -139,6 +149,14 @@ async function setRefreshTokenHash(userId, refreshTokenHash) {
 
 async function clearRefreshTokenHash(userId) {
   await query(`UPDATE users SET refresh_token_hash = NULL WHERE id = ?`, [userId]);
+}
+
+async function setPasswordResetToken(userId, passwordResetTokenHash) {
+  await query(`UPDATE users SET password_reset_token = ? WHERE id = ?`, [passwordResetTokenHash, userId]);
+}
+
+async function clearPasswordResetToken(userId) {
+  await query(`UPDATE users SET password_reset_token = NULL WHERE id = ?`, [userId]);
 }
 
 async function updateProfile(userId, { displayName, bio, avatarUrl }) {
@@ -271,11 +289,14 @@ module.exports = {
   findAuthByEmail,
   findByUsername,
   findAuthById,
+  findPasswordResetAuthById,
   findByVerificationToken,
   markVerified,
   setVerificationToken,
   setRefreshTokenHash,
   clearRefreshTokenHash,
+  setPasswordResetToken,
+  clearPasswordResetToken,
   updateProfile,
   updatePassword,
   updateFields,

@@ -11,6 +11,8 @@ import Notifications from './pages/Notifications.jsx';
 import Settings from './pages/Settings.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
 import VerifyEmail from './pages/VerifyEmail.jsx';
 import NotFound from './pages/NotFound.jsx';
 import ProtectedRoute from './components/layout/ProtectedRoute.jsx';
@@ -24,6 +26,8 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route
                 path="/"

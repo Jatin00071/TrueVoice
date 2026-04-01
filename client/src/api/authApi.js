@@ -46,6 +46,29 @@ export async function resendVerification(payload) {
   return res.data;
 }
 
+export async function forgotPassword(payload) {
+  let body;
+
+  if (typeof payload === 'string') {
+    body = { identifier: payload };
+  } else if (payload && typeof payload === 'object') {
+    body = payload;
+  } else {
+    throw new Error('Invalid forgot password payload');
+  }
+
+  const res = await api.post('/auth/forgot-password', body);
+  return res.data;
+}
+
+export async function resetPassword(token, newPassword) {
+  const res = await api.post('/auth/reset-password', {
+    token,
+    newPassword
+  });
+  return res.data;
+}
+
 export async function refresh(refreshToken) {
   const res = await api.post('/auth/refresh', { refreshToken });
   return res.data;
@@ -69,6 +92,8 @@ export const authApi = {
   login,
   verifyEmail,
   resendVerification,
+  forgotPassword,
+  resetPassword,
   refresh,
   logout,
   changePassword

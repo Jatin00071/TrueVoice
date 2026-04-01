@@ -94,7 +94,62 @@ async function sendVerificationEmail({ to, username, verificationUrl }) {
   };
 }
 
+async function sendPasswordResetEmail({ to, username, resetUrl }) {
+  const text = [
+    `Hi ${username || 'there'},`,
+    '',
+    'We received a request to reset your TrueVoice password.',
+    'Open the link below to choose a new password:',
+    resetUrl,
+    '',
+    'If you did not request this, you can ignore this email.'
+  ].join('\n');
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1a1a2e;">
+      <p>Hi ${username || 'there'},</p>
+      <p>We received a request to reset your <strong>TrueVoice</strong> password.</p>
+      <p>Use the button below to choose a new password.</p>
+      <p>
+        <a
+          href="${resetUrl}"
+          style="display: inline-block; padding: 12px 18px; border-radius: 10px; background: #1a1a2e; color: #ffffff; text-decoration: none;"
+        >
+          Reset password
+        </a>
+      </p>
+      <p style="word-break: break-all; color: #6b7280;">${resetUrl}</p>
+      <p>If you did not request this, you can ignore this email.</p>
+    </div>
+  `;
+
+  if (!isConfigured()) {
+    // eslint-disable-next-line no-console
+    console.log(`[Mail] Password reset preview for ${to}: ${resetUrl}`);
+    return {
+      delivered: false,
+      mode: 'preview',
+      previewUrl: resetUrl
+    };
+  }
+
+  const transportContext = getTransportContext();
+  await transportContext.transport.sendMail({
+    from: transportContext.from,
+    to,
+    subject: 'Reset your TrueVoice password',
+    text,
+    html
+  });
+
+  return {
+    delivered: true,
+    mode: 'smtp'
+  };
+}
+
 module.exports = {
   isConfigured,
-  sendVerificationEmail
+  sendVerificationEmail,
+  sendPasswordResetEmail
 };

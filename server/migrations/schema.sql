@@ -11,6 +11,7 @@ CREATE TABLE users (
   avatar_url VARCHAR(500) DEFAULT NULL,
   is_verified TINYINT(1) DEFAULT 0,
   verification_token VARCHAR(255) DEFAULT NULL,
+  password_reset_token VARCHAR(255) DEFAULT NULL,
   refresh_token_hash VARCHAR(255) DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP
@@ -110,6 +111,9 @@ ALTER TABLE users
   ADD COLUMN notif_follows TINYINT(1) DEFAULT 1,
   ADD COLUMN notif_shield TINYINT(1) DEFAULT 1,
   ADD COLUMN notif_reshares TINYINT(1) DEFAULT 1;
+
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS password_reset_token VARCHAR(255) DEFAULT NULL;
 
 ALTER TABLE users
   ADD COLUMN is_private TINYINT(1) DEFAULT 0,

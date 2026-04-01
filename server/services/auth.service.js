@@ -9,7 +9,7 @@ function safeUser(u) {
   if (!u) return u;
   // repository already strips most; keep defensive
   // eslint-disable-next-line no-unused-vars
-  const { password_hash, refresh_token_hash, verification_token, ...rest } = u;
+  const { password_hash, refresh_token_hash, verification_token, password_reset_token, ...rest } = u;
   return rest;
 }
 
@@ -36,11 +36,25 @@ function ensureEmailVerificationAvailable() {
   }
 }
 
-function buildVerificationUrl(token) {
+function buildClientUrl(pathname, query = {}) {
   const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-  const verifyUrl = new URL('/verify-email', clientUrl);
-  verifyUrl.searchParams.set('token', token);
-  return verifyUrl.toString();
+  const nextUrl = new URL(pathname, clientUrl);
+
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      nextUrl.searchParams.set(key, value);
+    }
+  });
+
+  return nextUrl.toString();
+}
+
+function buildVerificationUrl(token) {
+  return buildClientUrl('/verify-email', { token });
+}
+
+function buildPasswordResetUrl(token) {
+  return buildClientUrl('/reset-password', { token });
 }
 
 async function sendVerificationEmail(authUser, verificationUrl) {
@@ -60,6 +74,23 @@ async function sendVerificationEmail(authUser, verificationUrl) {
   }
 }
 
+async function sendPasswordResetEmail(authUser, resetUrl) {
+  try {
+    return await emailService.sendPasswordResetEmail({
+      to: authUser.email,
+      username: authUser.display_name || authUser.username,
+      resetUrl
+    });
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[Mail] Failed to send password reset email:', error?.message || error);
+    return {
+      delivered: false,
+      mode: 'error'
+    };
+  }
+}
+
 function verificationResponseFields(mailResult, verificationUrl) {
   const response = {
     verificationRequired: true,
@@ -68,6 +99,18 @@ function verificationResponseFields(mailResult, verificationUrl) {
 
   if (process.env.NODE_ENV !== 'production' && verificationUrl) {
     response.verificationUrl = verificationUrl;
+  }
+
+  return response;
+}
+
+function passwordResetResponseFields(mailResult, resetUrl) {
+  const response = {
+    emailSent: Boolean(mailResult?.delivered)
+  };
+
+  if (process.env.NODE_ENV !== 'production' && resetUrl) {
+    response.resetUrl = resetUrl;
   }
 
   return response;
@@ -346,4 +389,124 @@ async function resendVerification(payload = {}) {
   };
 }
 
-module.exports = { register, login, refresh, logout, changePassword, verifyEmail, resendVerification };
+async function forgotPassword(payload = {}) {
+  const explicitEmail = normalizeEmail(payload.email);
+  const explicitUsername = normalizeUsername(payload.username);
+  const identifier = normalizeUsername(payload.identifier);
+
+  const email = explicitEmail || (identifier.includes('@') ? normalizeEmail(identifier) : '');
+  const username = explicitUsername || (!identifier.includes('@') ? identifier : '');
+
+  if (!email && !username) {
+    throw {
+      error: true,
+      message: 'Email or username is required',
+      code: 'VALIDATION_ERROR',
+      statusCode: 400
+    };
+  }
+
+  ensureEmailVerificationAvailable();
+
+  const authUser = email
+    ? await userRepo.findAuthByEmail(email)
+    : await userRepo.findByUsername(username);
+
+  if (!authUser) {
+    return {
+      success: true,
+      message: 'If an account exists for that login, a password reset link has been sent.'
+    };
+  }
+
+  const resetToken = tokenService.signPasswordResetToken({
+    userId: authUser.id,
+    email: authUser.email
+  });
+  const resetTokenHash = hashVerificationToken(resetToken);
+  const resetUrl = buildPasswordResetUrl(resetToken);
+
+  await userRepo.setPasswordResetToken(authUser.id, resetTokenHash);
+
+  const mailResult = await sendPasswordResetEmail(authUser, resetUrl);
+
+  let message = 'If an account exists for that login, a password reset link has been sent.';
+  if (mailResult.mode === 'preview') {
+    message = 'Email delivery is not configured, so use the development reset link below.';
+  } else if (mailResult.mode === 'error') {
+    message = 'We could not send the password reset email just now. Please try again in a moment.';
+  }
+
+  return {
+    success: true,
+    message,
+    ...passwordResetResponseFields(mailResult, resetUrl)
+  };
+}
+
+async function resetPassword(payload = {}) {
+  const token = String(payload.token || '').trim();
+  const newPassword = String(payload.newPassword || '');
+
+  if (!token || !newPassword) {
+    throw {
+      error: true,
+      message: 'Reset token and new password are required',
+      code: 'VALIDATION_ERROR',
+      statusCode: 400
+    };
+  }
+
+  if (newPassword.length < 8) {
+    throw {
+      error: true,
+      message: 'New password must be at least 8 characters',
+      code: 'VALIDATION_ERROR',
+      statusCode: 400
+    };
+  }
+
+  const tokenPayload = tokenService.verifyPasswordResetToken(token);
+  const authUser = await userRepo.findPasswordResetAuthById(tokenPayload.userId);
+
+  if (!authUser) {
+    throw {
+      error: true,
+      message: 'Account not found',
+      code: 'NOT_FOUND',
+      statusCode: 404
+    };
+  }
+
+  const tokenHash = hashVerificationToken(token);
+  if (!authUser.password_reset_token || authUser.password_reset_token !== tokenHash) {
+    throw {
+      error: true,
+      message: 'This password reset link is no longer valid. Request a new one and try again.',
+      code: 'PASSWORD_RESET_INVALID',
+      statusCode: 400
+    };
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  await userRepo.updatePassword(authUser.id, passwordHash);
+  await userRepo.clearPasswordResetToken(authUser.id);
+  await userRepo.clearRefreshTokenHash(authUser.id);
+
+  return {
+    success: true,
+    message: 'Password reset successful. You can sign in with your new password now.'
+  };
+}
+
+module.exports = {
+  register,
+  login,
+  refresh,
+  logout,
+  changePassword,
+  verifyEmail,
+  resendVerification,
+  forgotPassword,
+  resetPassword
+};
