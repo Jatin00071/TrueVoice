@@ -26,6 +26,26 @@ export async function login(payload, password) {
   return res.data;
 }
 
+export async function verifyEmail(token) {
+  const res = await api.post('/auth/verify-email', { token });
+  return res.data;
+}
+
+export async function resendVerification(payload) {
+  let body;
+
+  if (typeof payload === 'string') {
+    body = { email: payload };
+  } else if (payload && typeof payload === 'object') {
+    body = payload;
+  } else {
+    throw new Error('Invalid verification resend payload');
+  }
+
+  const res = await api.post('/auth/resend-verification', body);
+  return res.data;
+}
+
 export async function refresh(refreshToken) {
   const res = await api.post('/auth/refresh', { refreshToken });
   return res.data;
@@ -47,6 +67,8 @@ export async function changePassword(currentPassword, newPassword) {
 export const authApi = {
   register,
   login,
+  verifyEmail,
+  resendVerification,
   refresh,
   logout,
   changePassword

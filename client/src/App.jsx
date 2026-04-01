@@ -11,6 +11,7 @@ import Notifications from './pages/Notifications.jsx';
 import Settings from './pages/Settings.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import VerifyEmail from './pages/VerifyEmail.jsx';
 import NotFound from './pages/NotFound.jsx';
 import ProtectedRoute from './components/layout/ProtectedRoute.jsx';
 
@@ -23,6 +24,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
               <Route
                 path="/"
                 element={

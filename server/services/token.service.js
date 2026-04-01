@@ -26,6 +26,20 @@ function signRefreshToken(payload) {
   return jwt.sign(payload, secret, { expiresIn: process.env.JWT_REFRESH_EXPIRY || '7d' });
 }
 
+function signEmailVerificationToken(payload) {
+  const secret = process.env.JWT_EMAIL_SECRET || process.env.JWT_SECRET;
+  if (!secret) throw { error: true, message: 'JWT email secret not configured', code: 'JWT_CONFIG', statusCode: 500 };
+
+  return jwt.sign(
+    {
+      ...payload,
+      purpose: 'email_verification'
+    },
+    secret,
+    { expiresIn: process.env.EMAIL_VERIFY_EXPIRY || '24h' }
+  );
+}
+
 function verifyAccessToken(token) {
   try {
     return jwt.verify(token, process.env.JWT_SECRET);
@@ -42,6 +56,23 @@ function verifyRefreshToken(token) {
   }
 }
 
+function verifyEmailVerificationToken(token) {
+  try {
+    const payload = jwt.verify(token, process.env.JWT_EMAIL_SECRET || process.env.JWT_SECRET);
+    if (payload?.purpose !== 'email_verification') {
+      throw new Error('Invalid verification token purpose');
+    }
+    return payload;
+  } catch (e) {
+    throw {
+      error: true,
+      message: 'Invalid or expired verification link',
+      code: 'EMAIL_VERIFICATION_INVALID',
+      statusCode: 400
+    };
+  }
+}
+
 function accessTokenExpiryMs() {
   return msFromJwtExpiry(process.env.JWT_EXPIRY || '15m');
 }
@@ -49,8 +80,9 @@ function accessTokenExpiryMs() {
 module.exports = {
   signAccessToken,
   signRefreshToken,
+  signEmailVerificationToken,
   verifyAccessToken,
   verifyRefreshToken,
+  verifyEmailVerificationToken,
   accessTokenExpiryMs
 };
-

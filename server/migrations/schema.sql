@@ -9,7 +9,7 @@ CREATE TABLE users (
   display_name VARCHAR(80) NOT NULL,
   bio VARCHAR(300) DEFAULT NULL,
   avatar_url VARCHAR(500) DEFAULT NULL,
-  is_verified TINYINT(1) DEFAULT 1,
+  is_verified TINYINT(1) DEFAULT 0,
   verification_token VARCHAR(255) DEFAULT NULL,
   refresh_token_hash VARCHAR(255) DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

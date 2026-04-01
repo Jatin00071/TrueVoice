@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.post('/register', asyncHandler(authController.register));
 router.post('/login', loginRateLimit, asyncHandler(authController.login));
+router.post('/verify-email', asyncHandler(authController.verifyEmail));
+router.post('/resend-verification', asyncHandler(authController.resendVerification));
 router.post('/refresh', asyncHandler(authController.refresh));
 router.post('/logout', requireAuth, asyncHandler(authController.logout));
 router.put('/change-password', requireAuth, asyncHandler(authController.changePassword));

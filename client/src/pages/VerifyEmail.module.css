@@ -1,0 +1,296 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background:
+    radial-gradient(circle at top left, rgba(244, 162, 97, 0.16), transparent 28%),
+    radial-gradient(circle at right, rgba(45, 106, 79, 0.08), transparent 26%),
+    var(--paper);
+}
+
+.leftPanel {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 24%, rgba(230, 57, 70, 0.2), transparent 22%),
+    radial-gradient(circle at 70% 70%, rgba(244, 162, 97, 0.2), transparent 18%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 26%),
+    var(--ink);
+  color: white;
+}
+
+.brandBlock {
+  position: relative;
+  z-index: 1;
+  max-width: 460px;
+  padding: 56px;
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-size: 60px;
+  font-weight: 700;
+  color: white;
+}
+
+.brandTagline {
+  margin-top: 14px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 360px;
+}
+
+.decorCircle1,
+.decorCircle2 {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.decorCircle1 {
+  width: 320px;
+  height: 320px;
+  top: 16%;
+  left: 10%;
+  background: rgba(230, 57, 70, 0.18);
+}
+
+.decorCircle2 {
+  width: 220px;
+  height: 220px;
+  bottom: 18%;
+  left: 28%;
+  background: rgba(244, 162, 97, 0.2);
+}
+
+.decorLine {
+  position: absolute;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.decorLineOne {
+  top: 24%;
+  left: 16%;
+  width: 52%;
+}
+
+.decorLineTwo {
+  top: 48%;
+  left: 22%;
+  width: 38%;
+}
+
+.decorLineThree {
+  top: 72%;
+  left: 14%;
+  width: 46%;
+}
+
+.rightPanel {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background:
+    radial-gradient(circle at top right, rgba(244, 162, 97, 0.08), transparent 26%),
+    var(--paper);
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  border-radius: 28px;
+  padding: 36px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.48), transparent 24%),
+    var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(18px);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badgeLoading {
+  background: rgba(26, 26, 46, 0.08);
+  color: var(--ink);
+}
+
+.badgeSuccess {
+  background: rgba(45, 106, 79, 0.12);
+  color: var(--sage);
+}
+
+.badgeError {
+  background: rgba(230, 57, 70, 0.08);
+  color: var(--accent);
+}
+
+.title {
+  margin-top: 18px;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.message {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.loader {
+  width: 42px;
+  height: 42px;
+  margin-top: 24px;
+  border-radius: 50%;
+  border: 3px solid rgba(26, 26, 46, 0.12);
+  border-top-color: var(--ink);
+  animation: spin 0.8s linear infinite;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.primaryLink,
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.primaryLink {
+  background: linear-gradient(135deg, var(--ink), rgba(26, 26, 46, 0.9));
+  color: white;
+  box-shadow: 0 16px 30px rgba(26, 26, 46, 0.16);
+}
+
+.secondaryLink {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--ink);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 900px) {
+  .page {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .leftPanel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+:global([data-theme='dark']) .page {
+  background: #000000;
+}
+
+:global([data-theme='dark']) .leftPanel {
+  background: #000000;
+  border-right: 1px solid #1a1a1a;
+}
+
+:global([data-theme='dark']) .brandName {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .brandTagline {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .decorCircle1 {
+  background: rgba(255, 69, 84, 0.15);
+}
+
+:global([data-theme='dark']) .decorCircle2 {
+  background: rgba(244, 162, 97, 0.12);
+}
+
+:global([data-theme='dark']) .decorLine {
+  background: #1a1a1a;
+}
+
+:global([data-theme='dark']) .rightPanel {
+  background: #000000;
+}
+
+:global([data-theme='dark']) .card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
+    #0d0d0d;
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+:global([data-theme='dark']) .badgeLoading {
+  background: #111111;
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .badgeSuccess {
+  background: rgba(76, 175, 130, 0.08);
+  color: #4caf82;
+}
+
+:global([data-theme='dark']) .badgeError {
+  background: rgba(255, 69, 84, 0.06);
+  color: #ff4554;
+}
+
+:global([data-theme='dark']) .title {
+  color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .message {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .loader {
+  border-color: #222222;
+  border-top-color: #f0f0f0;
+}
+
+:global([data-theme='dark']) .primaryLink {
+  background: #f0f0f0;
+  color: #000000;
+}
+
+:global([data-theme='dark']) .secondaryLink {
+  background: #111111;
+  border-color: #222222;
+  color: #f0f0f0;
+}

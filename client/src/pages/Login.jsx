@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
+import { authApi } from '../api/authApi.js';
 import { useAuthContext } from '../hooks/useAuth.js';
 import styles from './Login.module.css';
 
@@ -10,12 +11,28 @@ function getErrorMessage(error, fallback) {
 function Login() {
   const { isAuthenticated, login, isLoading } = useAuthContext();
   const location = useLocation();
+  const initialNotice = location.state?.verified
+    ? 'Email verified. You can sign in now.'
+    : location.state?.message
+      ? location.state.message
+      : location.state?.needsVerification
+        ? `Check ${location.state?.email || 'your inbox'} for the verification link before signing in.`
+        : location.state?.registered
+          ? 'Account created. Check your email for the verification link.'
+          : '';
+
   const [loginMethod, setLoginMethod] = useState('email');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState(initialNotice);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendTarget, setResendTarget] = useState(
+    location.state?.email ? { email: location.state.email } : null
+  );
+  const [verificationUrl, setVerificationUrl] = useState(location.state?.verificationUrl || '');
 
   if (!isLoading && isAuthenticated) {
     return <Navigate to="/feed" replace />;
@@ -31,6 +48,7 @@ function Login() {
     }
 
     setIsSubmitting(true);
+    setVerificationUrl('');
 
     try {
       const payload = loginMethod === 'email'
@@ -38,9 +56,38 @@ function Login() {
         : { username: identifier.trim(), password };
       await login(payload);
     } catch (submitError) {
-      setError(getErrorMessage(submitError, 'Unable to sign you in.'));
+      const nextError = getErrorMessage(submitError, 'Unable to sign you in.');
+      const code = submitError?.response?.data?.code;
+
+      setError(nextError);
+
+      if (code === 'UNVERIFIED_EMAIL') {
+        setResendTarget(
+          loginMethod === 'email'
+            ? { email: identifier.trim() }
+            : { username: identifier.trim() }
+        );
+        setNotice('Your account is waiting for email verification. Request a fresh link below.');
+      }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!resendTarget) return;
+
+    setError('');
+    setIsResending(true);
+
+    try {
+      const response = await authApi.resendVerification(resendTarget);
+      setNotice(response?.message || 'A fresh verification email is on its way.');
+      setVerificationUrl(response?.verificationUrl || '');
+    } catch (submitError) {
+      setError(getErrorMessage(submitError, 'Unable to resend verification email.'));
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -64,7 +111,7 @@ function Login() {
           <h1 className={styles.formTitle}>Welcome back</h1>
           <p className={styles.formSubtitle}>Sign in to TrueVoice</p>
 
-          {location.state?.registered ? <p className={styles.successMsg}>Account created. You can sign in now.</p> : null}
+          {notice ? <p className={styles.successMsg}>{notice}</p> : null}
 
           <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.loginToggle} aria-label="Choose login method">
@@ -133,6 +180,29 @@ function Login() {
             </div>
 
             {error ? <p className={styles.errorMsg}>{error}</p> : null}
+
+            {resendTarget ? (
+              <div className={styles.verificationActions}>
+                <button
+                  type="button"
+                  className={styles.secondaryBtn}
+                  onClick={handleResendVerification}
+                  disabled={isResending}
+                >
+                  {isResending ? 'Sending...' : 'Resend verification email'}
+                </button>
+                {verificationUrl ? (
+                  <a
+                    href={verificationUrl}
+                    className={styles.utilityLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open verification link
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
 
             <button type="submit" className={styles.submitBtn} disabled={isSubmitting} aria-label="Sign in">
               {isSubmitting ? 'Signing in...' : 'Sign in'}

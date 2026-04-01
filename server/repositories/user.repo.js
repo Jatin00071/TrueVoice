@@ -8,11 +8,11 @@ function stripSensitive(u) {
   return rest;
 }
 
-async function create({ username, email, passwordHash, displayName }) {
+async function create({ username, email, passwordHash, displayName, verificationTokenHash = null, isVerified = false }) {
   const rows = await query(
     `INSERT INTO users (username, email, password_hash, display_name, verification_token, is_verified)
-     VALUES (?, ?, ?, ?, NULL, 1)`,
-    [username, email, passwordHash, displayName]
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [username, email, passwordHash, displayName, verificationTokenHash, isVerified ? 1 : 0]
   );
   return findById(rows.insertId);
 }
@@ -122,6 +122,15 @@ async function findByVerificationToken(token) {
 async function markVerified(userId) {
   await query(`UPDATE users SET is_verified = 1, verification_token = NULL WHERE id = ?`, [userId]);
   return findById(userId);
+}
+
+async function setVerificationToken(userId, verificationTokenHash) {
+  await query(
+    `UPDATE users
+     SET verification_token = ?, is_verified = 0
+     WHERE id = ?`,
+    [verificationTokenHash, userId]
+  );
 }
 
 async function setRefreshTokenHash(userId, refreshTokenHash) {
@@ -264,6 +273,7 @@ module.exports = {
   findAuthById,
   findByVerificationToken,
   markVerified,
+  setVerificationToken,
   setRefreshTokenHash,
   clearRefreshTokenHash,
   updateProfile,

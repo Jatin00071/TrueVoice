@@ -49,4 +49,16 @@ async function changePassword(req, res) {
   });
 }
 
-module.exports = { register, login, refresh, logout, changePassword };
+async function verifyEmail(req, res) {
+  const token = req.body?.token || req.query?.token;
+  const result = await authService.verifyEmail(token);
+  res.json(result);
+}
+
+async function resendVerification(req, res) {
+  const { email, username } = req.body || {};
+  const result = await authService.resendVerification({ email, username });
+  res.json(result);
+}
+
+module.exports = { register, login, refresh, logout, changePassword, verifyEmail, resendVerification };

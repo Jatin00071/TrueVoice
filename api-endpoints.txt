@@ -1,0 +1,68 @@
+Base URL (client axios):
+- /api/v1 (from client/src/api/axiosInstance.js)
+
+1) Auth API (/api/v1/auth)
+- POST /register
+- POST /login
+- POST /verify-email
+- POST /resend-verification
+- POST /refresh
+- POST /logout
+- PUT /change-password
+
+2) User API (/api/v1/users)
+- GET /search?q=...
+- GET /:id
+- PUT /:id/notification-preferences
+- PUT /:id/privacy
+- PUT /:id (multipart form data avatar upload)
+- DELETE /:id
+- GET /:id/followers
+- GET /:id/following
+- POST /:id/follow
+- GET /:id/follow-requests
+- POST /:id/follow-requests/:requesterId/approve
+- POST /:id/follow-requests/:requesterId/reject
+
+3) Posts API (/api/v1/posts)
+- POST / (multipart form data 'media' upload)
+- GET /feed?cursor=...&limit=...
+- GET /discover?cursor=...&limit=...
+- GET /:id
+- PUT /:id
+- DELETE /:id
+- GET /:id/origin-chain
+
+4) Like API (/api/v1/posts)
+- POST /:id/like
+
+5) Comment API (/api/v1/posts)
+- POST /:id/comments
+- GET /:id/comments
+- DELETE /:id/comments/:cid
+- GET /:id/comments/pending
+- POST /:id/comments/:cid/approve
+
+6) Shield API (/api/v1/posts)
+- POST /:id/shield/activate
+- POST /:id/shield/deactivate
+- GET /:id/shield/status
+
+7) Notifications API (/api/v1/notifications)
+- GET /
+- PUT /:id/read
+- PUT /read-all
+
+Client wrapper functions in /client/src/api:
+- authApi: register, login, verifyEmail, resendVerification, refresh, logout, changePassword
+- userApi: getProfile, updateProfile, followUser, getFollowers, getFollowing, searchUsers, updateNotifPrefs, updatePrivacy, deleteAccount
+- postApi: createPost, getFeed, getDiscover, getPost, updatePost, deletePost, getOriginChain, likePost, getComments, addComment, deleteComment, getPendingComments, approveComment
+- notificationApi: getNotifications, markNotificationRead, markAllNotificationsRead
+- shield API is called directly from pages using axiosInstance:
+  - GET /posts/:id/shield/status
+  - POST /posts/:id/shield/activate
+  - POST /posts/:id/shield/deactivate
+
+External third-party APIs in server/service:
+- Hugging Face inference: https://router.huggingface.co/hf-inference/models/unitary/multilingual-toxic-xlm-roberta
+- Anthropic AI SDK via @anthropic-ai/sdk (API key env var ANTHROPIC_API_KEY)

@@ -11,7 +11,7 @@ function getErrorMessage(error, fallback) {
 function Progress({ step }) {
   const steps = [
     { key: 1, label: 'Create account' },
-    { key: 2, label: "You're in" }
+    { key: 2, label: 'Verify email' }
   ];
 
   return (
@@ -49,6 +49,9 @@ function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
+  const [verificationUrl, setVerificationUrl] = useState('');
 
   if (!isLoading && isAuthenticated) {
     return <Navigate to="/feed" replace />;
@@ -77,17 +80,45 @@ function Register() {
     setIsSubmitting(true);
 
     try {
-      await authApi.register(username.trim(), email.trim(), password, displayName.trim(), bio.trim());
+      const response = await authApi.register(username.trim(), email.trim(), password, displayName.trim(), bio.trim());
+      setVerificationEmail(email.trim());
+      setVerificationUrl(response?.verificationUrl || '');
       setStep(2);
-      setSuccess('Account created. Redirecting to sign in...');
-      window.setTimeout(() => {
-        navigate('/login', { replace: true, state: { registered: true } });
-      }, 1200);
+      setSuccess(response?.message || `Account created. Check ${email.trim()} to verify your account.`);
     } catch (submitError) {
       setError(getErrorMessage(submitError, 'Registration failed'));
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleResend = async () => {
+    if (!verificationEmail) return;
+
+    setError('');
+    setIsResending(true);
+
+    try {
+      const response = await authApi.resendVerification({ email: verificationEmail });
+      setSuccess(response?.message || 'A fresh verification email is on its way.');
+      setVerificationUrl(response?.verificationUrl || '');
+    } catch (submitError) {
+      setError(getErrorMessage(submitError, 'Unable to resend verification email.'));
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const handleContinueToLogin = () => {
+    navigate('/login', {
+      replace: true,
+      state: {
+        needsVerification: true,
+        email: verificationEmail,
+        message: success,
+        verificationUrl
+      }
+    });
   };
 
   return (
@@ -214,8 +245,36 @@ function Register() {
             </form>
           ) : (
             <div className={styles.messageState}>
-              <p className={styles.successMsg}>{success || 'Account created successfully.'}</p>
-              <p className={styles.formSubtitle}>You can sign in with the username or email you just created.</p>
+              <p className={styles.successMsg}>{success || 'Account created. Check your email to verify your account.'}</p>
+              <p className={styles.helperText}>
+                Verify the inbox for <span className={styles.emphasis}>{verificationEmail}</span> before signing in.
+              </p>
+
+              {error ? <p className={styles.errorMsg}>{error}</p> : null}
+
+              <div className={styles.actionStack}>
+                <button type="button" className={styles.submitBtn} onClick={handleContinueToLogin}>
+                  Continue to sign in
+                </button>
+                <button
+                  type="button"
+                  className={styles.secondaryBtn}
+                  onClick={handleResend}
+                  disabled={isResending}
+                >
+                  {isResending ? 'Sending...' : 'Resend verification email'}
+                </button>
+                {verificationUrl ? (
+                  <a
+                    href={verificationUrl}
+                    className={styles.utilityLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open verification link
+                  </a>
+                ) : null}
+              </div>
             </div>
           )}
 

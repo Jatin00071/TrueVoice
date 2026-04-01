@@ -257,6 +257,47 @@
   gap: 8px;
 }
 
+.helperText {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.emphasis {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.actionStack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.secondaryBtn {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--ink);
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.utilityLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+}
+
 .successMsg {
   font-size: 14px;
   padding: 12px 14px;
@@ -398,6 +439,10 @@
   color: #555555;
 }
 
+:global([data-theme='dark']) .emphasis {
+  color: #f0f0f0;
+}
+
 :global([data-theme='dark']) .submitBtn {
   background: #f0f0f0;
   color: #000000;
@@ -412,7 +457,21 @@
   color: #888888;
 }
 
+:global([data-theme='dark']) .helperText {
+  color: #888888;
+}
+
+:global([data-theme='dark']) .secondaryBtn {
+  background: #111111;
+  border-color: #222222;
+  color: #f0f0f0;
+}
+
 :global([data-theme='dark']) .switchLink {
+  color: #ff4554;
+}
+
+:global([data-theme='dark']) .utilityLink {
   color: #ff4554;
 }
 
