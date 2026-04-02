@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import styles from './BottomNav.module.css';
 import { useAuthContext } from '../../hooks/useAuth.js';
 
@@ -47,6 +47,22 @@ function SettingsIcon() {
 
 function BottomNav() {
   const { user } = useAuthContext();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleCreate = () => {
+    try {
+      window.sessionStorage.setItem('tv:openComposer', '1');
+    } catch {
+      // Ignore storage issues and rely on the direct event path.
+    }
+
+    if (location.pathname !== '/feed') {
+      navigate('/feed');
+    }
+
+    window.dispatchEvent(new CustomEvent('tv:openComposer'));
+  };
 
   return (
     <nav className={styles.nav} aria-label="Primary">
@@ -68,10 +84,7 @@ function BottomNav() {
       <button
         type="button"
         className={styles.item}
-        onClick={() => {
-          const event = new CustomEvent('tv:openComposer');
-          window.dispatchEvent(event);
-        }}
+        onClick={handleCreate}
         aria-label="Create post"
       >
         <span aria-hidden="true" className={styles.icon}>

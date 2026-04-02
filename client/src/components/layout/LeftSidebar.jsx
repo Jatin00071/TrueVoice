@@ -85,7 +85,16 @@ function LeftSidebar() {
   }, [user, loadNotifications, location.pathname]);
 
   const handleCreate = () => {
-    navigate('/feed', { replace: false });
+    try {
+      window.sessionStorage.setItem('tv:openComposer', '1');
+    } catch {
+      // Ignore storage issues and rely on the direct event path.
+    }
+
+    if (location.pathname !== '/feed') {
+      navigate('/feed', { replace: false });
+    }
+
     window.dispatchEvent(new CustomEvent('tv:openComposer'));
   };
 

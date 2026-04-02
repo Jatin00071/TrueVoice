@@ -1,9 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { addComment, deletePost, getFeed, likePost } from '../api/postApi.js';
+import { addComment, createPost, deletePost, getFeed, likePost } from '../api/postApi.js';
 import api from '../api/axiosInstance.js';
 import { useAuthContext } from '../hooks/useAuth.js';
 import styles from './Feed.module.css';
+
+const ALLOWED_MEDIA_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'video/mp4',
+  'video/quicktime'
+]);
+
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
 
 function formatRelativeTime(value) {
   if (!value) return 'Now';
@@ -42,6 +54,27 @@ function getMediaUrl(post) {
   return resolveAssetUrl(post?.media_url) || '';
 }
 
+function isVideoFile(file) {
+  return Boolean(file?.type?.startsWith('video/'));
+}
+
+function validateMediaFile(file) {
+  if (!file) return '';
+
+  if (!ALLOWED_MEDIA_TYPES.has(file.type)) {
+    return 'Only JPG, PNG, GIF, WEBP, MP4, and MOV files are supported.';
+  }
+
+  const maxSize = isVideoFile(file) ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+  if (file.size > maxSize) {
+    return `File too large. ${isVideoFile(file) ? 'Videos' : 'Images'} must be under ${
+      isVideoFile(file) ? '100MB' : '10MB'
+    }.`;
+  }
+
+  return '';
+}
+
 function isResharePost(post) {
   return (
     post?.is_reshare === 1 ||
@@ -68,6 +101,9 @@ function getOriginalOwnerUsername(post) {
 function Feed() {
   const { user } = useAuthContext();
   const navigate = useNavigate();
+  const composerRef = useRef(null);
+  const composerTextareaRef = useRef(null);
+  const composerFileInputRef = useRef(null);
   const [posts, setPosts] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [error, setError] = useState('');
@@ -81,7 +117,30 @@ function Feed() {
   const [likeBusyPostId, setLikeBusyPostId] = useState(null);
   const [deleteBusyPostId, setDeleteBusyPostId] = useState(null);
   const [socketToast, setSocketToast] = useState(null);
+  const [composerText, setComposerText] = useState('');
+  const [composerMedia, setComposerMedia] = useState(null);
+  const [composerPreviewUrl, setComposerPreviewUrl] = useState('');
+  const [composerBusy, setComposerBusy] = useState(false);
+  const [composerFocused, setComposerFocused] = useState(false);
+  const [composerShieldEnabled, setComposerShieldEnabled] = useState(false);
+  const [composerFeedback, setComposerFeedback] = useState(null);
   const toastTimerRef = useRef(null);
+
+  const focusComposer = () => {
+    composerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.requestAnimationFrame(() => {
+      composerTextareaRef.current?.focus();
+    });
+  };
+
+  const resetComposer = () => {
+    setComposerText('');
+    setComposerMedia(null);
+    setComposerShieldEnabled(false);
+    if (composerFileInputRef.current) {
+      composerFileInputRef.current.value = '';
+    }
+  };
 
   const loadFeed = async ({ nextCursor = null, append = false } = {}) => {
     const setLoadingState = append ? setIsLoadingMore : setIsLoading;
@@ -103,6 +162,20 @@ function Feed() {
   useEffect(() => {
     loadFeed();
   }, []);
+
+  useEffect(() => {
+    if (!composerMedia) {
+      setComposerPreviewUrl('');
+      return undefined;
+    }
+
+    const objectUrl = window.URL.createObjectURL(composerMedia);
+    setComposerPreviewUrl(objectUrl);
+
+    return () => {
+      window.URL.revokeObjectURL(objectUrl);
+    };
+  }, [composerMedia]);
 
   useEffect(() => {
     let active = true;
@@ -235,6 +308,30 @@ function Feed() {
     return () => window.removeEventListener('tv:toast', handleToast);
   }, []);
 
+  useEffect(() => {
+    const handleOpenComposer = () => {
+      try {
+        window.sessionStorage.removeItem('tv:openComposer');
+      } catch {
+        // Ignore storage access issues and still focus the composer.
+      }
+
+      focusComposer();
+    };
+
+    window.addEventListener('tv:openComposer', handleOpenComposer);
+
+    try {
+      if (window.sessionStorage.getItem('tv:openComposer') === '1') {
+        handleOpenComposer();
+      }
+    } catch {
+      // Ignore storage access issues and rely on the direct event path.
+    }
+
+    return () => window.removeEventListener('tv:openComposer', handleOpenComposer);
+  }, []);
+
   const updateCommentFeedback = (postId, text = '', type = 'info') => {
     setCommentFeedback((current) => {
       const next = { ...current };
@@ -260,6 +357,87 @@ function Feed() {
         return next;
       });
     }, delay);
+  };
+
+  const clearComposerMedia = () => {
+    setComposerMedia(null);
+    setComposerFeedback(null);
+    if (composerFileInputRef.current) {
+      composerFileInputRef.current.value = '';
+    }
+  };
+
+  const handleComposerMediaChange = (event) => {
+    const file = event.target.files?.[0] || null;
+
+    if (!file) {
+      return;
+    }
+
+    const validationMessage = validateMediaFile(file);
+    if (validationMessage) {
+      setComposerMedia(null);
+      setComposerFeedback({ type: 'error', text: validationMessage });
+      event.target.value = '';
+      return;
+    }
+
+    setComposerMedia(file);
+    setComposerFeedback(null);
+  };
+
+  const handleComposerSubmit = async () => {
+    const trimmedText = composerText.trim();
+
+    if (!trimmedText && !composerMedia) {
+      setComposerFeedback({ type: 'error', text: 'Add some text or upload an image or video.' });
+      focusComposer();
+      return;
+    }
+
+    setComposerBusy(true);
+    setComposerFeedback(null);
+
+    const formData = new FormData();
+    if (trimmedText) {
+      formData.append('content', trimmedText);
+    }
+    if (composerMedia) {
+      formData.append('media', composerMedia);
+    }
+    formData.append('shieldEnabled', composerShieldEnabled ? 'true' : 'false');
+
+    try {
+      const result = await createPost(formData);
+
+      if (result?.removed) {
+        setComposerFeedback({
+          type: 'error',
+          text: result?.message || 'Your post was removed by moderation.'
+        });
+        return;
+      }
+
+      const createdPost = result?.data?.post || null;
+      if (createdPost?.id) {
+        setPosts((current) => [createdPost, ...current.filter((post) => post.id !== createdPost.id)]);
+      } else {
+        await loadFeed();
+      }
+
+      resetComposer();
+      setComposerFeedback({
+        type: 'info',
+        text: result?.message || 'Post created.'
+      });
+    } catch (submitError) {
+      setComposerFeedback({
+        type: 'error',
+        text: getErrorMessage(submitError, 'Unable to publish your post right now.')
+      });
+    } finally {
+      setComposerBusy(false);
+    }
   };
 
   const handleLike = async (postId) => {
@@ -398,6 +576,115 @@ function Feed() {
         <p className={socketToast.tone === 'warning' ? styles.messageError : styles.infoMessage}>
           {socketToast.message}
         </p>
+      ) : null}
+
+      {user ? (
+        <section ref={composerRef} className={styles.composer} aria-label="Create a post">
+          <label className={styles.composerLabel} htmlFor="feed-composer-text">
+            Share something with your community
+          </label>
+          <textarea
+            id="feed-composer-text"
+            ref={composerTextareaRef}
+            className={[
+              styles.textarea,
+              composerFocused || composerText ? styles.textareaActive : '',
+              composerFeedback?.type === 'error' ? styles.textareaError : ''
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            value={composerText}
+            onChange={(event) => {
+              setComposerText(event.target.value);
+              if (composerFeedback) {
+                setComposerFeedback(null);
+              }
+            }}
+            onFocus={() => setComposerFocused(true)}
+            onBlur={() => setComposerFocused(false)}
+            rows={4}
+            placeholder="Speak your mind, or post media without text."
+          />
+
+          <div className={styles.uploadRow}>
+            <input
+              id="feed-composer-media"
+              ref={composerFileInputRef}
+              className={styles.fileInput}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/quicktime"
+              onChange={handleComposerMediaChange}
+            />
+            <button
+              type="button"
+              className={styles.uploadButton}
+              onClick={() => composerFileInputRef.current?.click()}
+            >
+              {composerMedia ? 'Change media' : 'Upload photo or video'}
+            </button>
+            {composerMedia ? (
+              <button type="button" className={styles.clearMediaButton} onClick={clearComposerMedia}>
+                Remove media
+              </button>
+            ) : null}
+            <span className={styles.uploadMeta}>
+              {composerMedia
+                ? `${composerMedia.name} ${isVideoFile(composerMedia) ? '(video)' : '(image)'}`
+                : 'JPG, PNG, GIF, WEBP up to 10MB, MP4/MOV up to 100MB'}
+            </span>
+          </div>
+
+          {composerPreviewUrl ? (
+            <div className={styles.previewWrap}>
+              {isVideoFile(composerMedia) ? (
+                <video className={styles.previewImage} controls preload="metadata">
+                  <source src={composerPreviewUrl} type={composerMedia?.type} />
+                </video>
+              ) : (
+                <img className={styles.previewImage} src={composerPreviewUrl} alt="Selected post media preview" />
+              )}
+            </div>
+          ) : null}
+
+          <div className={styles.shieldToggleRow}>
+            <div className={styles.shieldToggleInfo}>
+              <span className={styles.shieldToggleIcon} aria-hidden="true">
+                {'\uD83D\uDEE1'}
+              </span>
+              <div>
+                <span className={styles.shieldToggleLabel}>Comment Shield</span>
+                <span className={styles.shieldToggleDesc}>Auto-protect this post from abusive comments.</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              className={`${styles.shieldToggleBtn} ${composerShieldEnabled ? styles.shieldOn : ''}`.trim()}
+              onClick={() => setComposerShieldEnabled((current) => !current)}
+              aria-pressed={composerShieldEnabled}
+              aria-label={composerShieldEnabled ? 'Turn off comment shield' : 'Turn on comment shield'}
+            >
+              <span className={styles.shieldToggleKnob} />
+            </button>
+          </div>
+
+          <div className={styles.composerFooter}>
+            <p className={styles.composerHint}>You can publish text only, media only, or both together.</p>
+            <button
+              type="button"
+              className={styles.submitButton}
+              onClick={handleComposerSubmit}
+              disabled={composerBusy}
+            >
+              {composerBusy ? 'Posting...' : 'Post now'}
+            </button>
+          </div>
+
+          {composerFeedback ? (
+            <p className={composerFeedback.type === 'error' ? styles.messageError : styles.infoMessage}>
+              {composerFeedback.text}
+            </p>
+          ) : null}
+        </section>
       ) : null}
 
       {isLoading ? <p className={styles.status}>Loading your feed...</p> : null}
