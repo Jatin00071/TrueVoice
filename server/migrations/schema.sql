@@ -1,4 +1,4 @@
-CREATE DATABASE truevoice_db;
+CREATE DATABASE IF NOT EXISTS truevoice_db;
 USE truevoice_db;
 
 CREATE TABLE users (
@@ -102,7 +102,9 @@ CREATE TABLE shield_events (
 
 ALTER TABLE fingerprints
   ADD COLUMN phash VARCHAR(256) DEFAULT NULL,
-  ADD COLUMN fingerprint_type ENUM('image','text','both') NOT NULL DEFAULT 'image',
+  ADD COLUMN fingerprint_type ENUM('image','text','both') NOT NULL DEFAULT 'image';
+
+ALTER TABLE fingerprints
   ADD INDEX idx_phash (phash);
 
 ALTER TABLE users
