@@ -12,11 +12,16 @@ function getTransportContext() {
   if (!isConfigured()) return null;
 
   const from = process.env.MAIL_FROM || process.env.SMTP_USER || 'TrueVoice <no-reply@truevoice.local>';
+  const timeoutMs = Number(process.env.SMTP_TIMEOUT_MS || 8000);
 
   if (process.env.SMTP_URL) {
     transportCache = {
       from,
-      transport: nodemailer.createTransport(process.env.SMTP_URL)
+      transport: nodemailer.createTransport(process.env.SMTP_URL, {
+        connectionTimeout: timeoutMs,
+        greetingTimeout: timeoutMs,
+        socketTimeout: timeoutMs
+      })
     };
     return transportCache;
   }
@@ -33,7 +38,10 @@ function getTransportContext() {
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
-      }
+      },
+      connectionTimeout: timeoutMs,
+      greetingTimeout: timeoutMs,
+      socketTimeout: timeoutMs
     })
   };
 
