@@ -1,6 +1,9 @@
 const nodemailer = require('nodemailer');
+const dns = require('dns').promises;
+const net = require('net');
 
 let transportCache = null;
+let transportPromise = null;
 
 function isConfigured() {
   return Boolean(process.env.SMTP_URL)
@@ -21,8 +24,28 @@ function formatMailError(error) {
   };
 }
 
-function getTransportContext() {
-  if (transportCache) return transportCache;
+async function resolveSmtpHost(host, family) {
+  const smtpHost = cleanEnvValue(host);
+
+  if (family !== 4 || net.isIP(smtpHost)) {
+    return {
+      host: smtpHost,
+      servername: net.isIP(smtpHost) ? cleanEnvValue(process.env.SMTP_SERVERNAME) : smtpHost
+    };
+  }
+
+  const addresses = await dns.resolve4(smtpHost);
+  if (!addresses.length) {
+    throw new Error(`No IPv4 address found for SMTP host ${smtpHost}`);
+  }
+
+  return {
+    host: addresses[0],
+    servername: smtpHost
+  };
+}
+
+async function createTransportContext() {
   if (!isConfigured()) return null;
 
   const from = cleanEnvValue(process.env.MAIL_FROM) || cleanEnvValue(process.env.SMTP_USER) || 'TrueVoice <no-reply@truevoice.local>';
@@ -30,39 +53,57 @@ function getTransportContext() {
   const family = Number(process.env.SMTP_FAMILY || 4);
 
   if (process.env.SMTP_URL) {
-    transportCache = {
+    return {
       from,
       transport: nodemailer.createTransport(cleanEnvValue(process.env.SMTP_URL), {
-        family,
         connectionTimeout: timeoutMs,
         greetingTimeout: timeoutMs,
         socketTimeout: timeoutMs
       })
     };
-    return transportCache;
   }
 
   const port = Number(process.env.SMTP_PORT || 587);
   const secure = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true' || port === 465;
+  const resolved = await resolveSmtpHost(process.env.SMTP_HOST, family);
 
-  transportCache = {
+  return {
     from,
     transport: nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
+      host: resolved.host,
       port,
       secure,
-      family,
+      servername: resolved.servername,
       auth: {
         user: cleanEnvValue(process.env.SMTP_USER),
         pass: cleanEnvValue(process.env.SMTP_PASS)
       },
       connectionTimeout: timeoutMs,
       greetingTimeout: timeoutMs,
-      socketTimeout: timeoutMs
+      socketTimeout: timeoutMs,
+      tls: resolved.servername
+        ? {
+            servername: resolved.servername
+          }
+        : undefined
     })
   };
+}
 
-  return transportCache;
+async function getTransportContext() {
+  if (transportCache) return transportCache;
+  if (transportPromise) return transportPromise;
+
+  transportPromise = createTransportContext()
+    .then((context) => {
+      transportCache = context;
+      return context;
+    })
+    .finally(() => {
+      transportPromise = null;
+    });
+
+  return transportPromise;
 }
 
 async function sendVerificationEmail({ to, username, verificationUrl }) {
@@ -104,7 +145,7 @@ async function sendVerificationEmail({ to, username, verificationUrl }) {
     };
   }
 
-  const transportContext = getTransportContext();
+  const transportContext = await getTransportContext();
   await transportContext.transport.sendMail({
     from: transportContext.from,
     to,
@@ -158,7 +199,7 @@ async function sendPasswordResetEmail({ to, username, resetUrl }) {
     };
   }
 
-  const transportContext = getTransportContext();
+  const transportContext = await getTransportContext();
   await transportContext.transport.sendMail({
     from: transportContext.from,
     to,
