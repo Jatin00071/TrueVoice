@@ -66,7 +66,7 @@ async function sendVerificationEmail(authUser, verificationUrl) {
     });
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('[Mail] Failed to send verification email:', error?.message || error);
+    console.error('[Mail] Failed to send verification email:', emailService.formatMailError(error));
     return {
       delivered: false,
       mode: 'error'
@@ -83,7 +83,7 @@ async function sendPasswordResetEmail(authUser, resetUrl) {
     });
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('[Mail] Failed to send password reset email:', error?.message || error);
+    console.error('[Mail] Failed to send password reset email:', emailService.formatMailError(error));
     return {
       delivered: false,
       mode: 'error'

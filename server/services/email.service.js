@@ -7,17 +7,33 @@ function isConfigured() {
     || Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
 }
 
+function cleanEnvValue(value) {
+  return String(value || '').trim().replace(/^['"]|['"]$/g, '');
+}
+
+function formatMailError(error) {
+  return {
+    message: error?.message || 'Unknown mail error',
+    code: error?.code,
+    command: error?.command,
+    responseCode: error?.responseCode,
+    response: error?.response
+  };
+}
+
 function getTransportContext() {
   if (transportCache) return transportCache;
   if (!isConfigured()) return null;
 
-  const from = process.env.MAIL_FROM || process.env.SMTP_USER || 'TrueVoice <no-reply@truevoice.local>';
+  const from = cleanEnvValue(process.env.MAIL_FROM) || cleanEnvValue(process.env.SMTP_USER) || 'TrueVoice <no-reply@truevoice.local>';
   const timeoutMs = Number(process.env.SMTP_TIMEOUT_MS || 8000);
+  const family = Number(process.env.SMTP_FAMILY || 4);
 
   if (process.env.SMTP_URL) {
     transportCache = {
       from,
-      transport: nodemailer.createTransport(process.env.SMTP_URL, {
+      transport: nodemailer.createTransport(cleanEnvValue(process.env.SMTP_URL), {
+        family,
         connectionTimeout: timeoutMs,
         greetingTimeout: timeoutMs,
         socketTimeout: timeoutMs
@@ -35,9 +51,10 @@ function getTransportContext() {
       host: process.env.SMTP_HOST,
       port,
       secure,
+      family,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
+        user: cleanEnvValue(process.env.SMTP_USER),
+        pass: cleanEnvValue(process.env.SMTP_PASS)
       },
       connectionTimeout: timeoutMs,
       greetingTimeout: timeoutMs,
@@ -158,6 +175,7 @@ async function sendPasswordResetEmail({ to, username, resetUrl }) {
 
 module.exports = {
   isConfigured,
+  formatMailError,
   sendVerificationEmail,
   sendPasswordResetEmail
 };
