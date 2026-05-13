@@ -129,7 +129,41 @@ async function register(payload = {}) {
 
   const existingEmail = await userRepo.findAuthByEmail(email);
   if (existingEmail) {
-    throw { error: true, message: 'Email already registered', code: 'DUPLICATE_EMAIL', statusCode: 409 };
+    if (existingEmail.is_verified) {
+      throw {
+        error: true,
+        message: 'This email is already registered. Sign in instead.',
+        code: 'DUPLICATE_EMAIL',
+        statusCode: 409
+      };
+    }
+
+    const verificationToken = tokenService.signEmailVerificationToken({
+      userId: existingEmail.id,
+      email: existingEmail.email
+    });
+    const verificationUrl = buildVerificationUrl(verificationToken);
+    const verificationTokenHash = hashVerificationToken(verificationToken);
+
+    await userRepo.setVerificationToken(existingEmail.id, verificationTokenHash);
+
+    const mailResult = await sendVerificationEmail(existingEmail, verificationUrl);
+
+    let message = 'This email already has an unverified account. We sent a fresh verification link.';
+    if (mailResult.mode === 'preview') {
+      message = 'This email already has an unverified account. Email delivery is not configured, so use the development verification link below.';
+    } else if (mailResult.mode === 'error') {
+      message = 'This email already has an unverified account, but we could not send the verification email just now. Please request a new link from sign in.';
+    }
+
+    const user = await userRepo.findById(existingEmail.id);
+
+    return {
+      user: safeUser(user),
+      existingUnverified: true,
+      message,
+      ...verificationResponseFields(mailResult, verificationUrl)
+    };
   }
 
   const existingUsername = await userRepo.findByUsername(username);
