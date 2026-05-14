@@ -5,6 +5,8 @@ import {
   markAllNotificationsRead,
   markNotificationRead
 } from '../api/notificationApi.js';
+import { userApi } from '../api/userApi.js';
+import { useAuthContext } from '../hooks/useAuth.js';
 import styles from './Notifications.module.css';
 
 function getErrorMessage(error, fallback) {
@@ -49,23 +51,30 @@ function getMessage(notification) {
 
 function Notifications() {
   const navigate = useNavigate();
+  const { user } = useAuthContext();
   const [items, setItems] = useState([]);
+  const [followRequests, setFollowRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [requestBusyId, setRequestBusyId] = useState(null);
 
   const loadNotifications = useCallback(async () => {
     setIsLoading(true);
     setError('');
 
     try {
-      const data = await getNotifications();
+      const [data, requestData] = await Promise.all([
+        getNotifications(),
+        user?.id ? userApi.getFollowRequests(user.id) : Promise.resolve({ items: [] })
+      ]);
       setItems(Array.isArray(data?.items) ? data.items : []);
+      setFollowRequests(Array.isArray(requestData?.items) ? requestData.items : []);
     } catch (loadError) {
       setError(getErrorMessage(loadError, 'Unable to load notifications.'));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     loadNotifications();
@@ -96,6 +105,32 @@ function Notifications() {
       setError(getErrorMessage(markError, 'Unable to mark all notifications as read.'));
     }
   };
+
+  const handleFollowRequestAction = async (requesterId, action) => {
+    if (!user?.id || !requesterId) return;
+
+    setRequestBusyId(requesterId);
+    setError('');
+
+    try {
+      if (action === 'approve') {
+        await userApi.approveFollowRequest(user.id, requesterId);
+      } else {
+        await userApi.rejectFollowRequest(user.id, requesterId);
+      }
+
+      setFollowRequests((current) =>
+        current.filter((request) => String(request.requester_id) !== String(requesterId))
+      );
+    } catch (requestError) {
+      setError(getErrorMessage(requestError, 'Unable to update follow request.'));
+    } finally {
+      setRequestBusyId(null);
+    }
+  };
+
+  const hasFollowRequests = followRequests.length > 0;
+  const hasNotifications = items.length > 0;
 
   return (
     <section className={styles.page}>
@@ -141,14 +176,70 @@ function Notifications() {
           </div>
         ) : null}
 
-        {!isLoading && !error && items.length === 0 ? (
+        {!isLoading && !error && !hasFollowRequests && !hasNotifications ? (
           <div className={styles.emptyState}>
             <p className={styles.emptyTitle}>You are all caught up.</p>
-            <p className={styles.emptyText}>New likes, follows, comments, and origin activity will appear here.</p>
+            <p className={styles.emptyText}>New requests, likes, follows, comments, and origin activity will appear here.</p>
           </div>
         ) : null}
 
-        {!isLoading && !error && items.length > 0 ? (
+        {!isLoading && !error && hasFollowRequests ? (
+          <div className={styles.requestSection}>
+            <p className={styles.sectionTitle}>Follow requests</p>
+            <div className={styles.list}>
+              {followRequests.map((request) => {
+                const requesterId = request.requester_id;
+                const isBusy = String(requestBusyId) === String(requesterId);
+
+                return (
+                  <div key={requesterId} className={styles.requestItem}>
+                    <div className={styles.avatar} aria-hidden="true" style={{ overflow: 'hidden' }}>
+                      {resolveAssetUrl(request.avatar_url) ? (
+                        <img
+                          src={resolveAssetUrl(request.avatar_url)}
+                          alt=""
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        (request.display_name || request.username || 'R').charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <div className={styles.body}>
+                      <p className={styles.message}>
+                        {request.display_name || request.username || 'Someone'} requested to follow you
+                      </p>
+                      <p className={styles.meta}>
+                        <span className={styles.kind}>follow request</span>
+                        <span className={styles.dot}>|</span>
+                        <span className={styles.time}>{formatRelativeTime(request.created_at)}</span>
+                      </p>
+                    </div>
+                    <div className={styles.requestActions}>
+                      <button
+                        type="button"
+                        className={styles.secondaryButton}
+                        onClick={() => handleFollowRequestAction(requesterId, 'reject')}
+                        disabled={isBusy}
+                      >
+                        Reject
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.primaryButton}
+                        onClick={() => handleFollowRequestAction(requesterId, 'approve')}
+                        disabled={isBusy}
+                      >
+                        {isBusy ? 'Saving...' : 'Approve'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
+        {!isLoading && !error && hasNotifications ? (
           <div className={styles.list}>
             {items.map((notification) => (
               <button
@@ -175,7 +266,7 @@ function Notifications() {
                   <p className={styles.message}>{getMessage(notification)}</p>
                   <p className={styles.meta}>
                     <span className={styles.kind}>{notification.type.replace('_', ' ')}</span>
-                    <span className={styles.dot}>•</span>
+                    <span className={styles.dot}>|</span>
                     <span className={styles.time}>{formatRelativeTime(notification.created_at)}</span>
                   </p>
                 </div>
