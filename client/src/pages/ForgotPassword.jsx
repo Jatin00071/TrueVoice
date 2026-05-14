@@ -29,7 +29,7 @@ function ForgotPassword() {
 
     try {
       const response = await authApi.forgotPassword({ identifier: identifier.trim() });
-      setSuccess(response?.message || 'If an account exists for that login, a password reset link has been sent.');
+      setSuccess(response?.message || 'Check your email for the password reset link.');
       setResetUrl(response?.resetUrl || '');
     } catch (submitError) {
       setError(getErrorMessage(submitError, 'Unable to send password reset email.'));

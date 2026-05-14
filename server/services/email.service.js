@@ -24,6 +24,24 @@ function formatMailError(error) {
   };
 }
 
+function formatMailInfo(info) {
+  return {
+    messageId: info?.messageId,
+    accepted: info?.accepted,
+    rejected: info?.rejected,
+    pending: info?.pending,
+    response: info?.response
+  };
+}
+
+function mailHeaders() {
+  const messageStream = cleanEnvValue(process.env.POSTMARK_MESSAGE_STREAM || process.env.SMTP_MESSAGE_STREAM);
+
+  return {
+    ...(messageStream ? { 'X-PM-Message-Stream': messageStream } : {})
+  };
+}
+
 async function resolveSmtpHost(host, family) {
   const smtpHost = cleanEnvValue(host);
 
@@ -146,13 +164,16 @@ async function sendVerificationEmail({ to, username, verificationUrl }) {
   }
 
   const transportContext = await getTransportContext();
-  await transportContext.transport.sendMail({
+  const info = await transportContext.transport.sendMail({
     from: transportContext.from,
     to,
     subject: 'Verify your TrueVoice email',
+    headers: mailHeaders(),
     text,
     html
   });
+  // eslint-disable-next-line no-console
+  console.log('[Mail] Verification email accepted:', formatMailInfo(info));
 
   return {
     delivered: true,
@@ -200,13 +221,16 @@ async function sendPasswordResetEmail({ to, username, resetUrl }) {
   }
 
   const transportContext = await getTransportContext();
-  await transportContext.transport.sendMail({
+  const info = await transportContext.transport.sendMail({
     from: transportContext.from,
     to,
     subject: 'Reset your TrueVoice password',
+    headers: mailHeaders(),
     text,
     html
   });
+  // eslint-disable-next-line no-console
+  console.log('[Mail] Password reset email accepted:', formatMailInfo(info));
 
   return {
     delivered: true,

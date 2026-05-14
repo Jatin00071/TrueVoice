@@ -447,9 +447,13 @@ async function forgotPassword(payload = {}) {
     : await userRepo.findByUsername(username);
 
   if (!authUser) {
-    return {
-      success: true,
-      message: 'If an account exists for that login, a password reset link has been sent.'
+    throw {
+      error: true,
+      message: email
+        ? 'There is no account with this email.'
+        : 'There is no account with this username.',
+      code: 'ACCOUNT_NOT_FOUND',
+      statusCode: 404
     };
   }
 
@@ -464,7 +468,7 @@ async function forgotPassword(payload = {}) {
 
   const mailResult = await sendPasswordResetEmail(authUser, resetUrl);
 
-  let message = 'If an account exists for that login, a password reset link has been sent.';
+  let message = 'Check your email for the password reset link.';
   if (mailResult.mode === 'preview') {
     message = 'Email delivery is not configured, so use the development reset link below.';
   } else if (mailResult.mode === 'error') {
