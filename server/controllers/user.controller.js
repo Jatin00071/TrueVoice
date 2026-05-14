@@ -7,7 +7,7 @@ async function search(req, res) {
 }
 
 async function getProfile(req, res) {
-  const profile = await userService.getProfile(req.params.id);
+  const profile = await userService.getProfile(req.params.id, req.auth?.userId);
   return res.status(200).json({ data: profile, message: 'success' });
 }
 

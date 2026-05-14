@@ -47,6 +47,10 @@ export default function Settings() {
     shield_enabled: user?.shield_enabled ?? 1
   });
   const [privacySaving, setPrivacySaving] = useState(false);
+  const [followRequests, setFollowRequests] = useState([]);
+  const [followRequestsLoading, setFollowRequestsLoading] = useState(false);
+  const [followRequestsError, setFollowRequestsError] = useState(null);
+  const [followRequestBusyId, setFollowRequestBusyId] = useState(null);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
@@ -69,6 +73,33 @@ export default function Settings() {
       shield_enabled: user.shield_enabled ?? 1
     });
   }, [user]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    let isMounted = true;
+    setFollowRequestsLoading(true);
+    setFollowRequestsError(null);
+
+    userApi.getFollowRequests(user.id)
+      .then((response) => {
+        if (!isMounted) return;
+        setFollowRequests(Array.isArray(response?.items) ? response.items : []);
+      })
+      .catch((error) => {
+        if (!isMounted) return;
+        setFollowRequestsError(getErrorMessage(error, 'Unable to load follow requests'));
+      })
+      .finally(() => {
+        if (isMounted) {
+          setFollowRequestsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id]);
 
   const handleLogout = async () => {
     try {
@@ -157,6 +188,29 @@ export default function Settings() {
       setPrivacySettings(previous);
     } finally {
       setPrivacySaving(false);
+    }
+  };
+
+  const handleFollowRequestAction = async (requesterId, action) => {
+    if (!user?.id || !requesterId) return;
+
+    setFollowRequestBusyId(requesterId);
+    setFollowRequestsError(null);
+
+    try {
+      if (action === 'approve') {
+        await userApi.approveFollowRequest(user.id, requesterId);
+      } else {
+        await userApi.rejectFollowRequest(user.id, requesterId);
+      }
+
+      setFollowRequests((current) =>
+        current.filter((request) => String(request.requester_id) !== String(requesterId))
+      );
+    } catch (error) {
+      setFollowRequestsError(getErrorMessage(error, 'Unable to update follow request'));
+    } finally {
+      setFollowRequestBusyId(null);
     }
   };
 
@@ -409,6 +463,66 @@ export default function Settings() {
               </button>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <p className={styles.sectionLabel}>FOLLOW REQUESTS</p>
+        <div className={styles.sectionCard}>
+          <p className={styles.sectionNote}>
+            {followRequestsLoading ? 'Loading requests...' : 'Approve people who can follow your private account'}
+          </p>
+
+          {followRequestsError ? <p className={styles.errorMsg}>{followRequestsError}</p> : null}
+
+          {!followRequestsLoading && followRequests.length === 0 ? (
+            <p className={styles.emptyText}>No pending follow requests.</p>
+          ) : null}
+
+          {followRequests.map((request) => {
+            const requesterId = request.requester_id;
+            const isBusy = String(followRequestBusyId) === String(requesterId);
+
+            return (
+              <div key={requesterId} className={styles.requestRow}>
+                <div className={styles.requestInfo}>
+                  <div className={styles.requestAvatar}>
+                    {request.avatar_url ? (
+                      <img
+                        src={resolveAssetUrl(request.avatar_url)}
+                        alt={request.display_name || request.username}
+                        className={styles.requestImg}
+                      />
+                    ) : (
+                      <span>{(request.display_name || request.username || '?')[0].toUpperCase()}</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className={styles.requestName}>{request.display_name || request.username}</p>
+                    <p className={styles.requestHandle}>@{request.username}</p>
+                  </div>
+                </div>
+                <div className={styles.requestActions}>
+                  <button
+                    type="button"
+                    className={styles.cancelBtn}
+                    onClick={() => handleFollowRequestAction(requesterId, 'reject')}
+                    disabled={isBusy}
+                  >
+                    Reject
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.saveBtn}
+                    onClick={() => handleFollowRequestAction(requesterId, 'approve')}
+                    disabled={isBusy}
+                  >
+                    {isBusy ? 'Saving...' : 'Approve'}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 

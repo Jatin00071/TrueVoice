@@ -41,6 +41,7 @@ function Profile() {
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followRequested, setFollowRequested] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [followBusy, setFollowBusy] = useState(false);
@@ -73,6 +74,7 @@ function Profile() {
           setFollowing([]);
           setPosts([]);
           setIsFollowing(false);
+          setFollowRequested(false);
           return;
         }
 
@@ -92,13 +94,11 @@ function Profile() {
         setPosts(discoverPosts.filter((item) => String(item.user_id) === String(nextProfile.id)));
 
         if (viewerId && String(viewerId) !== String(nextProfile.id)) {
-          const viewerFollowing = await userApi.getFollowing(viewerId);
-          const viewerFollowingItems = Array.isArray(viewerFollowing?.items) ? viewerFollowing.items : [];
-          setIsFollowing(
-            viewerFollowingItems.some((item) => String(item.id) === String(nextProfile.id))
-          );
+          setIsFollowing(Boolean(nextProfile.viewer_is_following));
+          setFollowRequested(Boolean(nextProfile.viewer_has_requested));
         } else {
           setIsFollowing(false);
+          setFollowRequested(false);
         }
       } catch (err) {
         console.error('Profile fetch error:', err);
@@ -126,7 +126,9 @@ function Profile() {
     try {
       const result = await userApi.followUser(profile.id);
       const nowFollowing = Boolean(result?.following);
+      const nowRequested = Boolean(result?.requested);
       setIsFollowing(nowFollowing);
+      setFollowRequested(nowRequested);
       setFollowers((current) =>
         nowFollowing
           ? [...current, { id: user.id, username: user.username, display_name: user.display_name }]
@@ -350,10 +352,16 @@ function Profile() {
               type="button"
               className={styles.primaryAction}
               onClick={handleFollow}
-              aria-label={isFollowing ? 'Unfollow this user' : 'Follow this user'}
+              aria-label={
+                isFollowing
+                  ? 'Unfollow this user'
+                  : followRequested
+                    ? 'Cancel follow request'
+                    : 'Follow this user'
+              }
               disabled={followBusy}
             >
-              {followBusy ? 'Updating...' : isFollowing ? 'Following' : 'Follow'}
+              {followBusy ? 'Updating...' : isFollowing ? 'Following' : followRequested ? 'Requested' : 'Follow'}
             </button>
           )}
         </div>

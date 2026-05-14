@@ -9,11 +9,33 @@ async function search(q, authUserId) {
   return { items, viewerId: authUserId };
 }
 
-async function getProfile(identifier) {
+async function getProfile(identifier, viewerId = null) {
   const user = await userRepo.getProfileByIdOrUsername(identifier);
   if (!user) {
     throw { error: true, message: 'User not found', code: 'NOT_FOUND', statusCode: 404 };
   }
+
+  if (viewerId && String(viewerId) !== String(user.id)) {
+    const [viewerIsFollowing, viewerHasRequested] = await Promise.all([
+      followRepo.isFollower(viewerId, user.id),
+      followRepo.hasFollowRequest(viewerId, user.id)
+    ]);
+
+    return {
+      ...user,
+      viewer_is_following: viewerIsFollowing ? 1 : 0,
+      viewer_has_requested: viewerHasRequested ? 1 : 0
+    };
+  }
+
+  if (viewerId && String(viewerId) === String(user.id)) {
+    return {
+      ...user,
+      viewer_is_following: 0,
+      viewer_has_requested: 0
+    };
+  }
+
   return user;
 }
 

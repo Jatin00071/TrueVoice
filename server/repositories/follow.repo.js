@@ -131,9 +131,9 @@ async function rejectFollowRequest(recipientId, requesterId) {
 
 module.exports = {
   isFollower,
+  hasFollowRequest,
   toggleFollow,
   listFollowRequests,
   approveFollowRequest,
   rejectFollowRequest
 };
-

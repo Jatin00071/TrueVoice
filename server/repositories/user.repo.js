@@ -190,6 +190,7 @@ async function deleteAccount(userId) {
     if (!userRows.length) return false;
 
     await conn.execute('DELETE FROM notifications WHERE recipient_id = ? OR sender_id = ?', [userId, userId]);
+    await conn.execute('DELETE FROM follow_requests WHERE requester_id = ? OR recipient_id = ?', [userId, userId]);
     await conn.execute('DELETE FROM follows WHERE follower_id = ? OR following_id = ?', [userId, userId]);
     await conn.execute('DELETE FROM likes WHERE user_id = ?', [userId]);
     await conn.execute('DELETE FROM comments WHERE user_id = ?', [userId]);

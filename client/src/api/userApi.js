@@ -28,6 +28,21 @@ export async function getFollowing(id) {
   return res.data;
 }
 
+export async function getFollowRequests(id) {
+  const res = await api.get(`/users/${id}/follow-requests`);
+  return res.data;
+}
+
+export async function approveFollowRequest(id, requesterId) {
+  const res = await api.post(`/users/${id}/follow-requests/${requesterId}/approve`);
+  return res.data;
+}
+
+export async function rejectFollowRequest(id, requesterId) {
+  const res = await api.post(`/users/${id}/follow-requests/${requesterId}/reject`);
+  return res.data;
+}
+
 export async function searchUsers(q) {
   const res = await api.get('/users/search', { params: { q } });
   return res.data;
@@ -54,6 +69,9 @@ export const userApi = {
   followUser,
   getFollowers,
   getFollowing,
+  getFollowRequests,
+  approveFollowRequest,
+  rejectFollowRequest,
   searchUsers,
   updateNotifPrefs,
   updatePrivacy,
