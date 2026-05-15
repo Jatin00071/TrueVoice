@@ -5,6 +5,8 @@ import {
   markAllNotificationsRead,
   markNotificationRead
 } from '../../api/notificationApi.js';
+import { userApi } from '../../api/userApi.js';
+import { useAuthContext } from '../../hooks/useAuth.js';
 import NotificationDropdown from './NotificationDropdown.jsx';
 import styles from './NotificationBell.module.css';
 
@@ -34,9 +36,11 @@ function getErrorMessage(error, fallback) {
 
 function NotificationBell() {
   const navigate = useNavigate();
+  const { user } = useAuthContext();
   const wrapperRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [followRequestCount, setFollowRequestCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -45,14 +49,18 @@ function NotificationBell() {
     setError('');
 
     try {
-      const data = await getNotifications();
+      const [data, requestData] = await Promise.all([
+        getNotifications(),
+        user?.id ? userApi.getFollowRequests(user.id) : Promise.resolve({ items: [] })
+      ]);
       setNotifications(Array.isArray(data?.items) ? data.items : []);
+      setFollowRequestCount(Array.isArray(requestData?.items) ? requestData.items.length : 0);
     } catch (loadError) {
       setError(getErrorMessage(loadError, 'Unable to load notifications.'));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     loadNotifications();
@@ -71,7 +79,7 @@ function NotificationBell() {
     };
   }, []);
 
-  const unread = notifications.filter((item) => !item.is_read).length;
+  const unread = notifications.filter((item) => !item.is_read).length + followRequestCount;
 
   const handleToggle = async () => {
     const next = !isOpen;
