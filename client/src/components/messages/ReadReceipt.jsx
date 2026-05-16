@@ -1,5 +1,6 @@
+import styles from './Messages.module.css';
 function ReadReceipt({ read, mine }) {
   if (!mine) return null;
-  return <span aria-label={read ? 'Read' : 'Delivered'}>{read ? 'Read' : 'Sent'}</span>;
+  return <span className={read ? styles.read : styles.delivered} aria-label={read ? 'Read' : 'Delivered'}>{read ? '??' : '?'}</span>;
 }
 export default ReadReceipt;

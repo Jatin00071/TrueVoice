@@ -85,7 +85,10 @@ export function CryptoProvider({ children }) {
     if (!identity) throw new Error('Encryption identity is not ready');
     let keys = conversationKeys[conversationId] || await loadConversationKeys(conversationId);
     const peer = keys.find((key) => String(key.user_id) !== String(user?.id));
-    const publicKey = peer?.public_key || identity.publicKeyString;
+    if (!peer?.public_key) {
+      throw new Error('Recipient encryption key is not ready yet. Ask them to open this conversation once, then try again.');
+    }
+    const publicKey = peer.public_key;
     const aesKey = await deriveAesKey(identity.privateKey, publicKey);
     const ivBytes = crypto.getRandomValues(new Uint8Array(12));
     const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: ivBytes }, aesKey, encoder.encode(plaintext));

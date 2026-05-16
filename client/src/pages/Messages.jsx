@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import MessagesLayout from '../components/messages/MessagesLayout.jsx';
 import ConversationList from '../components/messages/ConversationList.jsx';
 import ChatWindow from '../components/messages/ChatWindow.jsx';
@@ -9,7 +9,16 @@ import { useAuthContext } from '../hooks/useAuth.js';
 import { useMessages } from '../hooks/useMessages.js';
 import styles from './Messages.module.css';
 
+function PlusIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
 function Messages() {
+  const navigate = useNavigate();
   const { user } = useAuthContext();
   const messages = useMessages();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,8 +28,10 @@ function Messages() {
 
   useEffect(() => {
     const userId = searchParams.get('user');
-    if (!userId) return;
+    if (!userId) return undefined;
+
     let cancelled = false;
+
     async function start() {
       try {
         const result = await startConversation(userId);
@@ -34,8 +45,11 @@ function Messages() {
         setError(err?.response?.data?.message || err.message || 'Unable to start conversation.');
       }
     }
+
     void start();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [messages, searchParams, setSearchParams]);
 
   useEffect(() => {
@@ -46,9 +60,15 @@ function Messages() {
     }
   }, [messages, searchParams]);
 
-  const activeConversation = useMemo(() => messages.conversations.find((item) => String(item.id) === String(messages.activeConversationId)), [messages.activeConversationId, messages.conversations]);
+  const activeConversation = useMemo(
+    () => messages.conversations.find((item) => String(item.id) === String(messages.activeConversationId)),
+    [messages.activeConversationId, messages.conversations]
+  );
+
   const activeMessages = messages.messagesByConversation[messages.activeConversationId] || [];
-  const visibleMessages = activeMessages.filter((message) => !messageFilter.trim() || message.decryptedContent?.toLowerCase().includes(messageFilter.trim().toLowerCase()));
+  const visibleMessages = activeMessages.filter(
+    (message) => !messageFilter.trim() || message.decryptedContent?.toLowerCase().includes(messageFilter.trim().toLowerCase())
+  );
 
   const selectConversation = async (conversation) => {
     messages.setActiveConversationId(conversation.id);
@@ -58,9 +78,53 @@ function Messages() {
 
   const send = async (text) => {
     if (!messages.activeConversationId) return;
-    await messages.sendEncryptedMessage({ conversationId: messages.activeConversationId, text });
+    try {
+      setError('');
+      await messages.sendEncryptedMessage({ conversationId: messages.activeConversationId, text });
+    } catch (err) {
+      setError(err?.response?.data?.message || err.message || 'Unable to send encrypted message.');
+    }
   };
 
-  return <section className={styles.page}><div className={styles.header}><div><h1>Messages</h1><p>Private, end-to-end encrypted conversations.</p></div><MessageSearch value={messageFilter} onChange={setMessageFilter} /></div>{error ? <p className={styles.error}>{error}</p> : null}<MessagesLayout sidebar={<ConversationList conversations={messages.conversations} activeId={messages.activeConversationId} onSelect={selectConversation} filter={conversationFilter} onFilterChange={setConversationFilter} />}><ChatWindow conversation={activeConversation} messages={visibleMessages} currentUserId={user?.id} typing={messages.typingByConversation[messages.activeConversationId]} onSend={send} /></MessagesLayout></section>;
+  return (
+    <section className={styles.page}>
+      <header className={styles.header}>
+        <div>
+          <h1>Messages</h1>
+          <p>Private, end-to-end encrypted conversations</p>
+        </div>
+        <div className={styles.headerActions}>
+          <MessageSearch value={messageFilter} onChange={setMessageFilter} />
+          <button type="button" className={styles.newButton} onClick={() => navigate('/discover')}>
+            <PlusIcon />
+            New Message
+          </button>
+        </div>
+      </header>
+
+      {error ? <p className={styles.error} role="alert" aria-live="polite">{error}</p> : null}
+
+      <MessagesLayout
+        sidebar={
+          <ConversationList
+            conversations={messages.conversations}
+            activeId={messages.activeConversationId}
+            onSelect={selectConversation}
+            filter={conversationFilter}
+            onFilterChange={setConversationFilter}
+          />
+        }
+      >
+        <ChatWindow
+          conversation={activeConversation}
+          messages={visibleMessages}
+          currentUserId={user?.id}
+          typing={messages.typingByConversation[messages.activeConversationId]}
+          onSend={send}
+        />
+      </MessagesLayout>
+    </section>
+  );
 }
+
 export default Messages;
