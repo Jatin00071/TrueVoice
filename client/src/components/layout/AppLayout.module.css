@@ -33,6 +33,17 @@
   padding: 24px 16px;
 }
 
+.messagesLayout {
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.messagesLayout .main {
+  grid-column: 2;
+  max-width: none;
+  margin: 0;
+  padding: 0 24px 24px;
+}
+
 @media (max-width: 1023px) {
   .layout {
     grid-template-columns: 1fr 260px;
@@ -48,6 +59,15 @@
 
   .rightPanel {
     grid-column: 2;
+  }
+
+  .messagesLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .messagesLayout .main {
+    grid-column: 1;
+    max-width: none;
   }
 }
 
