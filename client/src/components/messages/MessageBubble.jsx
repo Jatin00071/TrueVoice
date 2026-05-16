@@ -8,10 +8,15 @@ function formatTime(value) {
 }
 
 function MessageBubble({ message, mine }) {
+  const failed = Boolean(message.decryptionError);
+  const displayText = failed
+    ? `Decryption failed: ${message.decryptionError}`
+    : message.decryptedContent || (message.encrypted_content ? '[Encrypted]' : '');
+
   return (
-    <article className={`${styles.bubbleRow} ${mine ? styles.mine : ''}`}>
-      <div className={styles.bubble}>
-        <p>{message.decryptedContent || '[Encrypted]'}</p>
+    <article className={`${styles.bubbleRow} ${mine ? styles.mine : ''} ${failed ? styles.failedBubbleRow : ''}`.trim()}>
+      <div className={`${styles.bubble} ${failed ? styles.failedBubble : ''}`} title={failed ? message.decryptionError : undefined}>
+        <p>{failed ? `? ${displayText}` : displayText}</p>
         <AttachmentList attachments={message.attachments || []} />
         <footer>
           <time>{formatTime(message.created_at)}</time>

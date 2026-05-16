@@ -1,20 +1,50 @@
 const crypto = require('crypto');
 
-const IV_PATTERN = /^[A-Za-z0-9+/=_-]{12,64}$/;
-const SALT_PATTERN = /^[A-Za-z0-9+/=_-]{12,128}$/;
+function encryptionError(message, details = {}) {
+  const error = { error: true, message, code: 'ENCRYPTION_REQUIRED', statusCode: 400, details };
+  if (process.env.NODE_ENV !== 'test') {
+    console.warn('[Messaging] encrypted envelope validation failed:', details);
+  }
+  return error;
+}
+
+function decodeBase64Field(name, value) {
+  if (typeof value !== 'string' || !value.trim()) {
+    throw encryptionError(`${name} is required`, { field: name, reason: 'missing' });
+  }
+
+  try {
+    const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+    const buffer = Buffer.from(normalized, 'base64');
+    if (!buffer.length || buffer.toString('base64').replace(/=+$/, '') !== normalized.replace(/=+$/, '')) {
+      throw new Error('invalid base64');
+    }
+    return buffer;
+  } catch (error) {
+    throw encryptionError(`${name} must be base64 encoded`, { field: name, reason: error.message });
+  }
+}
 
 function assertEncryptedEnvelope(body = {}) {
   const encryptedContent = body.encryptedContent ?? body.encrypted_content;
   const { iv, salt } = body;
 
-  if (typeof encryptedContent !== 'string' || encryptedContent.length < 1) {
-    throw { error: true, message: 'Encrypted content is required', code: 'ENCRYPTED_CONTENT_REQUIRED', statusCode: 400 };
+  const ciphertext = decodeBase64Field('encrypted_content', encryptedContent);
+  const ivBytes = decodeBase64Field('iv', iv);
+  const saltBytes = decodeBase64Field('salt', salt);
+
+  if (ciphertext.length < 16) {
+    throw encryptionError('Encrypted content is too short', { field: 'encrypted_content', byteLength: ciphertext.length });
   }
-  if (typeof iv !== 'string' || !IV_PATTERN.test(iv)) {
-    throw { error: true, message: 'A valid encryption IV is required', code: 'INVALID_IV', statusCode: 400 };
+
+  // The browser client uses a 12-byte AES-GCM IV, while 16-byte IVs are accepted for
+  // forward compatibility with older clients/spec drafts.
+  if (![12, 16].includes(ivBytes.length)) {
+    throw encryptionError('A valid AES-GCM IV is required', { field: 'iv', byteLength: ivBytes.length });
   }
-  if (typeof salt !== 'string' || !SALT_PATTERN.test(salt)) {
-    throw { error: true, message: 'A valid encryption salt is required', code: 'INVALID_SALT', statusCode: 400 };
+
+  if (saltBytes.length < 12) {
+    throw encryptionError('A valid encryption salt is required', { field: 'salt', byteLength: saltBytes.length });
   }
 
   return { encryptedContent, iv, salt };

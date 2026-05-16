@@ -99,6 +99,9 @@ async function verifyKeys(userId, conversationId) {
 
 async function publicKey(_requesterId, userId) {
   const key = await encryptionKeyRepo.latestPublicKeyForUser(userId);
+  if (!key) {
+    throw { error: true, message: 'User has not initialized encryption', code: 'KEY_NOT_FOUND', statusCode: 404 };
+  }
   return { key };
 }
 

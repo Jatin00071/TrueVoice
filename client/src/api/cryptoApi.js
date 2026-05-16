@@ -1,8 +1,15 @@
 import axios from './axiosInstance.js';
 
 export async function getPublicKey(userId) {
-  const { data } = await axios.get(`/keys/public/${userId}`);
-  return data;
+  try {
+    const { data } = await axios.get(`/keys/public/${userId}`);
+    return data;
+  } catch (error) {
+    if (error.response?.status === 404) {
+      throw new Error(`User ${userId} has not initialized encryption`);
+    }
+    throw error;
+  }
 }
 
 export async function exchangeKeys(payload) {
