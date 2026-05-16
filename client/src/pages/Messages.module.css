@@ -1,0 +1,6 @@
+.page { display: grid; gap: 16px; }
+.header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.header h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1; }
+.header p { color: var(--muted); }
+.error { border: 1px solid rgba(230, 57, 70, .28); background: rgba(230, 57, 70, .08); color: var(--accent); border-radius: var(--radius); padding: 10px 12px; }
+@media (max-width: 760px) { .header { align-items: stretch; flex-direction: column; } }

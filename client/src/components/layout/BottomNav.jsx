@@ -1,6 +1,7 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import styles from './BottomNav.module.css';
 import { useAuthContext } from '../../hooks/useAuth.js';
+import { useMessages } from '../../hooks/useMessages.js';
 
 function HomeIcon() {
   return (
@@ -45,8 +46,18 @@ function SettingsIcon() {
   );
 }
 
+function MessageIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <path d="M4.5 6.5h15v10h-9L6.5 20v-3.5h-2v-10Z" />
+      <path d="M8 10h8M8 13h5" />
+    </svg>
+  );
+}
+
 function BottomNav() {
   const { user } = useAuthContext();
+  const messageState = useMessages();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -92,6 +103,18 @@ function BottomNav() {
         </span>
         <span className={styles.label}>Create</span>
       </button>
+      {user ? (
+        <NavLink
+          to="/messages"
+          className={({ isActive }) => (isActive ? `${styles.item} ${styles.active}` : styles.item)}
+        >
+          <span aria-hidden="true" className={styles.icon}>
+            <MessageIcon />
+          </span>
+          <span className={styles.label}>Messages</span>
+          {messageState?.unreadCount > 0 ? <span className={styles.badge}>{Math.min(messageState.unreadCount, 99)}</span> : null}
+        </NavLink>
+      ) : null}
       {user ? (
         <NavLink
           to={`/profile/${user.id}`}

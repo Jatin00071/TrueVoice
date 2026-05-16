@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { getNotifications } from '../../api/notificationApi.js';
 import { useAuthContext } from '../../hooks/useAuth.js';
+import { useMessages } from '../../hooks/useMessages.js';
 import styles from './LeftSidebar.module.css';
 
 function resolveAssetUrl(value) {
@@ -47,12 +48,22 @@ function BellIcon() {
   );
 }
 
+function MessageIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <path d="M4.5 6.5h15v10h-9L6.5 20v-3.5h-2v-10Z" />
+      <path d="M8 10h8M8 13h5" />
+    </svg>
+  );
+}
+
 function navClassName({ isActive }) {
   return `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`.trim();
 }
 
 function LeftSidebar() {
   const { user } = useAuthContext();
+  const messageState = useMessages();
   const navigate = useNavigate();
   const location = useLocation();
   const [notifications, setNotifications] = useState([]);
@@ -133,6 +144,14 @@ function LeftSidebar() {
                 <ProfileIcon />
               </span>
               <span className={styles.label}>Profile</span>
+            </NavLink>
+
+            <NavLink to="/messages" className={navClassName}>
+              <span className={styles.icon} aria-hidden="true">
+                <MessageIcon />
+              </span>
+              <span className={styles.label}>Messages</span>
+              {messageState?.unreadCount > 0 ? <span className={styles.badge}>{Math.min(messageState.unreadCount, 99)}</span> : null}
             </NavLink>
 
             <NavLink to="/notifications" className={navClassName}>

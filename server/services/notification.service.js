@@ -7,7 +7,8 @@ function buildMessage(n) {
     comment: 'commented on your post',
     follow: 'started following you',
     shield_activated: 'Shield activated on your post',
-    content_reshared: 'reshared your content'
+    content_reshared: 'reshared your content',
+    message: 'sent you a message'
   };
   return base[n.type] || 'New notification';
 }
@@ -38,4 +39,3 @@ async function readAll(userId) {
 }
 
 module.exports = { create, list, read, readAll };
-

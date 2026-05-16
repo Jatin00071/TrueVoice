@@ -25,6 +25,8 @@ const commentRoutes = require('./routes/comment.routes');
 const likeRoutes = require('./routes/like.routes');
 const shieldRoutes = require('./routes/shield.routes');
 const notificationRoutes = require('./routes/notification.routes');
+const conversationRoutes = require('./routes/conversation.routes');
+const messageRoutes = require('./routes/message.routes');
 
 const socketManager = require('./socket/socket.manager');
 const cronService = require('./services/cron.service');
@@ -97,6 +99,8 @@ app.use('/api/v1/posts', likeRoutes);
 app.use('/api/v1/posts', commentRoutes);
 app.use('/api/v1/posts', shieldRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/conversations', conversationRoutes);
+app.use('/api/v1', messageRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

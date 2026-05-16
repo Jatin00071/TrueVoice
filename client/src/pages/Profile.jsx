@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getDiscover } from '../api/postApi.js';
+import { startConversation } from '../api/conversationApi.js';
 import { userApi } from '../api/userApi.js';
 import { useAuthContext } from '../hooks/useAuth.js';
 import styles from './Profile.module.css';
@@ -138,6 +139,16 @@ function Profile() {
       setError(getErrorMessage(followError, 'Unable to update the follow status.'));
     } finally {
       setFollowBusy(false);
+    }
+  };
+
+  const handleMessage = async () => {
+    if (!profile || !user || isOwnProfile) return;
+    try {
+      const result = await startConversation(profile.id);
+      navigate(`/messages?conversation=${result.conversation.id}`);
+    } catch (messageError) {
+      setError(getErrorMessage(messageError, 'Unable to start a conversation.'));
     }
   };
 
@@ -348,21 +359,31 @@ function Profile() {
               Edit profile
             </button>
           ) : (
-            <button
-              type="button"
-              className={styles.primaryAction}
-              onClick={handleFollow}
-              aria-label={
-                isFollowing
-                  ? 'Unfollow this user'
-                  : followRequested
-                    ? 'Cancel follow request'
-                    : 'Follow this user'
-              }
-              disabled={followBusy}
-            >
-              {followBusy ? 'Updating...' : isFollowing ? 'Following' : followRequested ? 'Requested' : 'Follow'}
-            </button>
+            <>
+              <button
+                type="button"
+                className={styles.secondaryAction}
+                onClick={handleMessage}
+                aria-label="Message this user"
+              >
+                Message
+              </button>
+              <button
+                type="button"
+                className={styles.primaryAction}
+                onClick={handleFollow}
+                aria-label={
+                  isFollowing
+                    ? 'Unfollow this user'
+                    : followRequested
+                      ? 'Cancel follow request'
+                      : 'Follow this user'
+                }
+                disabled={followBusy}
+              >
+                {followBusy ? 'Updating...' : isFollowing ? 'Following' : followRequested ? 'Requested' : 'Follow'}
+              </button>
+            </>
           )}
         </div>
       </header>
