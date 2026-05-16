@@ -9,7 +9,7 @@ function SearchIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>;
 }
 
-function ConversationList({ conversations, activeId, onSelect, filter, onFilterChange }) {
+function ConversationList({ conversations, activeId, onSelect, filter, onFilterChange, getQueuedCount }) {
   const filtered = conversations.filter((item) => {
     const q = filter.trim().toLowerCase();
     return !q || item.other_username?.toLowerCase().includes(q) || item.other_display_name?.toLowerCase().includes(q);
@@ -33,6 +33,7 @@ function ConversationList({ conversations, activeId, onSelect, filter, onFilterC
             conversation={conversation}
             active={String(activeId) === String(conversation.id)}
             onClick={() => onSelect(conversation)}
+            pendingCount={getQueuedCount?.(conversation.id) || 0}
           />
         ))}
         {filtered.length === 0 ? (

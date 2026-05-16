@@ -10,6 +10,11 @@ export async function getConversation(id) {
   return data;
 }
 
+export async function getConversationDetails(id) {
+  const { data } = await axios.get(`/conversations/${id}/details`);
+  return data;
+}
+
 export async function startConversation(userId) {
   const { data } = await axios.post(`/conversations/${userId}`);
   return data;

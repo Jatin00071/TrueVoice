@@ -11,7 +11,12 @@ async function update(req, res) {
 }
 
 async function remove(req, res) {
-  const result = await messageService.remove(req.auth.userId, Number(req.params.id));
+  const result = await messageService.remove(req.auth.userId, Number(req.params.id), req.query.type || 'soft');
+  res.json(result);
+}
+
+async function unsend(req, res) {
+  const result = await messageService.unsend(req.auth.userId, Number(req.params.id));
   res.json(result);
 }
 
@@ -35,4 +40,9 @@ async function verifyKeys(req, res) {
   res.json(result);
 }
 
-module.exports = { send, update, remove, read, publicKey, exchangeKey, verifyKeys };
+async function getQueue(req, res) {
+  const result = await messageService.getQueue(req.auth.userId);
+  res.json(result);
+}
+
+module.exports = { send, update, remove, unsend, read, publicKey, exchangeKey, verifyKeys, getQueue };

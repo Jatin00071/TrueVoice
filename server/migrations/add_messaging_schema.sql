@@ -26,12 +26,48 @@ CREATE TABLE IF NOT EXISTS messages (
   is_edited TINYINT DEFAULT 0,
   edited_at TIMESTAMP NULL,
   deleted_at TIMESTAMP NULL,
+  unsent_at TIMESTAMP NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
   FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_conversation (conversation_id),
   INDEX idx_created (created_at),
   INDEX idx_read (is_read)
+);
+
+ALTER TABLE messages
+  ADD COLUMN IF NOT EXISTS unsent_at TIMESTAMP NULL;
+
+CREATE TABLE IF NOT EXISTS message_queue (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  conversation_id BIGINT NOT NULL,
+  user_id INT UNSIGNED NOT NULL,
+  encrypted_content LONGTEXT NOT NULL,
+  iv VARCHAR(32) NOT NULL,
+  salt VARCHAR(32) NOT NULL,
+  status ENUM('pending', 'sent', 'failed') DEFAULT 'pending',
+  retry_count INT DEFAULT 0,
+  max_retries INT DEFAULT 10,
+  last_retry_at TIMESTAMP NULL,
+  error_message TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_conversation_status (conversation_id, status),
+  INDEX idx_user_status (user_id, status),
+  INDEX idx_created (created_at)
+);
+
+CREATE TABLE IF NOT EXISTS message_visibility (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  message_id BIGINT NOT NULL,
+  user_id INT UNSIGNED NOT NULL,
+  is_hidden TINYINT DEFAULT 0,
+  hidden_at TIMESTAMP NULL,
+  UNIQUE KEY unique_visibility (message_id, user_id),
+  FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_user_hidden (user_id, is_hidden)
 );
 
 CREATE TABLE IF NOT EXISTS message_attachments (

@@ -5,6 +5,9 @@ import { useSocketContext } from '../hooks/useSocket.js';
 import { useCrypto } from '../hooks/useCrypto.js';
 import { useAuthContext } from '../hooks/useAuth.js';
 import { MessageContext } from './messageStore.js';
+import * as queueService from '../services/messageQueueService.js';
+import * as deliveryService from '../services/messageDeliveryService.js';
+import * as deletionService from '../services/messageDeletionService.js';
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -48,7 +51,30 @@ export function MessageProvider({ children }) {
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [typingByConversation, setTypingByConversation] = useState({});
   const [decryptionFailures, setDecryptionFailures] = useState({});
+  const [messageQueue, setMessageQueue] = useState({});
+  const [deliveryStatus, setDeliveryStatus] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const refreshLocalQueue = useCallback(async () => {
+    try {
+      const all = await queueService.getAll();
+      const grouped = all.reduce((acc, item) => {
+        const key = String(item.conversationId);
+        acc[key] = [...(acc[key] || []), item];
+        return acc;
+      }, {});
+      setMessageQueue(grouped);
+      setDeliveryStatus(Object.fromEntries(all.map((item) => [item.id, {
+        status: item.status,
+        retries: item.retryCount || 0,
+        lastRetry: item.lastRetryAt || null
+      }])));
+      return grouped;
+    } catch (error) {
+      console.warn('[Messages] Failed to load local message queue:', error);
+      return {};
+    }
+  }, []);
 
   const loadConversations = useCallback(async () => {
     if (!user) return [];
@@ -59,6 +85,9 @@ export function MessageProvider({ children }) {
   }, [user]);
 
   const decryptOneMessage = useCallback(async (conversationId, message) => {
+    if (message?.deleted_at || message?.unsent_at) {
+      return { ...message, decryptedContent: '', decryptionError: null };
+    }
     try {
       const decryptedContent = await cryptoContext.decryptMessage(conversationId, message);
       return { ...message, decryptedContent, decryptionError: null };
@@ -92,34 +121,165 @@ export function MessageProvider({ children }) {
         console.warn('[Messages] Failed to load conversation keys before message fetch:', error);
       }
 
-      const data = await getMessages(conversationId, { page: 1, limit: 50, ...params });
+      const data = await getMessages(conversationId, { page: 1, limit: 50, includeDeleted: true, ...params });
       const decrypted = await Promise.all((data.items || []).reverse().map((message) => decryptOneMessage(conversationId, message)));
+      const localPending = (await queueService.getPendingByConversation(conversationId)).map((item) => ({
+        ...item,
+        id: item.id,
+        conversation_id: conversationId,
+        sender_id: user?.id,
+        decryptedContent: item.text,
+        status: item.status
+      }));
 
       const failures = decrypted.filter((message) => message.decryptionError);
       setDecryptionFailures((current) => ({ ...current, [conversationId]: failures.map((message) => ({ id: message.id, error: message.decryptionError })) }));
-      setMessagesByConversation((current) => ({ ...current, [conversationId]: decrypted }));
-      return decrypted;
+      setMessagesByConversation((current) => ({ ...current, [conversationId]: [...decrypted, ...localPending] }));
+      await refreshLocalQueue();
+      return [...decrypted, ...localPending];
     } catch (error) {
       console.error('[Messages] Failed to load messages:', error);
       throw error;
     } finally {
       setIsLoading(false);
     }
-  }, [cryptoContext, decryptOneMessage]);
+  }, [cryptoContext, decryptOneMessage, refreshLocalQueue, user?.id]);
+
+  const queueMessage = useCallback(async (conversationId, payload) => {
+    const queued = await queueService.addToQueue(conversationId, payload);
+    setMessagesByConversation((current) => ({
+      ...current,
+      [conversationId]: [...(current[conversationId] || []), {
+        ...queued,
+        conversation_id: conversationId,
+        sender_id: user?.id,
+        decryptedContent: queued.text,
+        status: queued.status
+      }]
+    }));
+    setMessageQueue((current) => ({ ...current, [conversationId]: [...(current[conversationId] || []), queued] }));
+    setDeliveryStatus((current) => ({ ...current, [queued.id]: { status: 'pending', retries: 0, lastRetry: null } }));
+    socket?.emit('message:queued', { conversationId, messageId: queued.id });
+    return queued;
+  }, [socket, user?.id]);
+
+  const sendQueuedItem = useCallback(async (item) => {
+    const envelope = item.encryptedPayload || await cryptoContext.encryptForConversation(item.conversationId, item.text);
+    const data = await sendMessage({ conversationId: item.conversationId, ...envelope });
+    const sent = { ...data.message, decryptedContent: item.text, decryptionError: null, status: data.message?.status || 'sent' };
+    setMessagesByConversation((current) => ({
+      ...current,
+      [item.conversationId]: (current[item.conversationId] || []).map((message) => String(message.id) === String(item.id) ? sent : message)
+    }));
+    setDeliveryStatus((current) => ({ ...current, [item.id]: { status: 'sent', retries: Number(item.retryCount || 0), lastRetry: new Date().toISOString() } }));
+    await queueService.markSent(item.id);
+    await refreshLocalQueue();
+    await loadConversations();
+    return sent;
+  }, [cryptoContext, loadConversations, refreshLocalQueue]);
+
+  const retryPendingMessages = useCallback(async (conversationId) => {
+    const items = (await queueService.getAll()).filter((item) => (
+      String(item.conversationId) === String(conversationId) && ['pending', 'failed'].includes(item.status)
+    ));
+    await Promise.all(items.map((item) => sendQueuedItem(item).catch(async (error) => {
+      await queueService.markFailed(item.id, error);
+      setDeliveryStatus((current) => ({
+        ...current,
+        [item.id]: { status: 'failed', retries: Number(item.retryCount || 0) + 1, lastRetry: new Date().toISOString() }
+      }));
+      setMessagesByConversation((current) => ({
+        ...current,
+        [conversationId]: (current[conversationId] || []).map((message) => (
+          String(message.id) === String(item.id)
+            ? { ...message, status: Number(item.retryCount || 0) + 1 >= 10 ? 'failed' : 'pending', error: error.message }
+            : message
+        ))
+      }));
+    })));
+    await refreshLocalQueue();
+  }, [refreshLocalQueue, sendQueuedItem]);
 
   const sendEncryptedMessage = useCallback(async ({ conversationId, text }) => {
     await waitForIdentity(cryptoContext, 2000);
-    const envelope = await cryptoContext.encryptForConversation(conversationId, text);
-    const data = await sendMessage({ conversationId, ...envelope });
-    const message = { ...data.message, decryptedContent: text, decryptionError: null };
-    setMessagesByConversation((current) => ({ ...current, [conversationId]: [...(current[conversationId] || []), message] }));
+    try {
+      const envelope = await cryptoContext.encryptForConversation(conversationId, text);
+      const data = await sendMessage({ conversationId, ...envelope });
+      const message = { ...data.message, decryptedContent: text, decryptionError: null, status: data.message?.status || 'sent' };
+      setMessagesByConversation((current) => ({ ...current, [conversationId]: [...(current[conversationId] || []), message] }));
+      await loadConversations();
+      return message;
+    } catch (error) {
+      const queued = await queueMessage(conversationId, {
+        text,
+        error: error.message,
+        maxRetries: 10
+      });
+      deliveryService.startMonitoring(conversationId, async (item) => {
+        try {
+          return await sendQueuedItem(item);
+        } catch (retryError) {
+          setDeliveryStatus((current) => ({
+            ...current,
+            [item.id]: { status: 'failed', retries: Number(item.retryCount || 0) + 1, lastRetry: new Date().toISOString() }
+          }));
+          setMessagesByConversation((current) => ({
+            ...current,
+            [conversationId]: (current[conversationId] || []).map((message) => (
+              String(message.id) === String(item.id)
+                ? { ...message, status: Number(item.retryCount || 0) + 1 >= 10 ? 'failed' : 'pending', error: retryError.message }
+                : message
+            ))
+          }));
+          throw retryError;
+        }
+      });
+      return queued;
+    }
+  }, [cryptoContext, loadConversations, queueMessage, sendQueuedItem]);
+
+  const deleteMessage = useCallback(async (messageId, type = 'soft') => {
+    const result = await deletionService.deleteMessage(messageId, type);
+    const conversationId = result.message?.conversation_id;
+    setMessagesByConversation((current) => {
+      const next = { ...current };
+      Object.keys(next).forEach((key) => {
+        next[key] = next[key].map((message) => (
+          String(message.id) === String(messageId)
+            ? deletionService.handleMessageDeleted({ ...message, deleted_at: result.message?.deleted_at }, result.type)
+            : message
+        )).filter((message) => !message.is_hidden);
+      });
+      return next;
+    });
+    if (conversationId) await loadConversations();
+    return result;
+  }, [loadConversations]);
+
+  const unsendMessage = useCallback(async (messageId) => {
+    const result = await deletionService.unsendMessage(messageId);
+    setMessagesByConversation((current) => {
+      const next = {};
+      Object.keys(current).forEach((key) => {
+        next[key] = current[key].filter((message) => String(message.id) !== String(messageId));
+      });
+      return next;
+    });
     await loadConversations();
-    return message;
-  }, [cryptoContext, loadConversations]);
+    return result;
+  }, [loadConversations]);
+
+  const getQueuedCount = useCallback((conversationId = null) => {
+    if (conversationId) return (messageQueue[String(conversationId)] || []).filter((item) => item.status === 'pending').length;
+    return Object.values(messageQueue).flat().filter((item) => item.status === 'pending').length;
+  }, [messageQueue]);
 
   const markRead = useCallback(async (messageId) => markMessageRead(messageId), []);
 
-  useEffect(() => { void loadConversations(); }, [loadConversations]);
+  useEffect(() => {
+    void loadConversations();
+    void refreshLocalQueue();
+  }, [loadConversations, refreshLocalQueue]);
 
   useEffect(() => {
     if (!socket) return undefined;
@@ -142,27 +302,55 @@ export function MessageProvider({ children }) {
       if (payload.conversationId && payload.userId && payload.publicKey) {
         cryptoContext.fetchAndCachePublicKey(payload.conversationId, payload.userId).catch((error) => {
           console.warn('[Messages] Failed to refresh updated key:', error);
+        }).finally(() => {
+          void retryPendingMessages(payload.conversationId);
+          deliveryService.notifyKeyAvailable(payload.conversationId, sendQueuedItem).catch(() => {});
         });
       }
     };
 
+    const handleStatus = (payload = {}) => {
+      setDeliveryStatus((current) => ({ ...current, [payload.messageId]: { status: payload.status, lastRetry: payload.timestamp, retries: current[payload.messageId]?.retries || 0 } }));
+    };
+
+    const handleUnsent = (payload) => setMessagesByConversation((current) => ({
+      ...current,
+      [payload.conversation_id || payload.conversationId]: (current[payload.conversation_id || payload.conversationId] || []).filter((message) => String(message.id) !== String(payload.id || payload.messageId))
+    }));
+
     const handleTyping = (payload) => setTypingByConversation((current) => ({ ...current, [payload.conversationId]: payload }));
     const handleDeleted = (payload) => setMessagesByConversation((current) => ({
+      ...current,
+      [payload.conversation_id || payload.conversationId]: (current[payload.conversation_id || payload.conversationId] || []).map((message) => (
+        String(message.id) === String(payload.id || payload.messageId)
+          ? { ...message, deleted_at: payload.deletedAt || new Date().toISOString() }
+          : message
+      ))
+    }));
+    const handleHidden = (payload) => setMessagesByConversation((current) => ({
       ...current,
       [payload.conversation_id || payload.conversationId]: (current[payload.conversation_id || payload.conversationId] || []).filter((message) => String(message.id) !== String(payload.id || payload.messageId))
     }));
 
     socket.on('message:new', handleNew);
+    socket.on('message:status', handleStatus);
     socket.on('keys:updated', handleKeysUpdated);
+    socket.on('message:retry-eligible', (payload) => payload?.conversationId && retryPendingMessages(payload.conversationId));
     socket.on('message:typing', handleTyping);
     socket.on('message:deleted', handleDeleted);
+    socket.on('message:hidden', handleHidden);
+    socket.on('message:unsent', handleUnsent);
     return () => {
       socket.off('message:new', handleNew);
+      socket.off('message:status', handleStatus);
       socket.off('keys:updated', handleKeysUpdated);
+      socket.off('message:retry-eligible');
       socket.off('message:typing', handleTyping);
       socket.off('message:deleted', handleDeleted);
+      socket.off('message:hidden', handleHidden);
+      socket.off('message:unsent', handleUnsent);
     };
-  }, [cryptoContext, decryptOneMessage, loadConversations, socket]);
+  }, [cryptoContext, decryptOneMessage, loadConversations, retryPendingMessages, sendQueuedItem, socket]);
 
   const unreadCount = conversations.reduce((sum, item) => sum + Number(item.unread_count || 0), 0);
   const value = useMemo(() => ({
@@ -172,13 +360,20 @@ export function MessageProvider({ children }) {
     setActiveConversationId,
     typingByConversation,
     decryptionFailures,
+    messageQueue,
+    deliveryStatus,
     unreadCount,
     isLoading,
     loadConversations,
     loadMessages,
     sendEncryptedMessage,
+    queueMessage,
+    retryPendingMessages,
+    getQueuedCount,
+    deleteMessage,
+    unsendMessage,
     markRead
-  }), [activeConversationId, conversations, decryptionFailures, isLoading, loadConversations, loadMessages, markRead, messagesByConversation, sendEncryptedMessage, typingByConversation, unreadCount]);
+  }), [activeConversationId, conversations, decryptionFailures, deleteMessage, deliveryStatus, getQueuedCount, isLoading, loadConversations, loadMessages, markRead, messageQueue, messagesByConversation, queueMessage, retryPendingMessages, sendEncryptedMessage, typingByConversation, unreadCount, unsendMessage]);
 
   return <MessageContext.Provider value={value}>{children}</MessageContext.Provider>;
 }

@@ -1,8 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MessageBubble from './MessageBubble.jsx';
 import MessageInput from './MessageInput.jsx';
 import TypingIndicator from './TypingIndicator.jsx';
 import EncryptionIndicator from './EncryptionIndicator.jsx';
+import InfoPanel from './InfoPanel.jsx';
+import { useCrypto } from '../../hooks/useCrypto.js';
 import styles from './Messages.module.css';
 
 function PhoneIcon() {
@@ -25,8 +27,11 @@ function getInitial(name) {
   return (name?.trim()?.[0] || 'U').toUpperCase();
 }
 
-function ChatWindow({ conversation, messages, currentUserId, typing, onSend }) {
+function ChatWindow({ conversation, messages, currentUserId, typing, onSend, onDeleteMessage, onUnsendMessage, onRetryMessage, pendingCount = 0 }) {
   const bottomRef = useRef(null);
+  const { identity } = useCrypto();
+  const [showInfo, setShowInfo] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -52,26 +57,54 @@ function ChatWindow({ conversation, messages, currentUserId, typing, onSend }) {
           <span className={styles.headerAvatar} aria-hidden="true">{getInitial(displayName)}</span>
           <div>
             <h2>{displayName}</h2>
-            <p>Encrypted ? Last seen recently</p>
+            <p>Encrypted - Last seen recently</p>
           </div>
         </div>
         <div className={styles.chatActions} aria-label="Conversation actions">
-          <button type="button" aria-label="Start voice call"><PhoneIcon /></button>
-          <button type="button" aria-label="Start video call"><VideoIcon /></button>
-          <button type="button" aria-label="View conversation info"><InfoIcon /></button>
-          <button type="button" aria-label="More options"><MoreIcon /></button>
+          <button type="button" className={styles.disabledAction} aria-label="Voice calls coming soon" title="Voice calls coming soon" disabled><PhoneIcon /></button>
+          <button type="button" className={styles.disabledAction} aria-label="Video calls coming soon" title="Video calls coming soon" disabled><VideoIcon /></button>
+          <button type="button" className={showInfo ? styles.activeAction : ''} aria-label="View conversation info" title="Conversation details" onClick={() => setShowInfo(true)}><InfoIcon /></button>
+          <div className={styles.moreWrap}>
+            <button type="button" aria-label="More options" title="More options" onClick={() => setShowMore((value) => !value)}><MoreIcon /></button>
+            {showMore ? (
+              <div className={styles.moreMenu} role="menu">
+                <button type="button" role="menuitem">View Encryption Details</button>
+                <button type="button" role="menuitem">Conversation Settings</button>
+                <button type="button" role="menuitem">Pin Conversation</button>
+                <button type="button" role="menuitem">Mute Notifications</button>
+                <button type="button" role="menuitem">Block User</button>
+                <button type="button" role="menuitem">Report Conversation</button>
+                <button type="button" role="menuitem">Archive Conversation</button>
+              </div>
+            ) : null}
+          </div>
         </div>
       </header>
 
       <div className={styles.messages} role="log" aria-live="polite" aria-relevant="additions">
         {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} mine={String(message.sender_id) === String(currentUserId)} />
+          <MessageBubble
+            key={message.id}
+            message={message}
+            mine={String(message.sender_id) === String(currentUserId)}
+            currentUserId={currentUserId}
+            onDelete={onDeleteMessage}
+            onUnsend={onUnsendMessage}
+            onRetry={onRetryMessage}
+          />
         ))}
         <TypingIndicator typing={typing} />
         <div ref={bottomRef} />
       </div>
 
-      <MessageInput onSend={onSend} disabled={!conversation} />
+      <MessageInput onSend={onSend} disabled={!conversation} conversationId={conversation?.id} pendingCount={pendingCount} />
+      {showInfo ? (
+        <InfoPanel
+          conversation={conversation}
+          myFingerprint={identity?.fingerprint}
+          onClose={() => setShowInfo(false)}
+        />
+      ) : null}
     </main>
   );
 }

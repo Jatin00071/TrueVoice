@@ -276,6 +276,19 @@
   font-weight: 700;
 }
 
+.pendingBadge {
+  min-width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--color-warning);
+  color: #fff;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
 .emptyConversations,
 .placeholder {
   display: flex;
@@ -415,6 +428,45 @@
   color: var(--color-accent);
 }
 
+.chatActions .disabledAction,
+.chatActions .disabledAction:hover {
+  opacity: .5;
+  cursor: not-allowed;
+  color: var(--color-neutral-muted);
+  background: transparent;
+}
+
+.activeAction {
+  background: rgba(15, 52, 96, .1) !important;
+  color: var(--color-accent) !important;
+}
+
+.moreWrap {
+  position: relative;
+}
+
+.moreMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 5;
+  width: 220px;
+  padding: 6px;
+  border: 1px solid var(--color-neutral-border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.moreMenu button {
+  width: 100%;
+  height: 34px;
+  justify-content: flex-start;
+  padding: 0 10px;
+  color: var(--color-neutral-text);
+  font-size: 13px;
+}
+
 .messages {
   flex: 1;
   min-height: 0;
@@ -438,6 +490,7 @@
 }
 
 .bubble {
+  position: relative;
   max-width: 70%;
   padding: 10px 14px;
   border-radius: var(--radius-lg);
@@ -460,6 +513,69 @@
   border-top-right-radius: var(--radius-sm);
   background: var(--color-accent);
   color: #fff;
+}
+
+.pendingBubble {
+  opacity: .78;
+}
+
+.deletedBubble {
+  opacity: .65;
+  color: var(--color-neutral-muted);
+}
+
+.deletedBubble p {
+  text-decoration: line-through;
+}
+
+.messageActions {
+  position: absolute;
+  right: 8px;
+  top: -30px;
+  display: none;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--color-neutral-border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.bubble:hover .messageActions,
+.bubble:focus-within .messageActions {
+  display: flex;
+}
+
+.messageActions button {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-neutral-text);
+  cursor: pointer;
+}
+
+.messageActions button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.messageActions svg {
+  width: 16px;
+  height: 16px;
+}
+
+.deleteAction:hover {
+  color: var(--color-danger);
+  background: rgba(231, 76, 60, .1);
+}
+
+.unsendAction:hover {
+  color: var(--color-warning);
+  background: rgba(243, 156, 18, .14);
 }
 
 .failedBubble {
@@ -501,6 +617,28 @@
 
 .read {
   color: var(--color-success);
+}
+
+.messageStatus {
+  font-weight: 600;
+}
+
+.statusFailed {
+  color: var(--color-danger);
+}
+
+.statusRead {
+  color: #2f80ed;
+}
+
+.retryButton {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  background: rgba(231, 76, 60, .12);
+  color: var(--color-danger);
+  cursor: pointer;
+  font-size: 11px;
 }
 
 .attachments {
@@ -582,6 +720,17 @@
   padding: var(--space-lg) var(--space-xl);
   background: #fff;
   border-top: 1px solid var(--color-neutral-border);
+}
+
+.pendingBanner {
+  margin: 0;
+  border: 1px solid rgba(243, 156, 18, .22);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  background: rgba(243, 156, 18, .1);
+  color: #8a5a08;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .composerRow {
@@ -724,6 +873,183 @@
   padding: var(--space-sm);
 }
 
+.dialogBackdrop,
+.infoBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(26, 26, 46, .25);
+}
+
+.actionDialog {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: min(360px, calc(100vw - 32px));
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  background: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.actionDialog h2 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  line-height: 24px;
+}
+
+.actionDialog p {
+  margin: 0;
+  color: var(--color-neutral-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.dialogActions button,
+.infoParticipant button,
+.textButton {
+  border: 1px solid var(--color-neutral-border);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  background: #fff;
+  color: var(--color-neutral-text);
+  cursor: pointer;
+}
+
+.dialogActions .danger {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.dialogActions .warning {
+  border-color: var(--color-warning);
+  background: var(--color-warning);
+  color: #fff;
+}
+
+.infoBackdrop {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.infoPanel {
+  width: min(340px, 100vw);
+  height: 100%;
+  overflow-y: auto;
+  background: #fff;
+  box-shadow: var(--shadow-md);
+  animation: infoIn 200ms ease both;
+}
+
+.infoHeader {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--color-neutral-border);
+}
+
+.infoHeader button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
+}
+
+.infoHeader h2,
+.infoSection h3 {
+  margin: 0;
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.infoParticipant,
+.infoSection,
+.infoActions {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border-bottom: 1px solid var(--color-neutral-border);
+}
+
+.infoParticipant {
+  justify-items: center;
+  text-align: center;
+}
+
+.largeAvatar {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.infoParticipant p,
+.infoSection p,
+.fingerprintList {
+  margin: 0;
+  color: var(--color-neutral-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.verifiedLine {
+  color: var(--color-success) !important;
+  font-weight: 600;
+}
+
+.fingerprintList {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+}
+
+.fingerprintList dt {
+  color: var(--color-neutral-text);
+  font-weight: 600;
+}
+
+.fingerprintList dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.textButton {
+  width: fit-content;
+  color: var(--color-accent);
+}
+
+.infoActions button {
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 10px;
+  background: transparent;
+  color: var(--color-neutral-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.infoActions button:hover {
+  background: var(--color-neutral-bg);
+}
+
 @keyframes messageIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -742,6 +1068,11 @@
 @keyframes emptyIconIn {
   from { opacity: 0; transform: scale(.92); }
   to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes infoIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
 
 @media (max-width: 1023px) {

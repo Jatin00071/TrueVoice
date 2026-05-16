@@ -83,10 +83,39 @@ class SocketManager {
         }
       });
 
+      socket.on('message:retry', async (_payload = {}, ack) => {
+        try {
+          const messageService = require('../services/message.service');
+          await messageService.processQueue();
+          if (typeof ack === 'function') ack({ ok: true });
+        } catch (error) {
+          const response = {
+            ok: false,
+            code: error.code || 'MESSAGE_RETRY_FAILED',
+            message: error.message || 'Unable to retry message'
+          };
+          if (typeof ack === 'function') ack(response);
+          emitMessagingError(response.code, response.message);
+        }
+      });
+
+      socket.on('message:queued', (payload = {}) => {
+        socket.emit('message:status', {
+          messageId: payload.messageId,
+          conversationId: payload.conversationId,
+          status: 'pending',
+          timestamp: new Date().toISOString()
+        });
+      });
+
       socket.on('keys:exchange', async (payload = {}, ack) => {
         try {
           const messageService = require('../services/message.service');
           const result = await messageService.exchangeKey(userId, payload);
+          this.emit(userId, 'message:retry-eligible', {
+            conversationId: payload.conversationId,
+            readyToSend: true
+          });
           if (typeof ack === 'function') ack({ ok: true, ...result });
         } catch (error) {
           const response = {

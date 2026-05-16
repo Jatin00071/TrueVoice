@@ -12,8 +12,10 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: Num
 router.post('/messages', requireAuth, validateEncryptedEnvelope, asyncHandler(messageController.send));
 router.put('/messages/:id', requireAuth, validateEncryptedEnvelope, asyncHandler(messageController.update));
 router.delete('/messages/:id', requireAuth, asyncHandler(messageController.remove));
+router.post('/messages/:id/unsend', requireAuth, asyncHandler(messageController.unsend));
 router.put('/messages/:id/read', requireAuth, asyncHandler(messageController.read));
 router.post('/messages/upload', requireAuth, upload.single('file'), asyncHandler(attachmentController.upload));
+router.get('/message-queue', requireAuth, asyncHandler(messageController.getQueue));
 
 router.get('/attachments/:id/download', requireAuth, asyncHandler(attachmentController.download));
 router.get('/attachments/:id/thumbnail', requireAuth, asyncHandler(attachmentController.thumbnail));
@@ -21,5 +23,6 @@ router.get('/attachments/:id/thumbnail', requireAuth, asyncHandler(attachmentCon
 router.get('/keys/public/:userId', requireAuth, asyncHandler(messageController.publicKey));
 router.post('/keys/exchange', requireAuth, asyncHandler(messageController.exchangeKey));
 router.get('/keys/verify/:conversationId', requireAuth, asyncHandler(messageController.verifyKeys));
+router.get('/messages/:conversationId/verify-fingerprint', requireAuth, asyncHandler(messageController.verifyKeys));
 
 module.exports = router;

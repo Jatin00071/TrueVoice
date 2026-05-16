@@ -86,6 +86,11 @@ function Messages() {
     }
   };
 
+  const retry = async (message) => {
+    if (!message?.conversationId && !message?.conversation_id) return;
+    await messages.retryPendingMessages(message.conversationId || message.conversation_id);
+  };
+
   return (
     <section className={styles.page}>
       <header className={styles.header}>
@@ -112,6 +117,7 @@ function Messages() {
             onSelect={selectConversation}
             filter={conversationFilter}
             onFilterChange={setConversationFilter}
+            getQueuedCount={messages.getQueuedCount}
           />
         }
       >
@@ -121,6 +127,10 @@ function Messages() {
           currentUserId={user?.id}
           typing={messages.typingByConversation[messages.activeConversationId]}
           onSend={send}
+          onDeleteMessage={messages.deleteMessage}
+          onUnsendMessage={messages.unsendMessage}
+          onRetryMessage={retry}
+          pendingCount={messages.getQueuedCount?.(messages.activeConversationId) || 0}
         />
       </MessagesLayout>
     </section>

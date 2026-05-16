@@ -15,12 +15,22 @@ export async function editMessage(id, payload) {
   return data;
 }
 
-export async function deleteMessage(id) {
-  const { data } = await axios.delete(`/messages/${id}`);
+export async function deleteMessage(id, type = 'soft') {
+  const { data } = await axios.delete(`/messages/${id}`, { params: { type } });
+  return data;
+}
+
+export async function unsendMessage(id) {
+  const { data } = await axios.post(`/messages/${id}/unsend`);
   return data;
 }
 
 export async function markMessageRead(id) {
   const { data } = await axios.put(`/messages/${id}/read`);
+  return data;
+}
+
+export async function getMessageQueue() {
+  const { data } = await axios.get('/message-queue');
   return data;
 }

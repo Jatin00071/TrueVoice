@@ -8,10 +8,14 @@ function formatConversationTime(value) {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function ConversationItem({ conversation, active, onClick }) {
+function ConversationItem({ conversation, active, onClick, pendingCount = 0 }) {
   const name = conversation.other_display_name || conversation.other_username || 'TrueVoice user';
   const unread = Number(conversation.unread_count || 0);
-  const preview = unread > 0 ? '?? New encrypted message' : '?? End-to-end encrypted conversation';
+  const preview = pendingCount > 0
+    ? 'Sending pending message'
+    : unread > 0
+      ? 'New encrypted message'
+      : 'End-to-end encrypted conversation';
 
   return (
     <button
@@ -31,7 +35,8 @@ function ConversationItem({ conversation, active, onClick }) {
         </span>
         <span className={styles.previewRow}>{preview}</span>
       </span>
-      {unread > 0 ? <span className={styles.badge}>{Math.min(unread, 99)}</span> : null}
+      {pendingCount > 0 ? <span className={styles.pendingBadge} title={`${pendingCount} messages pending delivery`}>{Math.min(pendingCount, 99)}</span> : null}
+      {unread > 0 && pendingCount === 0 ? <span className={styles.badge}>{Math.min(unread, 99)}</span> : null}
     </button>
   );
 }
