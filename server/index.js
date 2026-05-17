@@ -35,12 +35,21 @@ const { notFound, errorHandler } = require('./middleware/error.middleware');
 const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
+
+function splitEnvList(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 const allowedOrigins = [
   'https://true-voice-psi.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:5174',
-  process.env.CLIENT_URL
+  process.env.CLIENT_URL,
+  ...splitEnvList(process.env.CLIENT_URLS)
 ].filter(Boolean).filter((value, index, array) => array.indexOf(value) === index);
 const uploadStaticDir = process.env.NODE_ENV === 'production'
   ? '/tmp/uploads'

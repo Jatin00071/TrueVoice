@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const fetch = require('node-fetch');
 const dns = require('dns').promises;
 const net = require('net');
 
@@ -6,7 +7,8 @@ let transportCache = null;
 let transportPromise = null;
 
 function isConfigured() {
-  return Boolean(process.env.SMTP_URL)
+  return Boolean(cleanEnvValue(process.env.SENDGRID_API_KEY))
+    || Boolean(process.env.SMTP_URL)
     || Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
 }
 
@@ -31,6 +33,72 @@ function formatMailInfo(info) {
     rejected: info?.rejected,
     pending: info?.pending,
     response: info?.response
+  };
+}
+
+function shouldUseSendGrid() {
+  return Boolean(cleanEnvValue(process.env.SENDGRID_API_KEY));
+}
+
+async function sendWithSendGrid({ to, subject, text, html }) {
+  const apiKey = cleanEnvValue(process.env.SENDGRID_API_KEY);
+  const from = cleanEnvValue(process.env.SENDGRID_FROM)
+    || cleanEnvValue(process.env.MAIL_FROM)
+    || 'TrueVoice <no-reply@truevoice.local>';
+  const match = from.match(/^(.*)<([^>]+)>$/);
+  const fromEmail = match ? match[2].trim() : from;
+  const fromName = match ? match[1].trim().replace(/^['"]|['"]$/g, '') : undefined;
+
+  const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      personalizations: [
+        {
+          to: [{ email: to }]
+        }
+      ],
+      from: {
+        email: fromEmail,
+        ...(fromName ? { name: fromName } : {})
+      },
+      subject,
+      content: [
+        {
+          type: 'text/plain',
+          value: text
+        },
+        {
+          type: 'text/html',
+          value: html
+        }
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(async () => ({ message: await response.text() }));
+    const message = body?.errors?.[0]?.message || body?.message || `SendGrid API request failed with ${response.status}`;
+    const error = new Error(message);
+    error.code = 'SENDGRID_API_ERROR';
+    error.responseCode = response.status;
+    error.response = body;
+    throw error;
+  }
+
+  // eslint-disable-next-line no-console
+  console.log('[Mail] SendGrid email accepted:', {
+    messageId: response.headers.get('x-message-id'),
+    to,
+    subject
+  });
+
+  return {
+    delivered: true,
+    mode: 'sendgrid'
   };
 }
 
@@ -163,6 +231,15 @@ async function sendVerificationEmail({ to, username, verificationUrl }) {
     };
   }
 
+  if (shouldUseSendGrid()) {
+    return sendWithSendGrid({
+      to,
+      subject: 'Verify your TrueVoice email',
+      text,
+      html
+    });
+  }
+
   const transportContext = await getTransportContext();
   const info = await transportContext.transport.sendMail({
     from: transportContext.from,
@@ -218,6 +295,15 @@ async function sendPasswordResetEmail({ to, username, resetUrl }) {
       mode: 'preview',
       previewUrl: resetUrl
     };
+  }
+
+  if (shouldUseSendGrid()) {
+    return sendWithSendGrid({
+      to,
+      subject: 'Reset your TrueVoice password',
+      text,
+      html
+    });
   }
 
   const transportContext = await getTransportContext();
