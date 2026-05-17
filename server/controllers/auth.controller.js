@@ -1,4 +1,58 @@
 const authService = require('../services/auth.service');
+const tokenService = require('../services/token.service');
+
+const REFRESH_COOKIE = 'tv_refresh';
+
+function parseCookies(header = '') {
+  return String(header || '')
+    .split(';')
+    .map((pair) => pair.trim())
+    .filter(Boolean)
+    .reduce((cookies, pair) => {
+      const index = pair.indexOf('=');
+      if (index === -1) return cookies;
+      let key;
+      let value;
+      try {
+        key = decodeURIComponent(pair.slice(0, index).trim());
+        value = decodeURIComponent(pair.slice(index + 1).trim());
+      } catch (_) {
+        return cookies;
+      }
+      cookies[key] = value;
+      return cookies;
+    }, {});
+}
+
+function refreshCookieOptions() {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/api/v1/auth',
+    maxAge: tokenService.refreshTokenExpiryMs()
+  };
+}
+
+function setRefreshCookie(res, refreshToken) {
+  if (refreshToken) res.cookie(REFRESH_COOKIE, refreshToken, refreshCookieOptions());
+}
+
+function clearRefreshCookie(res) {
+  const { maxAge, ...options } = refreshCookieOptions();
+  res.clearCookie(REFRESH_COOKIE, options);
+}
+
+function getRefreshToken(req) {
+  return req.body?.refreshToken || parseCookies(req.headers.cookie)[REFRESH_COOKIE] || null;
+}
+
+function withoutRefreshToken(result = {}) {
+  // eslint-disable-next-line no-unused-vars
+  const { refreshToken, ...publicResult } = result;
+  return publicResult;
+}
 
 async function register(req, res) {
   const { username, email, password, display_name, bio } = req.body || {};
@@ -8,16 +62,23 @@ async function register(req, res) {
 
 async function login(req, res) {
   const result = await authService.login(req.body);
-  res.json(result);
+  setRefreshCookie(res, result.refreshToken);
+  res.json(withoutRefreshToken(result));
 }
 
 async function refresh(req, res) {
-  const result = await authService.refresh(req.body);
-  res.json(result);
+  const result = await authService.refresh({ ...req.body, refreshToken: getRefreshToken(req) });
+  setRefreshCookie(res, result.refreshToken);
+  res.json(withoutRefreshToken(result));
 }
 
 async function logout(req, res) {
-  const result = await authService.logout({ userId: req.auth.userId, accessToken: req.auth.token });
+  const result = await authService.logout({
+    userId: req.auth?.userId,
+    accessToken: req.auth?.token,
+    refreshToken: getRefreshToken(req)
+  });
+  clearRefreshCookie(res);
   res.json(result);
 }
 
@@ -30,14 +91,6 @@ async function changePassword(req, res) {
       error: true,
       code: 'VALIDATION_ERROR',
       message: 'Current password and new password are required'
-    });
-  }
-
-  if (String(newPassword).length < 8) {
-    return res.status(400).json({
-      error: true,
-      code: 'VALIDATION_ERROR',
-      message: 'New password must be at least 8 characters'
     });
   }
 

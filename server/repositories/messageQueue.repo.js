@@ -34,16 +34,22 @@ async function listForUser(userId) {
   );
 }
 
-async function listPending(limit = 100) {
+async function listPending({ limit = 100, userId = null } = {}) {
   const safeLimit = Math.max(1, Math.min(Number.parseInt(limit, 10) || 100, 500));
+  const params = [];
+  const userFilter = userId ? 'AND user_id = ?' : '';
+  if (userId) params.push(userId);
+
   return query(
     `SELECT *
      FROM message_queue
      WHERE status = 'pending'
        AND retry_count < max_retries
        AND (last_retry_at IS NULL OR last_retry_at <= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 2 SECOND))
+       ${userFilter}
      ORDER BY created_at ASC
-     LIMIT ${safeLimit}`
+     LIMIT ${safeLimit}`,
+    params
   );
 }
 

@@ -12,6 +12,7 @@ export function AuthProvider({ children }) {
   const refreshPromiseRef = useRef(null);
 
   const clearSession = useCallback(() => {
+    window.localStorage.removeItem('tv_session');
     window.localStorage.removeItem('tv_refresh');
     window.localStorage.removeItem('tv_uid');
     setUser(null);
@@ -41,27 +42,30 @@ export function AuthProvider({ children }) {
     }
 
     const res = await authApi.login(authPayload);
-    const { user: u, accessToken: at, refreshToken: rt } = res;
+    const { user: u, accessToken: at } = res;
     setUser(u);
     setAccessToken(at);
-    window.localStorage.setItem('tv_refresh', rt);
+    window.localStorage.setItem('tv_session', '1');
+    window.localStorage.removeItem('tv_refresh');
     window.localStorage.setItem('tv_uid', String(u.id));
     navigate('/feed', { replace: true });
   }, [navigate]);
 
   const refreshSession = useCallback(async () => {
     if (refreshPromiseRef.current) return refreshPromiseRef.current;
-    const rt = window.localStorage.getItem('tv_refresh');
-    if (!rt) {
+    const legacyRefreshToken = window.localStorage.getItem('tv_refresh');
+    const hasRefreshSession = window.localStorage.getItem('tv_session') === '1' || Boolean(legacyRefreshToken);
+    if (!hasRefreshSession) {
       clearSession();
       throw new Error('No refresh token');
     }
     const p = authApi
-      .refresh(rt)
+      .refresh(legacyRefreshToken || undefined)
       .then((data) => {
         setUser(data.user);
         setAccessToken(data.accessToken);
-        window.localStorage.setItem('tv_refresh', data.refreshToken);
+        window.localStorage.setItem('tv_session', '1');
+        window.localStorage.removeItem('tv_refresh');
         return { accessToken: data.accessToken };
       })
       .finally(() => {
@@ -74,17 +78,19 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let cancelled = false;
     const bootstrap = async () => {
-      const rt = window.localStorage.getItem('tv_refresh');
-      if (!rt) {
+      const legacyRefreshToken = window.localStorage.getItem('tv_refresh');
+      const hasRefreshSession = window.localStorage.getItem('tv_session') === '1' || Boolean(legacyRefreshToken);
+      if (!hasRefreshSession) {
         setIsLoading(false);
         return;
       }
       try {
-        const data = await authApi.refresh(rt);
+        const data = await authApi.refresh(legacyRefreshToken || undefined);
         if (cancelled) return;
         setUser(data.user);
         setAccessToken(data.accessToken);
-        window.localStorage.setItem('tv_refresh', data.refreshToken);
+        window.localStorage.setItem('tv_session', '1');
+        window.localStorage.removeItem('tv_refresh');
       } catch {
         if (!cancelled) {
           clearSession();
@@ -123,8 +129,8 @@ export function AuthProvider({ children }) {
       logout,
       refreshSession,
       updateUser,
-      get refreshToken() {
-        return window.localStorage.getItem('tv_refresh');
+      get canRefresh() {
+        return window.localStorage.getItem('tv_session') === '1' || Boolean(window.localStorage.getItem('tv_refresh'));
       }
     }),
     [accessToken, isLoading, login, logout, refreshSession, updateUser, user]

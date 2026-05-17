@@ -229,8 +229,8 @@ async function getQueue(userId) {
   };
 }
 
-async function processQueue() {
-  const pending = await messageQueueRepo.listPending();
+async function processQueue({ userId = null, limit = 100 } = {}) {
+  const pending = await messageQueueRepo.listPending({ userId, limit });
   for (const item of pending) {
     try {
       const conversation = await conversationService.ensureAccess(item.user_id, item.conversation_id);

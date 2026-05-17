@@ -2,14 +2,21 @@ const fs = require('fs/promises');
 const path = require('path');
 const crypto = require('crypto');
 const attachmentRepo = require('../repositories/attachment.repo');
+const { declaredMimeMatches, detectMime, hasDangerousExtension } = require('../utils/fileSignature.util');
 
 const STORAGE_ROOT = process.env.MESSAGE_STORAGE_DIR || path.join(__dirname, '..', 'uploads', 'messages');
-const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE || 50 * 1024 * 1024);
+function envInt(name, fallback) {
+  const value = Number(process.env[name] || fallback);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+const MAX_FILE_SIZE = envInt('MAX_FILE_SIZE', 50 * 1024 * 1024);
 const ALLOWED_TYPES = new Set([
   'image/jpeg', 'image/png', 'image/webp',
   'video/mp4', 'video/webm',
-  'application/pdf', 'text/plain', 'application/zip', 'application/octet-stream'
+  'application/pdf', 'text/plain', 'application/zip'
 ]);
+const MAX_ORIGINAL_NAME_LENGTH = 180;
 
 function classifyLimit(mimetype) {
   if (mimetype?.startsWith('image/')) return 10 * 1024 * 1024;
@@ -24,6 +31,20 @@ function assertFile(file) {
   }
   if (!ALLOWED_TYPES.has(file.mimetype)) {
     throw { error: true, message: 'Unsupported message attachment type', code: 'UNSUPPORTED_MEDIA', statusCode: 415 };
+  }
+  const originalName = path.basename(file.originalname || '');
+  if (originalName.length > MAX_ORIGINAL_NAME_LENGTH || /[\r\n\0]/.test(originalName) || hasDangerousExtension(originalName)) {
+    throw { error: true, message: 'This attachment name is not allowed', code: 'INVALID_FILE_NAME', statusCode: 400 };
+  }
+
+  const detectedMime = detectMime(file.buffer);
+  if (!declaredMimeMatches(file.mimetype, detectedMime)) {
+    throw {
+      error: true,
+      message: 'Attachment content does not match the declared file type',
+      code: 'MEDIA_SIGNATURE_MISMATCH',
+      statusCode: 415
+    };
   }
 }
 

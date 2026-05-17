@@ -111,6 +111,10 @@ function accessTokenExpiryMs() {
   return msFromJwtExpiry(process.env.JWT_EXPIRY || '15m');
 }
 
+function refreshTokenExpiryMs() {
+  return msFromJwtExpiry(process.env.JWT_REFRESH_EXPIRY || '7d');
+}
+
 module.exports = {
   signAccessToken,
   signRefreshToken,
@@ -120,5 +124,6 @@ module.exports = {
   verifyRefreshToken,
   verifyEmailVerificationToken,
   verifyPasswordResetToken,
-  accessTokenExpiryMs
+  accessTokenExpiryMs,
+  refreshTokenExpiryMs
 };

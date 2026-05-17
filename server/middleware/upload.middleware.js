@@ -1,4 +1,6 @@
 const multer = require('multer');
+const path = require('path');
+const { detectMime, declaredMimeMatches } = require('../utils/fileSignature.util');
 
 const ALLOWED_MIME_TYPES = new Set([
   'image/jpeg',
@@ -8,6 +10,15 @@ const ALLOWED_MIME_TYPES = new Set([
   'video/mp4',
   'video/quicktime'
 ]);
+
+function envInt(name, fallback) {
+  const value = Number(process.env[name] || fallback);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+const IMAGE_LIMIT = envInt('MAX_IMAGE_UPLOAD_SIZE', 10 * 1024 * 1024);
+const VIDEO_LIMIT = envInt('MAX_VIDEO_UPLOAD_SIZE', 50 * 1024 * 1024);
+const MAX_ORIGINAL_NAME_LENGTH = 180;
 
 const storage = multer.memoryStorage();
 
@@ -27,7 +38,7 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 100 * 1024 * 1024
+    fileSize: VIDEO_LIMIT
   }
 });
 
@@ -36,14 +47,34 @@ function enforceMediaLimits(req, res, next) {
   if (!file) return next();
 
   const isVideo = file.mimetype.startsWith('video/');
-  const max = isVideo ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+  const max = isVideo ? VIDEO_LIMIT : IMAGE_LIMIT;
 
   if (file.size > max) {
     return next({
       error: true,
-      message: `File too large (max ${isVideo ? '100MB' : '10MB'})`,
+      message: `File too large (max ${Math.round(max / 1024 / 1024)}MB)`,
       code: 'FILE_TOO_LARGE',
       statusCode: 413
+    });
+  }
+
+  const originalName = path.basename(file.originalname || '');
+  if (originalName.length > MAX_ORIGINAL_NAME_LENGTH || /[\r\n\0]/.test(originalName)) {
+    return next({
+      error: true,
+      message: 'File name is too long',
+      code: 'INVALID_FILE_NAME',
+      statusCode: 400
+    });
+  }
+
+  const detectedMime = detectMime(file.buffer);
+  if (!declaredMimeMatches(file.mimetype, detectedMime)) {
+    return next({
+      error: true,
+      message: 'File content does not match the declared media type',
+      code: 'MEDIA_SIGNATURE_MISMATCH',
+      statusCode: 415
     });
   }
 

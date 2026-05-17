@@ -17,6 +17,20 @@ function requireAuth(req, res, next) {
   next();
 }
 
+function optionalAuth(req, res, next) {
+  const token = getBearerToken(req);
+  if (!token || isBlocked(token)) return next();
+
+  try {
+    const payload = tokenService.verifyAccessToken(token);
+    req.auth = { userId: payload.userId, token };
+  } catch (_) {
+    // Logout and other cleanup flows should still be able to clear cookies.
+  }
+
+  return next();
+}
+
 function requireOwner(paramIdKey = 'id') {
   return function ownerOnly(req, res, next) {
     const id = Number(req.params[paramIdKey]);
@@ -27,5 +41,4 @@ function requireOwner(paramIdKey = 'id') {
   };
 }
 
-module.exports = { requireAuth, requireOwner };
-
+module.exports = { requireAuth, optionalAuth, requireOwner };

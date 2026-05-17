@@ -21,6 +21,61 @@ function normalizeUsername(username) {
   return String(username || '').trim();
 }
 
+function publicRecoveryMessage(kind = 'reset') {
+  return kind === 'verification'
+    ? 'If that account needs verification, a fresh email has been sent.'
+    : 'If an account exists for that login, a password reset email has been sent.';
+}
+
+function assertEmail(email) {
+  if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw { error: true, message: 'A valid email address is required', code: 'VALIDATION_ERROR', statusCode: 400 };
+  }
+}
+
+function assertUsername(username) {
+  if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) {
+    throw {
+      error: true,
+      message: 'Username must be 3-30 characters and use only letters, numbers, and underscores',
+      code: 'VALIDATION_ERROR',
+      statusCode: 400
+    };
+  }
+}
+
+function assertPassword(password, label = 'Password') {
+  const value = String(password || '');
+  const hasLower = /[a-z]/.test(value);
+  const hasUpper = /[A-Z]/.test(value);
+  const hasNumber = /\d/.test(value);
+
+  if (value.length < 10 || !hasLower || !hasUpper || !hasNumber) {
+    throw {
+      error: true,
+      message: `${label} must be at least 10 characters and include uppercase, lowercase, and a number`,
+      code: 'VALIDATION_ERROR',
+      statusCode: 400
+    };
+  }
+}
+
+function cleanDisplayName(displayName, fallback) {
+  const value = String(displayName || fallback || '').trim();
+  if (value.length > 80) {
+    throw { error: true, message: 'Display name must be 80 characters or fewer', code: 'VALIDATION_ERROR', statusCode: 400 };
+  }
+  return value || fallback;
+}
+
+function cleanBio(bio) {
+  const value = String(bio || '').trim();
+  if (value.length > 300) {
+    throw { error: true, message: 'Bio must be 300 characters or fewer', code: 'VALIDATION_ERROR', statusCode: 400 };
+  }
+  return value;
+}
+
 function hashVerificationToken(token) {
   return crypto.createHash('sha256').update(String(token)).digest('hex');
 }
@@ -105,11 +160,10 @@ function verificationResponseFields(mailResult, verificationUrl) {
 }
 
 function passwordResetResponseFields(mailResult, resetUrl) {
-  const response = {
-    emailSent: Boolean(mailResult?.delivered)
-  };
+  const response = {};
 
   if (process.env.NODE_ENV !== 'production' && resetUrl) {
+    response.emailSent = Boolean(mailResult?.delivered);
     response.resetUrl = resetUrl;
   }
 
@@ -125,6 +179,9 @@ async function register(payload = {}) {
     throw { error: true, message: 'Missing fields', code: 'VALIDATION_ERROR', statusCode: 400 };
   }
 
+  assertUsername(username);
+  assertEmail(email);
+  assertPassword(password);
   ensureEmailVerificationAvailable();
 
   const existingEmail = await userRepo.findAuthByEmail(email);
@@ -176,7 +233,7 @@ async function register(payload = {}) {
     username,
     email,
     passwordHash,
-    displayName: String(display_name || username).trim() || username,
+    displayName: cleanDisplayName(display_name, username),
     isVerified: false
   });
 
@@ -185,7 +242,8 @@ async function register(payload = {}) {
   await userRepo.setVerificationToken(user.id, finalVerificationTokenHash);
 
   const profileUpdates = {};
-  if (bio) profileUpdates.bio = bio;
+  const nextBio = cleanBio(bio);
+  if (nextBio) profileUpdates.bio = nextBio;
   if (Object.keys(profileUpdates).length) {
     await userRepo.updateFields(user.id, profileUpdates);
   }
@@ -286,8 +344,21 @@ async function refresh(payload = {}) {
   return { user: safeUser(user), accessToken, refreshToken: newRefreshToken };
 }
 
-async function logout({ userId, accessToken }) {
-  await userRepo.clearRefreshTokenHash(userId);
+async function logout({ userId, accessToken, refreshToken }) {
+  let sessionUserId = userId;
+
+  if (!sessionUserId && refreshToken) {
+    try {
+      sessionUserId = tokenService.verifyRefreshToken(refreshToken).userId;
+    } catch (_) {
+      sessionUserId = null;
+    }
+  }
+
+  if (sessionUserId) {
+    await userRepo.clearRefreshTokenHash(sessionUserId);
+  }
+
   if (accessToken) {
     const exp = Date.now() + tokenService.accessTokenExpiryMs();
     blocklist.block(accessToken, exp);
@@ -296,6 +367,8 @@ async function logout({ userId, accessToken }) {
 }
 
 async function changePassword(userId, currentPassword, newPassword) {
+  assertPassword(newPassword, 'New password');
+
   const user = await userRepo.findAuthById(userId);
   if (!user) {
     throw { code: 'NOT_FOUND', message: 'User not found', statusCode: 404 };
@@ -385,15 +458,14 @@ async function resendVerification(payload = {}) {
   if (!authUser) {
     return {
       success: true,
-      message: 'If an account exists for that login, a fresh verification email has been sent.'
+      message: publicRecoveryMessage('verification')
     };
   }
 
   if (authUser.is_verified) {
     return {
       success: true,
-      alreadyVerified: true,
-      message: 'This account is already verified. You can sign in now.'
+      message: publicRecoveryMessage('verification')
     };
   }
 
@@ -417,9 +489,8 @@ async function resendVerification(payload = {}) {
 
   return {
     success: true,
-    alreadyVerified: false,
-    message,
-    ...verificationResponseFields(mailResult, verificationUrl)
+    message: process.env.NODE_ENV === 'production' ? publicRecoveryMessage('verification') : message,
+    ...(process.env.NODE_ENV !== 'production' ? verificationResponseFields(mailResult, verificationUrl) : {})
   };
 }
 
@@ -447,13 +518,9 @@ async function forgotPassword(payload = {}) {
     : await userRepo.findByUsername(username);
 
   if (!authUser) {
-    throw {
-      error: true,
-      message: email
-        ? 'There is no account with this email.'
-        : 'There is no account with this username.',
-      code: 'ACCOUNT_NOT_FOUND',
-      statusCode: 404
+    return {
+      success: true,
+      message: publicRecoveryMessage('reset')
     };
   }
 
@@ -477,7 +544,7 @@ async function forgotPassword(payload = {}) {
 
   return {
     success: true,
-    message,
+    message: process.env.NODE_ENV === 'production' ? publicRecoveryMessage('reset') : message,
     ...passwordResetResponseFields(mailResult, resetUrl)
   };
 }
@@ -495,14 +562,7 @@ async function resetPassword(payload = {}) {
     };
   }
 
-  if (newPassword.length < 8) {
-    throw {
-      error: true,
-      message: 'New password must be at least 8 characters',
-      code: 'VALIDATION_ERROR',
-      statusCode: 400
-    };
-  }
+  assertPassword(newPassword, 'New password');
 
   const tokenPayload = tokenService.verifyPasswordResetToken(token);
   const authUser = await userRepo.findPasswordResetAuthById(tokenPayload.userId);

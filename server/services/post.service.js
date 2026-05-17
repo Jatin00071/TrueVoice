@@ -5,6 +5,14 @@ const mediaService = require('./media.service');
 const notificationService = require('./notification.service');
 const aiModerationService = require('./aiModerationService');
 
+function cleanPostContent(content) {
+  const value = String(content || '').trim();
+  if (value.length > 5000) {
+    throw { error: true, message: 'Post content must be 5000 characters or fewer', code: 'VALIDATION_ERROR', statusCode: 400 };
+  }
+  return value || null;
+}
+
 async function buildDuplicateResult({ post, originalPostId, originalOwnerId, matchType, userId }) {
   let nextPost = post;
 
@@ -38,7 +46,11 @@ async function buildDuplicateResult({ post, originalPostId, originalOwnerId, mat
 async function create(userId, data, file) {
   const isImageUpload = !!(file && file.mimetype.startsWith('image/'));
   const imageBuffer = isImageUpload ? file.buffer : null;
-  const textContent = data.content || null;
+  const textContent = cleanPostContent(data.content);
+
+  if (!textContent && !file) {
+    throw { error: true, message: 'Post content or media is required', code: 'VALIDATION_ERROR', statusCode: 400 };
+  }
 
   const fingerprintResult = await fingerprintService.processNewPost(
     textContent,
@@ -150,7 +162,7 @@ async function update(userId, postId, data) {
   const existing = await postRepo.findById(postId);
   if (!existing) throw { error: true, message: 'Post not found', code: 'NOT_FOUND', statusCode: 404 };
   if (existing.user_id !== userId) throw { error: true, message: 'Forbidden', code: 'FORBIDDEN', statusCode: 403 };
-  const post = await postRepo.update(postId, userId, { content: data.content ?? null });
+  const post = await postRepo.update(postId, userId, { content: cleanPostContent(data.content) });
   return { post };
 }
 

@@ -3,9 +3,18 @@ const followRepo = require('../repositories/follow.repo');
 const notificationService = require('./notification.service');
 const mediaService = require('./media.service');
 
+function cleanText(value, maxLength, field) {
+  const next = String(value || '').trim();
+  if (next.length > maxLength) {
+    throw { error: true, message: `${field} must be ${maxLength} characters or fewer`, code: 'VALIDATION_ERROR', statusCode: 400 };
+  }
+  return next;
+}
+
 async function search(q, authUserId) {
-  if (!q) return { items: [] };
-  const items = await userRepo.search(q);
+  const query = cleanText(q, 80, 'Search query');
+  if (!query) return { items: [] };
+  const items = await userRepo.search(query);
   return { items, viewerId: authUserId };
 }
 
@@ -43,10 +52,10 @@ async function updateProfile(userId, data, file = null) {
   const updates = {};
 
   if (data.displayName !== undefined || data.display_name !== undefined) {
-    updates.display_name = data.displayName ?? data.display_name;
+    updates.display_name = cleanText(data.displayName ?? data.display_name, 80, 'Display name');
   }
   if (data.bio !== undefined) {
-    updates.bio = data.bio;
+    updates.bio = cleanText(data.bio, 300, 'Bio');
   }
   if (file) {
     if (!file.mimetype?.startsWith('image/')) {

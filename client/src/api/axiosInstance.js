@@ -48,7 +48,7 @@ axiosInstance.interceptors.response.use(
     }
 
     if (error.response?.status === 401 && !original._retry && !isAuthRoute) {
-      if (!auth.refreshToken) {
+      if (!auth.canRefresh) {
         auth.logout();
         return Promise.reject(error);
       }

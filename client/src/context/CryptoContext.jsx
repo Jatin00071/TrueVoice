@@ -6,6 +6,9 @@ import '../utils/cryptoDebug.js';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+const CRYPTO_DB = 'truevoice-crypto-keys';
+const CRYPTO_STORE = 'identities';
+const CRYPTO_DB_VERSION = 1;
 
 function bytesToBase64(bytes) {
   return btoa(String.fromCharCode(...new Uint8Array(bytes)));
@@ -22,6 +25,67 @@ async function sha256Hex(value) {
 
 async function importPublicKey(publicKey) {
   return crypto.subtle.importKey('jwk', JSON.parse(atob(publicKey)), { name: 'ECDH', namedCurve: 'P-256' }, true, []);
+}
+
+function openCryptoDb() {
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(new Error('IndexedDB is not available'));
+      return;
+    }
+
+    const request = window.indexedDB.open(CRYPTO_DB, CRYPTO_DB_VERSION);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(CRYPTO_STORE)) {
+        db.createObjectStore(CRYPTO_STORE, { keyPath: 'userId' });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function cryptoTx(mode, callback) {
+  const db = await openCryptoDb();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(CRYPTO_STORE, mode);
+    const store = transaction.objectStore(CRYPTO_STORE);
+    let result;
+    transaction.oncomplete = () => resolve(result);
+    transaction.onerror = () => reject(transaction.error);
+    result = callback(store);
+  }).finally(() => db.close());
+}
+
+function requestToPromise(request) {
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function loadIdentityRecord(userId) {
+  return cryptoTx('readonly', (store) => requestToPromise(store.get(String(userId))));
+}
+
+function saveIdentityRecord(record) {
+  return cryptoTx('readwrite', (store) => store.put({ ...record, userId: String(record.userId) }));
+}
+
+async function importPrivateKey(privateJwk) {
+  return crypto.subtle.importKey('jwk', privateJwk, { name: 'ECDH', namedCurve: 'P-256' }, false, ['deriveKey']);
+}
+
+async function buildIdentityFromRecord(record) {
+  if (!record?.privateKey || !record?.publicJwk || !record?.fingerprint) return null;
+  const publicKey = await crypto.subtle.importKey('jwk', record.publicJwk, { name: 'ECDH', namedCurve: 'P-256' }, true, []);
+  return {
+    privateKey: record.privateKey,
+    publicKey,
+    publicKeyString: btoa(JSON.stringify(record.publicJwk)),
+    fingerprint: record.fingerprint
+  };
 }
 
 async function deriveAesKey(privateKey, publicKey) {
@@ -74,12 +138,26 @@ export function CryptoProvider({ children }) {
     async function init() {
       if (!user?.id || !crypto?.subtle) return;
       const storageKey = `tv:crypto:${user.id}`;
-      const existing = window.localStorage.getItem(storageKey);
+      const storedRecord = await loadIdentityRecord(user.id);
+      const storedIdentity = await buildIdentityFromRecord(storedRecord);
 
-      if (existing) {
-        const parsed = JSON.parse(existing);
-        const privateKey = await crypto.subtle.importKey('jwk', parsed.privateJwk, { name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveKey']);
+      if (storedIdentity) {
+        if (!cancelled) setIdentity(storedIdentity);
+        return;
+      }
+
+      const legacyIdentity = window.localStorage.getItem(storageKey);
+      if (legacyIdentity) {
+        const parsed = JSON.parse(legacyIdentity);
+        const privateKey = await importPrivateKey(parsed.privateJwk);
         const publicKey = await crypto.subtle.importKey('jwk', parsed.publicJwk, { name: 'ECDH', namedCurve: 'P-256' }, true, []);
+        await saveIdentityRecord({
+          userId: user.id,
+          privateKey,
+          publicJwk: parsed.publicJwk,
+          fingerprint: parsed.fingerprint
+        });
+        window.localStorage.removeItem(storageKey);
         if (!cancelled) {
           setIdentity({ privateKey, publicKey, publicKeyString: btoa(JSON.stringify(parsed.publicJwk)), fingerprint: parsed.fingerprint });
         }
@@ -89,10 +167,12 @@ export function CryptoProvider({ children }) {
       const pair = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveKey']);
       const privateJwk = await crypto.subtle.exportKey('jwk', pair.privateKey);
       const publicJwk = await crypto.subtle.exportKey('jwk', pair.publicKey);
+      const privateKey = await importPrivateKey(privateJwk);
+      const publicKey = await crypto.subtle.importKey('jwk', publicJwk, { name: 'ECDH', namedCurve: 'P-256' }, true, []);
       const publicKeyString = btoa(JSON.stringify(publicJwk));
       const fingerprint = await sha256Hex(publicKeyString);
-      window.localStorage.setItem(storageKey, JSON.stringify({ privateJwk, publicJwk, fingerprint }));
-      if (!cancelled) setIdentity({ privateKey: pair.privateKey, publicKey: pair.publicKey, publicKeyString, fingerprint });
+      await saveIdentityRecord({ userId: user.id, privateKey, publicJwk, fingerprint });
+      if (!cancelled) setIdentity({ privateKey, publicKey, publicKeyString, fingerprint });
     }
 
     init().catch((error) => {

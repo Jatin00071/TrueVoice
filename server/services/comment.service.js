@@ -3,14 +3,26 @@ const postRepo = require('../repositories/post.repo');
 const notificationService = require('./notification.service');
 const shieldService = require('./shield.service');
 
+function cleanCommentContent(content) {
+  const value = String(content || '').trim();
+  if (!value) {
+    throw { error: true, message: 'Comment content is required', code: 'VALIDATION_ERROR', statusCode: 400 };
+  }
+  if (value.length > 1000) {
+    throw { error: true, message: 'Comment content must be 1000 characters or fewer', code: 'VALIDATION_ERROR', statusCode: 400 };
+  }
+  return value;
+}
+
 async function createComment(userId, postId, content) {
-  const shieldResult = await shieldService.processComment(userId, postId, content);
+  const cleanContent = cleanCommentContent(content);
+  const shieldResult = await shieldService.processComment(userId, postId, cleanContent);
 
   if (!shieldResult.allowed) {
     const comment = await commentRepo.insert({
       userId,
       postId,
-      content,
+      content: cleanContent,
       status: 'rejected',
       flaggedReason: shieldResult.toxicityCategory || 'shield',
       deletedByShield: 1,
@@ -30,7 +42,7 @@ async function createComment(userId, postId, content) {
     const comment = await commentRepo.insert({
       userId,
       postId,
-      content,
+      content: cleanContent,
       status: 'approved',
       flaggedReason: shieldResult.toxicityCategory,
       deletedByShield: 1,
@@ -62,7 +74,7 @@ async function createComment(userId, postId, content) {
   const comment = await commentRepo.insert({
     userId,
     postId,
-    content,
+    content: cleanContent,
     status: shieldResult.status,
     flaggedReason: null,
     deletedByShield: 0,

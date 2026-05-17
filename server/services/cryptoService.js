@@ -51,7 +51,7 @@ function assertEncryptedEnvelope(body = {}) {
 }
 
 function fingerprintPublicKey(publicKey) {
-  if (typeof publicKey !== 'string' || publicKey.length < 32) {
+  if (typeof publicKey !== 'string' || publicKey.length < 32 || publicKey.length > 4096) {
     throw { error: true, message: 'A valid public key is required', code: 'INVALID_PUBLIC_KEY', statusCode: 400 };
   }
   return crypto.createHash('sha256').update(publicKey).digest('hex');

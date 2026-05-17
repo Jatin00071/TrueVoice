@@ -4,7 +4,7 @@ import UserAvatar from '../user/UserAvatar.jsx';
 import styles from './TopBar.module.css';
 import { useAuthContext } from '../../hooks/useAuth.js';
 
-function getRouteMeta(pathname, user) {
+function getRouteMeta(pathname) {
   if (pathname.startsWith('/discover')) {
     return {
       eyebrow: 'Explore',
@@ -44,7 +44,7 @@ function getRouteMeta(pathname, user) {
 function TopBar() {
   const { user } = useAuthContext();
   const location = useLocation();
-  const routeMeta = getRouteMeta(location.pathname, user);
+  const routeMeta = getRouteMeta(location.pathname);
 
   return (
     <header className={styles.bar}>

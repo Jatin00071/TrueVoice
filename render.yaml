@@ -14,6 +14,36 @@ services:
         value: "5000"
       - key: CLIENT_URL
         value: "https://true-voice-psi.vercel.app"
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_SSL_ENABLED
+        sync: false
+      - key: DB_SSL_CA
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: JWT_EMAIL_SECRET
+        sync: false
+      - key: JWT_PASSWORD_RESET_SECRET
+        sync: false
+      - key: JWT_EXPIRY
+        value: "15m"
+      - key: JWT_REFRESH_EXPIRY
+        value: "7d"
+      - key: EMAIL_VERIFY_EXPIRY
+        value: "24h"
+      - key: PASSWORD_RESET_EXPIRY
+        value: "30m"
       - key: SMTP_HOST
         value: "smtp.gmail.com"
       - key: SMTP_PORT
@@ -34,3 +64,45 @@ services:
         value: "8000"
       - key: SMTP_FAMILY
         value: "4"
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: HUGGINGFACE_API_KEY
+        sync: false
+      - key: MAX_IMAGE_UPLOAD_SIZE
+        value: "10485760"
+      - key: MAX_VIDEO_UPLOAD_SIZE
+        value: "52428800"
+      - key: MAX_FILE_SIZE
+        value: "52428800"
+      - key: RATE_LIMIT_API_MAX
+        value: "900"
+      - key: RATE_LIMIT_LOGIN_MAX
+        value: "5"
+      - key: RATE_LIMIT_REGISTER_MAX
+        value: "5"
+      - key: RATE_LIMIT_AUTH_EMAIL_MAX
+        value: "5"
+      - key: RATE_LIMIT_AUTH_TOKEN_MAX
+        value: "60"
+      - key: RATE_LIMIT_WRITE_MAX
+        value: "60"
+      - key: RATE_LIMIT_UPLOAD_MAX
+        value: "20"
+      - key: RATE_LIMIT_SEARCH_MAX
+        value: "30"
+      - key: RATE_LIMIT_MESSAGE_MAX
+        value: "90"
+      - key: SOCKET_LIMIT_MESSAGE_SEND
+        value: "60"
+      - key: SOCKET_LIMIT_TYPING
+        value: "120"
+      - key: SOCKET_LIMIT_READ
+        value: "120"
+      - key: SOCKET_LIMIT_RETRY
+        value: "10"
+      - key: SOCKET_LIMIT_QUEUED
+        value: "120"
+      - key: SOCKET_LIMIT_KEYS
+        value: "30"
+      - key: SOCKET_LIMIT_CONVERSATION
+        value: "20"

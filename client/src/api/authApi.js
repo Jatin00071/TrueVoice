@@ -70,7 +70,8 @@ export async function resetPassword(token, newPassword) {
 }
 
 export async function refresh(refreshToken) {
-  const res = await api.post('/auth/refresh', { refreshToken });
+  const body = refreshToken ? { refreshToken } : {};
+  const res = await api.post('/auth/refresh', body);
   return res.data;
 }
 

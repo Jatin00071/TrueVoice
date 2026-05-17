@@ -264,7 +264,7 @@ export function MessageProvider({ children }) {
       });
       return queued;
     }
-  }, [cryptoContext, loadConversations, queueMessage, sendQueuedItem]);
+  }, [cryptoContext, getConversationPeerId, loadConversations, queueMessage, sendQueuedItem]);
 
   const deleteMessage = useCallback(async (messageId, type = 'soft') => {
     const result = await deletionService.deleteMessage(messageId, type);

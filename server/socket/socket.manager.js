@@ -1,6 +1,21 @@
 const { Server } = require('socket.io');
 const tokenService = require('../services/token.service');
 
+function envInt(name, fallback) {
+  const value = Number(process.env[name] || fallback);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+const EVENT_LIMITS = {
+  'message:send': { windowMs: 60 * 1000, limit: envInt('SOCKET_LIMIT_MESSAGE_SEND', 60) },
+  'message:typing': { windowMs: 60 * 1000, limit: envInt('SOCKET_LIMIT_TYPING', 120) },
+  'message:read': { windowMs: 60 * 1000, limit: envInt('SOCKET_LIMIT_READ', 120) },
+  'message:retry': { windowMs: 60 * 1000, limit: envInt('SOCKET_LIMIT_RETRY', 10) },
+  'message:queued': { windowMs: 60 * 1000, limit: envInt('SOCKET_LIMIT_QUEUED', 120) },
+  'keys:exchange': { windowMs: 60 * 1000, limit: envInt('SOCKET_LIMIT_KEYS', 30) },
+  'conversation:archived': { windowMs: 60 * 1000, limit: envInt('SOCKET_LIMIT_CONVERSATION', 20) }
+};
+
 class SocketManager {
   constructor() {
     this.io = null;
@@ -36,7 +51,33 @@ class SocketManager {
         socket.emit('message:error', { code, message });
       };
 
+      const eventBuckets = new Map();
+      const checkEventLimit = (event, ack) => {
+        const config = EVENT_LIMITS[event];
+        if (!config) return true;
+
+        const now = Date.now();
+        const current = eventBuckets.get(event);
+        const nextBucket = current && current.resetAt > now
+          ? { ...current, count: current.count + 1 }
+          : { count: 1, resetAt: now + config.windowMs };
+
+        eventBuckets.set(event, nextBucket);
+
+        if (nextBucket.count <= config.limit) return true;
+
+        const response = {
+          ok: false,
+          code: 'SOCKET_RATE_LIMIT',
+          message: 'Too many realtime actions. Please slow down.'
+        };
+        if (typeof ack === 'function') ack(response);
+        emitMessagingError(response.code, response.message);
+        return false;
+      };
+
       socket.on('message:send', async (payload = {}, ack) => {
+        if (!checkEventLimit('message:send', ack)) return;
         try {
           const messageService = require('../services/message.service');
           const result = await messageService.send(userId, payload);
@@ -53,6 +94,7 @@ class SocketManager {
       });
 
       socket.on('message:typing', async (payload = {}) => {
+        if (!checkEventLimit('message:typing')) return;
         try {
           const conversationService = require('../services/conversation.service');
           const conversationRepo = require('../repositories/conversation.repo');
@@ -68,6 +110,7 @@ class SocketManager {
       });
 
       socket.on('message:read', async (payload = {}, ack) => {
+        if (!checkEventLimit('message:read', ack)) return;
         try {
           const messageService = require('../services/message.service');
           const result = await messageService.read(userId, Number(payload.messageId));
@@ -84,9 +127,10 @@ class SocketManager {
       });
 
       socket.on('message:retry', async (_payload = {}, ack) => {
+        if (!checkEventLimit('message:retry', ack)) return;
         try {
           const messageService = require('../services/message.service');
-          await messageService.processQueue();
+          await messageService.processQueue({ userId, limit: 25 });
           if (typeof ack === 'function') ack({ ok: true });
         } catch (error) {
           const response = {
@@ -100,6 +144,7 @@ class SocketManager {
       });
 
       socket.on('message:queued', (payload = {}) => {
+        if (!checkEventLimit('message:queued')) return;
         socket.emit('message:status', {
           messageId: payload.messageId,
           conversationId: payload.conversationId,
@@ -109,6 +154,7 @@ class SocketManager {
       });
 
       socket.on('keys:exchange', async (payload = {}, ack) => {
+        if (!checkEventLimit('keys:exchange', ack)) return;
         try {
           const messageService = require('../services/message.service');
           const result = await messageService.exchangeKey(userId, payload);
@@ -129,6 +175,7 @@ class SocketManager {
       });
 
       socket.on('conversation:archived', async (payload = {}, ack) => {
+        if (!checkEventLimit('conversation:archived', ack)) return;
         try {
           const conversationService = require('../services/conversation.service');
           const conversationRepo = require('../repositories/conversation.repo');
