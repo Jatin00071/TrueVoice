@@ -115,4 +115,12 @@
     align-items: stretch;
     flex-direction: column;
   }
+
+  .chatPageOpen {
+    gap: 0;
+  }
+
+  .chatPageOpen .header {
+    display: none;
+  }
 }

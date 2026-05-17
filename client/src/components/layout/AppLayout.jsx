@@ -8,11 +8,14 @@ import styles from './AppLayout.module.css';
 function AppLayout() {
   const location = useLocation();
   const isMessagesPage = location.pathname.startsWith('/messages');
+  const isMessagesChat = isMessagesPage && new URLSearchParams(location.search).has('conversation');
 
   return (
     <>
-      <TopBar />
-      <div className={`${styles.layout} ${isMessagesPage ? styles.messagesLayout : ''}`.trim()}>
+      <div className={isMessagesChat ? styles.mobileHiddenOnChat : ''}>
+        <TopBar />
+      </div>
+      <div className={`${styles.layout} ${isMessagesPage ? styles.messagesLayout : ''} ${isMessagesChat ? styles.chatFocusedLayout : ''}`.trim()}>
         <aside className={styles.sidebar}>
           <LeftSidebar />
         </aside>
@@ -25,7 +28,9 @@ function AppLayout() {
           </aside>
         ) : null}
       </div>
-      <BottomNav />
+      <div className={isMessagesChat ? styles.mobileHiddenOnChat : ''}>
+        <BottomNav />
+      </div>
     </>
   );
 }

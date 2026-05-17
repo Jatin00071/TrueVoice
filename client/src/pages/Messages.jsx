@@ -25,6 +25,7 @@ function Messages() {
   const [conversationFilter, setConversationFilter] = useState('');
   const [messageFilter, setMessageFilter] = useState('');
   const [error, setError] = useState('');
+  const chatOpen = Boolean(searchParams.get('conversation'));
 
   useEffect(() => {
     const userId = searchParams.get('user');
@@ -76,6 +77,10 @@ function Messages() {
     await messages.loadMessages(conversation.id);
   };
 
+  const backToConversations = () => {
+    setSearchParams({});
+  };
+
   const send = async (text) => {
     if (!messages.activeConversationId) return;
     try {
@@ -92,7 +97,7 @@ function Messages() {
   };
 
   return (
-    <section className={styles.page}>
+    <section className={`${styles.page} ${chatOpen ? styles.chatPageOpen : ''}`}>
       <header className={styles.header}>
         <div>
           <h1>Messages</h1>
@@ -110,6 +115,7 @@ function Messages() {
       {error ? <p className={styles.error} role="alert" aria-live="polite">{error}</p> : null}
 
       <MessagesLayout
+        chatOpen={chatOpen}
         sidebar={
           <ConversationList
             conversations={messages.conversations}
@@ -127,6 +133,7 @@ function Messages() {
           currentUserId={user?.id}
           typing={messages.typingByConversation[messages.activeConversationId]}
           onSend={send}
+          onBack={backToConversations}
           onDeleteMessage={messages.deleteMessage}
           onUnsendMessage={messages.unsendMessage}
           onRetryMessage={retry}

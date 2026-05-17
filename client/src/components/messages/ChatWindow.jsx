@@ -25,12 +25,15 @@ function MoreIcon() {
 function InboxIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M4.5 6.5h15v10h-9L6.5 20v-3.5h-2v-10Z" /><path d="M8 10h8M8 13h5" /></svg>;
 }
+function BackIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M15 18 9 12l6-6" /></svg>;
+}
 
 function getInitial(name) {
   return (name?.trim()?.[0] || 'U').toUpperCase();
 }
 
-function ChatWindow({ conversation, messages, currentUserId, typing, onSend, onDeleteMessage, onUnsendMessage, onRetryMessage, pendingCount = 0 }) {
+function ChatWindow({ conversation, messages, currentUserId, typing, onSend, onBack, onDeleteMessage, onUnsendMessage, onRetryMessage, pendingCount = 0 }) {
   const bottomRef = useRef(null);
   const { identity } = useCrypto();
   const [showInfo, setShowInfo] = useState(false);
@@ -61,6 +64,9 @@ function ChatWindow({ conversation, messages, currentUserId, typing, onSend, onD
     <main className={styles.window} aria-label={`Conversation with ${displayName}`}>
       <header className={styles.chatHeader}>
         <div className={styles.chatIdentity}>
+          <button type="button" className={styles.backButton} onClick={onBack} aria-label="Back to conversations">
+            <BackIcon />
+          </button>
           <span className={styles.headerAvatar} aria-hidden="true">{getInitial(displayName)}</span>
           <div>
             <h2>{displayName}</h2>

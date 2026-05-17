@@ -393,6 +393,24 @@
   gap: var(--space-md);
 }
 
+.backButton {
+  display: none;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-neutral-text);
+  cursor: pointer;
+}
+
+.backButton svg {
+  width: 22px;
+  height: 22px;
+}
+
 .chatIdentity h2 {
   margin: 0;
   color: var(--color-neutral-text);
@@ -1112,12 +1130,32 @@
 @media (max-width: 767px) {
   .layout {
     grid-template-columns: 1fr;
-    height: auto;
-    min-height: calc(100vh - 160px);
+    min-height: calc(100vh - 152px);
+    height: calc(100vh - 152px);
   }
 
   .conversationScroll {
-    max-height: 280px;
+    max-height: none;
+  }
+
+  .layout:not(.chatOpen) .chat {
+    display: none;
+  }
+
+  .chatOpen {
+    min-height: 100dvh;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .chatOpen .sidebar {
+    display: none;
+  }
+
+  .chatOpen .chat {
+    display: flex;
   }
 
   .conversationItem {
@@ -1134,7 +1172,11 @@
   .chatHeader {
     height: 56px;
     flex-basis: 56px;
-    padding: 12px 16px;
+    padding: 10px 12px;
+  }
+
+  .backButton {
+    display: grid;
   }
 
   .chatActions {
