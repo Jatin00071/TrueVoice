@@ -1,8 +1,22 @@
-const Anthropic = require('@anthropic-ai/sdk');
+let client = null;
+let clientLoadFailed = false;
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
-});
+function getAnthropicClient() {
+  if (client || clientLoadFailed) return client;
+
+  try {
+    const AnthropicModule = require('@anthropic-ai/sdk');
+    const Anthropic = AnthropicModule.default || AnthropicModule.Anthropic || AnthropicModule;
+    client = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY
+    });
+  } catch (error) {
+    clientLoadFailed = true;
+    console.error('[AI Similarity] Anthropic SDK failed to load:', error.message);
+  }
+
+  return client;
+}
 
 async function areTextsSemanticallyDuplicate(text1, text2) {
   if (!text1 || !text2) return false;
@@ -16,7 +30,10 @@ async function areTextsSemanticallyDuplicate(text1, text2) {
   }
 
   try {
-    const response = await client.messages.create({
+    const anthropicClient = getAnthropicClient();
+    if (!anthropicClient) return false;
+
+    const response = await anthropicClient.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 100,
       messages: [
