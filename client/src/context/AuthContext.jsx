@@ -10,6 +10,11 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshPromiseRef = useRef(null);
+  const accessTokenRef = useRef(null);
+
+  useEffect(() => {
+    accessTokenRef.current = accessToken;
+  }, [accessToken]);
 
   const clearSession = useCallback(() => {
     window.localStorage.removeItem('tv_session');
@@ -45,6 +50,8 @@ export function AuthProvider({ children }) {
     const { user: u, accessToken: at } = res;
     setUser(u);
     setAccessToken(at);
+    accessTokenRef.current = at;
+    setIsLoading(false);
     window.localStorage.setItem('tv_session', '1');
     window.localStorage.removeItem('tv_refresh');
     window.localStorage.setItem('tv_uid', String(u.id));
@@ -92,7 +99,7 @@ export function AuthProvider({ children }) {
         window.localStorage.setItem('tv_session', '1');
         window.localStorage.removeItem('tv_refresh');
       } catch {
-        if (!cancelled) {
+        if (!cancelled && !accessTokenRef.current) {
           clearSession();
           navigate('/login', { replace: true });
         }
