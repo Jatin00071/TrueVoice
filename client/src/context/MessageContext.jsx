@@ -113,6 +113,19 @@ export function MessageProvider({ children }) {
     }
   }, [cryptoContext, getConversationPeerId]);
 
+  const markConversationAsRead = useCallback(async (conversationId, messages) => {
+    if (!conversationId || !Array.isArray(messages) || messages.length === 0) return;
+    const unreadMessages = messages.filter((message) =>
+      message && message.id && String(message.sender_id) !== String(user?.id) && !message.is_read
+    );
+    if (!unreadMessages.length) return;
+    await Promise.all(unreadMessages.map((message) =>
+      markMessageRead(message.id).catch((error) => {
+        console.warn('[Messages] Failed to mark message read:', message.id, error);
+      })
+    ));
+  }, [user?.id]);
+
   const loadMessages = useCallback(async (conversationId, params = {}) => {
     if (!conversationId) return [];
     setIsLoading(true);
@@ -146,6 +159,8 @@ export function MessageProvider({ children }) {
       const failures = decrypted.filter((message) => message.decryptionError);
       setDecryptionFailures((current) => ({ ...current, [conversationId]: failures.map((message) => ({ id: message.id, error: message.decryptionError })) }));
       setMessagesByConversation((current) => ({ ...current, [conversationId]: [...decrypted, ...localPending] }));
+      await markConversationAsRead(conversationId, decrypted);
+      await loadConversations();
       await refreshLocalQueue();
       return [...decrypted, ...localPending];
     } catch (error) {
@@ -154,7 +169,7 @@ export function MessageProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
-  }, [cryptoContext, decryptOneMessage, refreshLocalQueue, user?.id]);
+  }, [cryptoContext, decryptOneMessage, loadConversations, markConversationAsRead, refreshLocalQueue, user?.id]);
 
   const queueMessage = useCallback(async (conversationId, payload) => {
     const queued = await queueService.addToQueue(conversationId, payload);
