@@ -95,6 +95,9 @@ async function toggleFollow(authUserId, targetId) {
   if (result.following) {
     await notificationService.create({ type: 'follow', recipientId: targetId, senderId: authUserId });
   }
+  if (result.requested) {
+    await notificationService.create({ type: 'follow_request', recipientId: targetId, senderId: authUserId });
+  }
   return result;
 }
 

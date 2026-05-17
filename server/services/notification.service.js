@@ -6,6 +6,7 @@ function buildMessage(n) {
     like: 'liked your post',
     comment: 'commented on your post',
     follow: 'started following you',
+    follow_request: 'sent you a follow request',
     shield_activated: 'Shield activated on your post',
     content_reshared: 'reshared your content',
     message: 'sent you a message'
