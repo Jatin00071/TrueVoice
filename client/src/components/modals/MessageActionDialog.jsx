@@ -7,6 +7,12 @@ const copy = {
     confirm: 'Delete',
     tone: 'danger'
   },
+  delete_conversation: {
+    title: 'Delete conversation?',
+    text: 'This will hide the conversation from your inbox.',
+    confirm: 'Delete',
+    tone: 'danger'
+  },
   unsend: {
     title: 'Unsend message?',
     text: 'This will remove the message from this conversation for both of you.',

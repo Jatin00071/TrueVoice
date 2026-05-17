@@ -26,6 +26,27 @@ async function archive(req, res) {
   res.json(result);
 }
 
+async function pin(req, res) {
+  const result = await conversationService.pinConversation(req.auth.userId, Number(req.params.id));
+  res.json(result);
+}
+
+async function mute(req, res) {
+  const { mutedUntil } = req.body || {};
+  const result = await conversationService.muteConversation(req.auth.userId, Number(req.params.id), { mutedUntil });
+  res.json(result);
+}
+
+async function block(req, res) {
+  const result = await conversationService.blockConversation(req.auth.userId, Number(req.params.id));
+  res.json(result);
+}
+
+async function hide(req, res) {
+  const result = await conversationService.hideConversation(req.auth.userId, Number(req.params.id));
+  res.json(result);
+}
+
 async function messages(req, res) {
   const result = await messageService.list(req.auth.userId, Number(req.params.id), {
     page: req.query.page,
@@ -35,4 +56,4 @@ async function messages(req, res) {
   res.json(result);
 }
 
-module.exports = { list, get, details, start, archive, messages };
+module.exports = { list, get, details, start, archive, messages, pin, mute, block, hide };

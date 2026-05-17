@@ -5,6 +5,9 @@ import TypingIndicator from './TypingIndicator.jsx';
 import EncryptionIndicator from './EncryptionIndicator.jsx';
 import InfoPanel from './InfoPanel.jsx';
 import { useCrypto } from '../../hooks/useCrypto.js';
+import { useMessages } from '../../hooks/useMessages.js';
+import MessageActionDialog from '../modals/MessageActionDialog.jsx';
+import { pinConversation, muteConversation, blockConversation, hideConversation } from '../../api/conversationApi.js';
 import styles from './Messages.module.css';
 
 function PhoneIcon() {
@@ -32,6 +35,10 @@ function ChatWindow({ conversation, messages, currentUserId, typing, onSend, onD
   const { identity } = useCrypto();
   const [showInfo, setShowInfo] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [actionDialogOpen, setActionDialogOpen] = useState(false);
+  const [actionType, setActionType] = useState('delete');
+  const [actionBusy, setActionBusy] = useState(false);
+  const messagesState = useMessages();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,11 +77,45 @@ function ChatWindow({ conversation, messages, currentUserId, typing, onSend, onD
               <div className={styles.moreMenu} role="menu">
                 <button type="button" role="menuitem">View Encryption Details</button>
                 <button type="button" role="menuitem">Conversation Settings</button>
-                <button type="button" role="menuitem">Pin Conversation</button>
-                <button type="button" role="menuitem">Mute Notifications</button>
-                <button type="button" role="menuitem">Block User</button>
+                <button type="button" role="menuitem" onClick={async () => {
+                  setActionBusy(true);
+                  try {
+                    await pinConversation(conversation.id);
+                    await messagesState.loadConversations();
+                  } catch (e) {
+                    console.warn('Pin failed', e);
+                  } finally {
+                    setActionBusy(false);
+                    setShowMore(false);
+                  }
+                }}>Pin Conversation</button>
+                <button type="button" role="menuitem" onClick={async () => {
+                  setActionBusy(true);
+                  try {
+                    await muteConversation(conversation.id);
+                    await messagesState.loadConversations();
+                  } catch (e) {
+                    console.warn('Mute failed', e);
+                  } finally {
+                    setActionBusy(false);
+                    setShowMore(false);
+                  }
+                }}>Mute Notifications</button>
+                <button type="button" role="menuitem" onClick={() => { setActionType('block'); setActionDialogOpen(true); setShowMore(false); }}>Block User</button>
                 <button type="button" role="menuitem">Report Conversation</button>
-                <button type="button" role="menuitem">Archive Conversation</button>
+                <button type="button" role="menuitem" onClick={async () => {
+                  setActionBusy(true);
+                  try {
+                    await hideConversation(conversation.id);
+                    await messagesState.loadConversations();
+                  } catch (e) {
+                    console.warn('Archive/hide failed', e);
+                  } finally {
+                    setActionBusy(false);
+                    setShowMore(false);
+                  }
+                }}>Archive Conversation</button>
+                <button type="button" role="menuitem" onClick={() => { setActionType('delete_conversation'); setActionDialogOpen(true); setShowMore(false); }}>Delete Conversation</button>
               </div>
             ) : null}
           </div>
@@ -98,6 +139,29 @@ function ChatWindow({ conversation, messages, currentUserId, typing, onSend, onD
       </div>
 
       <MessageInput onSend={onSend} disabled={!conversation} conversationId={conversation?.id} pendingCount={pendingCount} />
+      <MessageActionDialog
+        type={actionType}
+        open={actionDialogOpen}
+        busy={actionBusy}
+        onCancel={() => setActionDialogOpen(false)}
+            onConfirm={async () => {
+          setActionBusy(true);
+          try {
+            if (actionType === 'block') {
+              await blockConversation(conversation.id);
+              await messagesState.loadConversations();
+                } else if (actionType === 'delete_conversation') {
+              await hideConversation(conversation.id);
+              await messagesState.loadConversations();
+            }
+          } catch (e) {
+            console.warn('Action failed', e);
+          } finally {
+            setActionBusy(false);
+            setActionDialogOpen(false);
+          }
+        }}
+      />
       {showInfo ? (
         <InfoPanel
           conversation={conversation}
