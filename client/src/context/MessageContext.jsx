@@ -13,6 +13,12 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function otherUserIdForConversation(conversation, currentUserId) {
+  if (!conversation) return null;
+  return conversation.other_user_id
+    || (String(conversation.user_1_id) === String(currentUserId) ? conversation.user_2_id : conversation.user_1_id);
+}
+
 async function waitForIdentity(cryptoContext, timeoutMs = 2000) {
   if (cryptoContext?.waitForIdentityReady) {
     await cryptoContext.waitForIdentityReady(timeoutMs);
@@ -84,12 +90,17 @@ export function MessageProvider({ children }) {
     return items;
   }, [user]);
 
+  const getConversationPeerId = useCallback((conversationId) => {
+    const conversation = conversations.find((item) => String(item.id) === String(conversationId));
+    return otherUserIdForConversation(conversation, user?.id);
+  }, [conversations, user?.id]);
+
   const decryptOneMessage = useCallback(async (conversationId, message) => {
     if (message?.deleted_at || message?.unsent_at) {
       return { ...message, decryptedContent: '', decryptionError: null };
     }
     try {
-      const decryptedContent = await cryptoContext.decryptMessage(conversationId, message);
+      const decryptedContent = await cryptoContext.decryptMessage(conversationId, message, getConversationPeerId(conversationId));
       return { ...message, decryptedContent, decryptionError: null };
     } catch (error) {
       const messageText = error?.message || 'Message decryption failed';
@@ -100,7 +111,7 @@ export function MessageProvider({ children }) {
         decryptionError: messageText
       };
     }
-  }, [cryptoContext]);
+  }, [cryptoContext, getConversationPeerId]);
 
   const loadMessages = useCallback(async (conversationId, params = {}) => {
     if (!conversationId) return [];
@@ -164,7 +175,7 @@ export function MessageProvider({ children }) {
   }, [socket, user?.id]);
 
   const sendQueuedItem = useCallback(async (item) => {
-    const envelope = item.encryptedPayload || await cryptoContext.encryptForConversation(item.conversationId, item.text);
+    const envelope = item.encryptedPayload || await cryptoContext.encryptForConversation(item.conversationId, item.text, item.peerUserId || getConversationPeerId(item.conversationId));
     const data = await sendMessage({ conversationId: item.conversationId, ...envelope });
     const sent = { ...data.message, decryptedContent: item.text, decryptionError: null, status: data.message?.status || 'sent' };
     setMessagesByConversation((current) => ({
@@ -176,7 +187,7 @@ export function MessageProvider({ children }) {
     await refreshLocalQueue();
     await loadConversations();
     return sent;
-  }, [cryptoContext, loadConversations, refreshLocalQueue]);
+  }, [cryptoContext, getConversationPeerId, loadConversations, refreshLocalQueue]);
 
   const retryPendingMessages = useCallback(async (conversationId) => {
     const items = (await queueService.getAll()).filter((item) => (
@@ -203,7 +214,8 @@ export function MessageProvider({ children }) {
   const sendEncryptedMessage = useCallback(async ({ conversationId, text }) => {
     await waitForIdentity(cryptoContext, 2000);
     try {
-      const envelope = await cryptoContext.encryptForConversation(conversationId, text);
+      const peerUserId = getConversationPeerId(conversationId);
+      const envelope = await cryptoContext.encryptForConversation(conversationId, text, peerUserId);
       const data = await sendMessage({ conversationId, ...envelope });
       const message = { ...data.message, decryptedContent: text, decryptionError: null, status: data.message?.status || 'sent' };
       setMessagesByConversation((current) => ({ ...current, [conversationId]: [...(current[conversationId] || []), message] }));
@@ -212,6 +224,7 @@ export function MessageProvider({ children }) {
     } catch (error) {
       const queued = await queueMessage(conversationId, {
         text,
+        peerUserId: getConversationPeerId(conversationId),
         error: error.message,
         maxRetries: 10
       });

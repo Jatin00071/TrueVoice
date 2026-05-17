@@ -21,6 +21,7 @@ router.get('/attachments/:id/download', requireAuth, asyncHandler(attachmentCont
 router.get('/attachments/:id/thumbnail', requireAuth, asyncHandler(attachmentController.thumbnail));
 
 router.get('/keys/public/:userId', requireAuth, asyncHandler(messageController.publicKey));
+router.post('/keys/identity', requireAuth, asyncHandler(messageController.publishIdentityKey));
 router.post('/keys/exchange', requireAuth, asyncHandler(messageController.exchangeKey));
 router.get('/keys/verify/:conversationId', requireAuth, asyncHandler(messageController.verifyKeys));
 router.get('/messages/:conversationId/verify-fingerprint', requireAuth, asyncHandler(messageController.verifyKeys));

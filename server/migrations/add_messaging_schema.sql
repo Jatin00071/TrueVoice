@@ -97,6 +97,16 @@ CREATE TABLE IF NOT EXISTS encryption_keys (
   INDEX idx_conversation (conversation_id)
 );
 
+CREATE TABLE IF NOT EXISTS user_identity_keys (
+  user_id INT UNSIGNED PRIMARY KEY,
+  public_key LONGTEXT NOT NULL,
+  key_fingerprint VARCHAR(64) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_fingerprint (key_fingerprint)
+);
+
 CREATE TABLE IF NOT EXISTS message_read_receipts (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   message_id BIGINT NOT NULL,

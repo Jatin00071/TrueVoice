@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuthContext } from '../hooks/useAuth.js';
-import { exchangeKeys, getPublicKey, verifyKeys } from '../api/cryptoApi.js';
+import { exchangeKeys, getPublicKey, publishIdentityKey, verifyKeys } from '../api/cryptoApi.js';
 import { CryptoContext } from './cryptoStore.js';
 import '../utils/cryptoDebug.js';
 
@@ -49,10 +49,24 @@ export function CryptoProvider({ children }) {
   const [conversationKeys, setConversationKeys] = useState({});
   const [lastCryptoError, setLastCryptoError] = useState(null);
   const identityRef = useRef(null);
+  const publishedIdentityRef = useRef(null);
 
   useEffect(() => {
     identityRef.current = identity;
   }, [identity]);
+
+  useEffect(() => {
+    if (!identity?.publicKeyString || !user?.id) return;
+    const publishKey = `${user.id}:${identity.fingerprint}`;
+    if (publishedIdentityRef.current === publishKey) return;
+
+    publishedIdentityRef.current = publishKey;
+    publishIdentityKey({ publicKey: identity.publicKeyString, keyFingerprint: identity.fingerprint }).catch((error) => {
+      publishedIdentityRef.current = null;
+      console.warn('[Crypto] Failed to publish identity key:', error);
+      setLastCryptoError(error?.response?.data?.message || error.message || 'Failed to publish encryption identity');
+    });
+  }, [identity?.fingerprint, identity?.publicKeyString, user?.id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -131,6 +145,31 @@ export function CryptoProvider({ children }) {
     return key;
   }, [cacheConversationKey]);
 
+  const getPeerKey = useCallback(async (conversationId, peerUserId = null) => {
+    if (!conversationId) return null;
+    let keys = conversationKeys[conversationId];
+    if (!keys) keys = await loadConversationKeys(conversationId);
+
+    let peer = keys?.find((key) => String(key.user_id) !== String(user?.id));
+    if (peer?.public_key) return peer;
+
+    const response = await verifyKeys(conversationId);
+    keys = response.keys || [];
+    setConversationKeys((current) => ({ ...current, [conversationId]: uniqueKeys(keys) }));
+    peer = keys.find((key) => String(key.user_id) !== String(user?.id));
+    if (peer?.public_key) return peer;
+
+    if (peerUserId) {
+      try {
+        return await fetchAndCachePublicKey(conversationId, peerUserId);
+      } catch (error) {
+        console.warn(`[Crypto] Failed to fetch public key for peer ${peerUserId}:`, error);
+      }
+    }
+
+    return null;
+  }, [conversationKeys, fetchAndCachePublicKey, loadConversationKeys, user?.id]);
+
   const getSenderKey = useCallback(async (conversationId, senderId) => {
     let keys = conversationKeys[conversationId];
     if (!keys) keys = await loadConversationKeys(conversationId);
@@ -147,12 +186,11 @@ export function CryptoProvider({ children }) {
     return senderKey || null;
   }, [conversationKeys, fetchAndCachePublicKey, loadConversationKeys]);
 
-  const encryptForConversation = useCallback(async (conversationId, plaintext) => {
+  const encryptForConversation = useCallback(async (conversationId, plaintext, peerUserId = null) => {
     if (!identity) throw new Error('Encryption identity is not ready');
-    let keys = conversationKeys[conversationId] || await loadConversationKeys(conversationId);
-    const peer = keys.find((key) => String(key.user_id) !== String(user?.id));
+    const peer = await getPeerKey(conversationId, peerUserId);
     if (!peer?.public_key) {
-      throw new Error('Recipient encryption key is not ready yet. Ask them to open this conversation once, then try again.');
+      throw new Error('Recipient encryption key is not available yet. Your message will be retried after they sign in.');
     }
     const aesKey = await deriveAesKey(identity.privateKey, peer.public_key);
     const ivBytes = crypto.getRandomValues(new Uint8Array(12));
@@ -162,19 +200,21 @@ export function CryptoProvider({ children }) {
       iv: bytesToBase64(ivBytes),
       salt: bytesToBase64(crypto.getRandomValues(new Uint8Array(16)))
     };
-  }, [conversationKeys, identity, loadConversationKeys, user?.id]);
+  }, [getPeerKey, identity]);
 
-  const decryptMessage = useCallback(async (conversationId, message) => {
+  const decryptMessage = useCallback(async (conversationId, message, peerUserId = null) => {
     if (!identity) throw new Error('Encryption identity not initialized');
     if (!message?.encrypted_content) return '';
 
     try {
-      const senderKey = await getSenderKey(conversationId, message.sender_id);
-      if (!senderKey?.public_key) {
-        throw new Error(`Sender key not available (senderId: ${message.sender_id})`);
+      const decryptKey = String(message.sender_id) === String(user?.id)
+        ? await getPeerKey(conversationId, peerUserId)
+        : await getSenderKey(conversationId, message.sender_id);
+      if (!decryptKey?.public_key) {
+        throw new Error(`Encryption key not available (senderId: ${message.sender_id})`);
       }
 
-      const aesKey = await deriveAesKey(identity.privateKey, senderKey.public_key);
+      const aesKey = await deriveAesKey(identity.privateKey, decryptKey.public_key);
       const decrypted = await crypto.subtle.decrypt(
         { name: 'AES-GCM', iv: base64ToBytes(message.iv) },
         aesKey,
@@ -197,7 +237,7 @@ export function CryptoProvider({ children }) {
       setLastCryptoError(error?.message || 'Message decryption failed');
       throw new Error(error?.message || 'Message decryption failed');
     }
-  }, [conversationKeys, getSenderKey, identity]);
+  }, [conversationKeys, getPeerKey, getSenderKey, identity, user?.id]);
 
   const debugState = useMemo(() => ({
     identityReady: Boolean(identity),
@@ -221,9 +261,10 @@ export function CryptoProvider({ children }) {
     waitForIdentityReady,
     loadConversationKeys,
     fetchAndCachePublicKey,
+    getPeerKey,
     encryptForConversation,
     decryptMessage
-  }), [conversationKeys, debugState, decryptMessage, encryptForConversation, fetchAndCachePublicKey, identity, lastCryptoError, loadConversationKeys, publishKey, waitForIdentityReady]);
+  }), [conversationKeys, debugState, decryptMessage, encryptForConversation, fetchAndCachePublicKey, getPeerKey, identity, lastCryptoError, loadConversationKeys, publishKey, waitForIdentityReady]);
 
   return <CryptoContext.Provider value={value}>{children}</CryptoContext.Provider>;
 }

@@ -17,6 +17,11 @@ export async function exchangeKeys(payload) {
   return data;
 }
 
+export async function publishIdentityKey(payload) {
+  const { data } = await axios.post('/keys/identity', payload);
+  return data;
+}
+
 export async function verifyKeys(conversationId) {
   const { data } = await axios.get(`/keys/verify/${conversationId}`);
   return data;

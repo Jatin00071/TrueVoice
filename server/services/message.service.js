@@ -4,6 +4,7 @@ const messageVisibilityRepo = require('../repositories/messageVisibility.repo');
 const attachmentRepo = require('../repositories/attachment.repo');
 const conversationRepo = require('../repositories/conversation.repo');
 const encryptionKeyRepo = require('../repositories/encryptionKey.repo');
+const identityKeyRepo = require('../repositories/identityKey.repo');
 const userRepo = require('../repositories/user.repo');
 const conversationService = require('./conversation.service');
 const cryptoService = require('./cryptoService');
@@ -149,6 +150,7 @@ async function read(userId, messageId) {
 async function exchangeKey(userId, data) {
   const exchange = cryptoService.assertKeyExchange(data);
   const conversation = await conversationService.ensureAccess(userId, exchange.conversationId);
+  await identityKeyRepo.upsert({ userId, publicKey: exchange.publicKey, keyFingerprint: exchange.keyFingerprint });
   const key = await encryptionKeyRepo.upsert({ ...exchange, userId });
   socketManager.emit(conversationRepo.getOtherParticipant(conversation, userId), 'keys:updated', {
     conversationId: exchange.conversationId,
@@ -166,10 +168,20 @@ async function verifyKeys(userId, conversationId) {
 }
 
 async function publicKey(_requesterId, userId) {
-  const key = await encryptionKeyRepo.latestPublicKeyForUser(userId);
+  const key = await identityKeyRepo.findByUserId(userId) || await encryptionKeyRepo.latestPublicKeyForUser(userId);
   if (!key) {
     throw { error: true, message: 'User has not initialized encryption', code: 'KEY_NOT_FOUND', statusCode: 404 };
   }
+  return { key };
+}
+
+async function publishIdentityKey(userId, data) {
+  const publicKey = data.publicKey ?? data.public_key;
+  const keyFingerprint = data.keyFingerprint ?? data.key_fingerprint ?? cryptoService.fingerprintPublicKey(publicKey);
+  if (typeof keyFingerprint !== 'string' || keyFingerprint.length !== 64) {
+    throw { error: true, message: 'A valid key fingerprint is required', code: 'INVALID_FINGERPRINT', statusCode: 400 };
+  }
+  const key = await identityKeyRepo.upsert({ userId, publicKey, keyFingerprint });
   return { key };
 }
 
@@ -177,7 +189,7 @@ async function conversationDetails(userId, conversationId) {
   const conversation = await conversationService.ensureAccess(userId, conversationId);
   const otherUserId = conversationRepo.getOtherParticipant(conversation, userId);
   const participant = await userRepo.findById(otherUserId);
-  const encryptionKey = await encryptionKeyRepo.latestPublicKeyForUser(otherUserId);
+  const encryptionKey = await identityKeyRepo.findByUserId(otherUserId) || await encryptionKeyRepo.latestPublicKeyForUser(otherUserId);
   const messageCount = await messageRepo.countForConversation(conversationId);
   return {
     conversation: {
@@ -251,6 +263,7 @@ module.exports = {
   unsend,
   read,
   exchangeKey,
+  publishIdentityKey,
   verifyKeys,
   publicKey,
   conversationDetails,

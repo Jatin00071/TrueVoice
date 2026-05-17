@@ -35,6 +35,11 @@ async function exchangeKey(req, res) {
   res.status(201).json(result);
 }
 
+async function publishIdentityKey(req, res) {
+  const result = await messageService.publishIdentityKey(req.auth.userId, req.body);
+  res.status(201).json(result);
+}
+
 async function verifyKeys(req, res) {
   const result = await messageService.verifyKeys(req.auth.userId, Number(req.params.conversationId));
   res.json(result);
@@ -45,4 +50,4 @@ async function getQueue(req, res) {
   res.json(result);
 }
 
-module.exports = { send, update, remove, unsend, read, publicKey, exchangeKey, verifyKeys, getQueue };
+module.exports = { send, update, remove, unsend, read, publicKey, exchangeKey, publishIdentityKey, verifyKeys, getQueue };
