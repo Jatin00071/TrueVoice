@@ -106,9 +106,9 @@
   max-width: 420px;
   position: relative;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(242, 238, 235, 0.92)),
-    #f2eeeb;
-  border: 1px solid rgba(116, 113, 124, 0.42);
+    linear-gradient(180deg, rgba(36, 24, 45, 0.96), rgba(25, 25, 45, 0.94)),
+    #19192d;
+  border: 1px solid rgba(116, 113, 124, 0.34);
   border-radius: 28px;
   padding: 36px;
   box-shadow: 0 18px 48px rgba(25, 25, 45, 0.18);
@@ -161,7 +161,7 @@
 .formTitle {
   font-size: 28px;
   font-weight: 700;
-  color: #19192d;
+  color: #ffffff;
 }
 
 .formSubtitle {
@@ -174,10 +174,10 @@
   margin-top: 16px;
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(79, 61, 59, 0.1);
-  border: 1px solid rgba(79, 61, 59, 0.2);
+  background: rgba(79, 61, 59, 0.34);
+  border: 1px solid rgba(79, 61, 59, 0.56);
   font-size: 13px;
-  color: #4f3d3b;
+  color: #ffffff;
 }
 
 .form {
@@ -189,7 +189,7 @@
   border: 1px solid rgba(116, 113, 124, 0.34);
   border-radius: 999px;
   padding: 4px;
-  background: rgba(232, 237, 242, 0.4);
+  background: #24182d;
   overflow: hidden;
   margin-bottom: 20px;
 }
@@ -209,7 +209,7 @@
 }
 
 .toggleTabActive {
-  background: #19192d;
+  background: #5b2036;
   color: white;
   box-shadow: 0 10px 22px rgba(25, 25, 45, 0.22);
 }
@@ -223,7 +223,7 @@
   margin-bottom: 6px;
   font-size: 13px;
   font-weight: 600;
-  color: #19192d;
+  color: #ffffff;
 }
 
 .fieldHeader {
@@ -241,7 +241,7 @@
 .inlineLink {
   font-size: 12px;
   font-weight: 600;
-  color: #5b2036;
+  color: #ffffff;
 }
 
 .input {
@@ -251,14 +251,14 @@
   padding: 12px 14px;
   font-family: var(--font-body);
   font-size: 15px;
-  color: #19192d;
-  background: rgba(255, 255, 255, 0.78);
+  color: #ffffff;
+  background: #24182d;
   outline: none;
   transition: border-color 200ms ease;
 }
 
 .input:focus {
-  border-color: #19192d;
+  border-color: #74717c;
 }
 
 .passwordWrapper {
@@ -283,13 +283,13 @@
 }
 
 .pwToggle:hover {
-  color: #19192d;
+  color: #ffffff;
 }
 
 .submitBtn {
   width: 100%;
-  background: #19192d;
-  color: white;
+  background: #ffffff;
+  color: #19192d;
   border: none;
   border-radius: 14px;
   padding: 13px;
@@ -302,6 +302,7 @@
 
 .submitBtn:hover {
   background: #5b2036;
+  color: #ffffff;
 }
 
 .submitBtn:disabled {
@@ -316,7 +317,7 @@
 }
 
 .switchLink {
-  color: #5b2036;
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -327,7 +328,7 @@
   background: rgba(91, 32, 54, 0.08);
   border: 1px solid rgba(91, 32, 54, 0.18);
   font-size: 13px;
-  color: #5b2036;
+  color: #ffffff;
 }
 
 .verificationActions {
@@ -341,8 +342,8 @@
   width: 100%;
   border-radius: 14px;
   border: 1px solid rgba(116, 113, 124, 0.34);
-  background: rgba(255, 255, 255, 0.78);
-  color: #19192d;
+  background: #24182d;
+  color: #ffffff;
   padding: 13px;
   font-size: 15px;
   font-weight: 600;
@@ -357,7 +358,7 @@
 .utilityLink {
   font-size: 13px;
   font-weight: 600;
-  color: #5b2036;
+  color: #ffffff;
   text-align: center;
 }
 
