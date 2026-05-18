@@ -110,6 +110,14 @@ function Login() {
 
       <main className={styles.rightPanel}>
         <div className={styles.formCard}>
+          <div className={styles.mobileBrand}>
+            <span className={styles.mobileLogo} aria-hidden="true">TV</span>
+            <div>
+              <p className={styles.mobileBrandName}>TrueVoice</p>
+              <p className={styles.mobileBrandTagline}>Your content. Your credit.</p>
+            </div>
+          </div>
+
           <h1 className={styles.formTitle}>Welcome back</h1>
           <p className={styles.formSubtitle}>Sign in to TrueVoice</p>
 

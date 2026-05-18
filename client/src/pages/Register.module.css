@@ -3,9 +3,10 @@
   display: grid;
   grid-template-columns: 1fr;
   background:
-    radial-gradient(circle at top left, rgba(244, 162, 97, 0.16), transparent 28%),
-    radial-gradient(circle at right, rgba(45, 106, 79, 0.08), transparent 26%),
-    var(--paper);
+    radial-gradient(circle at 24% 28%, rgba(91, 32, 54, 0.78), transparent 25%),
+    radial-gradient(circle at 63% 66%, rgba(79, 61, 59, 0.72), transparent 18%),
+    radial-gradient(circle at 86% 62%, rgba(91, 32, 54, 0.24), transparent 16%),
+    #19192d;
 }
 
 .leftPanel {
@@ -13,10 +14,10 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 20% 24%, rgba(230, 57, 70, 0.2), transparent 22%),
-    radial-gradient(circle at 70% 70%, rgba(244, 162, 97, 0.2), transparent 18%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 26%),
-    var(--ink);
+    radial-gradient(circle at 30% 30%, rgba(91, 32, 54, 0.88), transparent 34%),
+    radial-gradient(circle at 58% 68%, rgba(79, 61, 59, 0.82), transparent 24%),
+    radial-gradient(circle at 82% 68%, rgba(91, 32, 54, 0.28), transparent 18%),
+    linear-gradient(135deg, #24182d, #19192d 48%, #19192d);
   color: white;
 }
 
@@ -52,7 +53,7 @@
   height: 300px;
   top: 14%;
   left: 12%;
-  background: rgba(230, 57, 70, 0.18);
+  background: rgba(91, 32, 54, 0.68);
 }
 
 .decorCircle2 {
@@ -60,13 +61,13 @@
   height: 240px;
   bottom: 18%;
   left: 28%;
-  background: rgba(244, 162, 97, 0.2);
+  background: rgba(79, 61, 59, 0.78);
 }
 
 .decorLine {
   position: absolute;
   height: 1px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(116, 113, 124, 0.52);
 }
 
 .decorLineOne {
@@ -93,8 +94,9 @@
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(circle at top right, rgba(244, 162, 97, 0.08), transparent 26%),
-    var(--paper);
+    radial-gradient(circle at 12% 18%, rgba(91, 32, 54, 0.34), transparent 24%),
+    radial-gradient(circle at 92% 72%, rgba(79, 61, 59, 0.38), transparent 28%),
+    transparent;
   min-height: 100vh;
   padding: 40px 24px;
 }
@@ -105,11 +107,54 @@
   border-radius: 28px;
   padding: 36px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.48), transparent 24%),
-    var(--card-bg);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(242, 238, 235, 0.92)),
+    #f2eeeb;
+  border: 1px solid rgba(116, 113, 124, 0.42);
+  box-shadow: 0 18px 48px rgba(25, 25, 45, 0.18);
   backdrop-filter: blur(18px);
+}
+
+.mobileBrand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  padding: 12px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 16% 24%, rgba(91, 32, 54, 0.42), transparent 34%),
+    rgba(25, 25, 45, 0.96);
+  border: 1px solid rgba(116, 113, 124, 0.44);
+}
+
+.mobileLogo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  background: rgba(91, 32, 54, 0.78);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 10px 24px rgba(25, 25, 45, 0.28);
+}
+
+.mobileBrandName {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.mobileBrandTagline {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .progress {
@@ -138,39 +183,39 @@
 }
 
 .completed {
-  background: var(--sage);
+  background: #4f3d3b;
 }
 
 .current {
-  background: var(--ink);
+  background: #19192d;
 }
 
 .pending {
-  border: 1px solid var(--border);
+  border: 1px solid rgba(116, 113, 124, 0.34);
   background: transparent;
 }
 
 .progressLine {
   flex: 1;
   height: 1px;
-  background: var(--border);
+  background: rgba(116, 113, 124, 0.34);
 }
 
 .progressLabel {
   font-size: 12px;
-  color: var(--muted);
+  color: #74717c;
 }
 
 .formTitle {
   font-size: 28px;
   font-weight: 700;
-  color: var(--ink);
+  color: #19192d;
 }
 
 .formSubtitle {
   margin-top: 6px;
   font-size: 14px;
-  color: var(--muted);
+  color: #74717c;
 }
 
 .form {
@@ -186,23 +231,23 @@
   align-items: center;
   font-size: 13px;
   font-weight: 600;
-  color: var(--ink);
+  color: #19192d;
   margin-bottom: 6px;
 }
 
 .fieldOptional {
   font-size: 11px;
-  color: var(--muted);
+  color: #74717c;
   font-weight: 400;
   margin-left: 6px;
 }
 
 .input {
   width: 100%;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(116, 113, 124, 0.34);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.78);
-  color: var(--ink);
+  color: #19192d;
   padding: 12px 14px;
   font-size: 15px;
   font-family: var(--font-body);
@@ -211,17 +256,17 @@
 }
 
 .input:focus {
-  border-color: var(--ink);
+  border-color: #19192d;
 }
 
 .textarea {
   width: 100%;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(116, 113, 124, 0.34);
   border-radius: 14px;
   padding: 12px 14px;
   font-family: var(--font-body);
   font-size: 14px;
-  color: var(--ink);
+  color: #19192d;
   background: rgba(255, 255, 255, 0.78);
   resize: none;
   line-height: 1.6;
@@ -230,24 +275,24 @@
 }
 
 .textarea:focus {
-  border-color: var(--ink);
+  border-color: #19192d;
 }
 
 .submitBtn {
   width: 100%;
   border: none;
   border-radius: 14px;
-  background: linear-gradient(135deg, var(--ink), rgba(26, 26, 46, 0.9));
+  background: #19192d;
   color: white;
   padding: 13px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 16px 30px rgba(26, 26, 46, 0.16);
+  box-shadow: 0 16px 30px rgba(25, 25, 45, 0.22);
 }
 
 .submitBtn:hover {
-  background: var(--accent);
+  background: #5b2036;
 }
 
 .messageState {
@@ -259,11 +304,11 @@
 
 .helperText {
   font-size: 14px;
-  color: var(--muted);
+  color: #74717c;
 }
 
 .emphasis {
-  color: var(--ink);
+  color: #19192d;
   font-weight: 600;
 }
 
@@ -277,9 +322,9 @@
 .secondaryBtn {
   width: 100%;
   border-radius: 14px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(116, 113, 124, 0.34);
   background: rgba(255, 255, 255, 0.78);
-  color: var(--ink);
+  color: #19192d;
   padding: 13px;
   font-size: 15px;
   font-weight: 600;
@@ -294,7 +339,7 @@
 .utilityLink {
   font-size: 13px;
   font-weight: 600;
-  color: var(--accent);
+  color: #5b2036;
   text-align: center;
 }
 
@@ -302,29 +347,29 @@
   font-size: 14px;
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(45, 106, 79, 0.08);
-  border: 1px solid rgba(45, 106, 79, 0.18);
-  color: var(--sage);
+  background: rgba(79, 61, 59, 0.1);
+  border: 1px solid rgba(79, 61, 59, 0.2);
+  color: #4f3d3b;
 }
 
 .errorMsg {
   font-size: 14px;
-  color: var(--accent);
+  color: #5b2036;
   margin-bottom: 14px;
   padding: 11px 13px;
   border-radius: 14px;
-  background: rgba(230, 57, 70, 0.06);
-  border: 1px solid rgba(230, 57, 70, 0.14);
+  background: rgba(91, 32, 54, 0.08);
+  border: 1px solid rgba(91, 32, 54, 0.18);
 }
 
 .switchText {
   margin-top: 18px;
   font-size: 14px;
-  color: var(--muted);
+  color: #74717c;
 }
 
 .switchLink {
-  color: var(--accent);
+  color: #5b2036;
   font-weight: 600;
 }
 
@@ -337,10 +382,40 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: transparent;
+  }
+
+  .rightPanel {
+    background: transparent;
+  }
+
+  .mobileBrand {
+    display: none;
   }
 }
 
 @media (max-width: 640px) {
+  .page {
+    background:
+      radial-gradient(circle at 8% 8%, rgba(91, 32, 54, 0.76), transparent 36%),
+      radial-gradient(circle at 78% 72%, rgba(79, 61, 59, 0.7), transparent 34%),
+      radial-gradient(circle at 100% 18%, rgba(91, 32, 54, 0.26), transparent 28%),
+      #19192d;
+  }
+
+  .rightPanel {
+    align-items: flex-start;
+    min-height: 100svh;
+    padding: 18px 14px 28px;
+    background: transparent;
+  }
+
+  .formCard {
+    padding: 20px;
+    border-radius: 22px;
+    box-shadow: 0 18px 40px rgba(26, 26, 46, 0.14);
+  }
+
   .progress {
     flex-direction: column;
     align-items: flex-start;
@@ -353,136 +428,114 @@
 }
 
 :global([data-theme='dark']) .page {
-  background: #000000;
+  background:
+    radial-gradient(circle at 24% 28%, rgba(91, 32, 54, 0.78), transparent 25%),
+    radial-gradient(circle at 63% 66%, rgba(79, 61, 59, 0.72), transparent 18%),
+    #19192d;
 }
 
 :global([data-theme='dark']) .leftPanel {
-  background: #000000;
-  border-right: 1px solid #1a1a1a;
+  background: transparent;
+  border-right: none;
 }
 
-:global([data-theme='dark']) .brandName {
-  color: #f0f0f0;
+:global([data-theme='dark']) .brandName,
+:global([data-theme='dark']) .formTitle,
+:global([data-theme='dark']) .emphasis {
+  color: #ffffff;
 }
 
-:global([data-theme='dark']) .brandTagline {
-  color: #888888;
+:global([data-theme='dark']) .brandTagline,
+:global([data-theme='dark']) .formSubtitle,
+:global([data-theme='dark']) .fieldLabel,
+:global([data-theme='dark']) .switchText,
+:global([data-theme='dark']) .helperText,
+:global([data-theme='dark']) .fieldOptional {
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .decorCircle1 {
-  background: rgba(255, 69, 84, 0.15);
+  background: rgba(91, 32, 54, 0.68);
 }
 
 :global([data-theme='dark']) .decorCircle2 {
-  background: rgba(244, 162, 97, 0.12);
+  background: rgba(79, 61, 59, 0.78);
 }
 
 :global([data-theme='dark']) .decorLine {
-  background: #1a1a1a;
+  background: rgba(116, 113, 124, 0.52);
 }
 
 :global([data-theme='dark']) .rightPanel {
-  background: #000000;
+  background: transparent;
 }
 
 :global([data-theme='dark']) .formCard {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
-    #0d0d0d;
-  border: 1px solid #1a1a1a;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    linear-gradient(180deg, rgba(36, 24, 45, 0.96), rgba(25, 25, 45, 0.94)),
+    #19192d;
+  border: 1px solid rgba(116, 113, 124, 0.34);
+  box-shadow: 0 8px 32px rgba(25, 25, 45, 0.72);
 }
 
-:global([data-theme='dark']) .progress {
-  background: #111111;
-  border-color: #1a1a1a;
+:global([data-theme='dark']) .mobileBrand,
+:global([data-theme='dark']) .progress,
+:global([data-theme='dark']) .secondaryBtn {
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
-:global([data-theme='dark']) .formTitle {
-  color: #f0f0f0;
+:global([data-theme='dark']) .mobileLogo {
+  background: #5b2036;
 }
 
-:global([data-theme='dark']) .formSubtitle {
-  color: #888888;
-}
-
-:global([data-theme='dark']) .fieldLabel {
-  color: #888888;
-}
-
-:global([data-theme='dark']) .input {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
-}
-
-:global([data-theme='dark']) .input::placeholder {
-  color: #444444;
-}
-
-:global([data-theme='dark']) .input:focus {
-  border-color: #444444;
-  outline: none;
-}
-
-:global([data-theme='dark']) .textarea {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
-}
-
-:global([data-theme='dark']) .textarea:focus {
-  border-color: #444444;
-}
-
-:global([data-theme='dark']) .fieldOptional {
-  color: #555555;
-}
-
-:global([data-theme='dark']) .emphasis {
-  color: #f0f0f0;
-}
-
-:global([data-theme='dark']) .submitBtn {
-  background: #f0f0f0;
-  color: #000000;
-}
-
-:global([data-theme='dark']) .submitBtn:hover {
-  background: #ff4554;
+:global([data-theme='dark']) .mobileBrandName {
   color: #ffffff;
 }
 
-:global([data-theme='dark']) .switchText {
-  color: #888888;
+:global([data-theme='dark']) .mobileBrandTagline {
+  color: rgba(255, 255, 255, 0.72);
 }
 
-:global([data-theme='dark']) .helperText {
-  color: #888888;
+:global([data-theme='dark']) .input,
+:global([data-theme='dark']) .textarea {
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
-:global([data-theme='dark']) .secondaryBtn {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
+:global([data-theme='dark']) .input::placeholder {
+  color: #74717c;
 }
 
-:global([data-theme='dark']) .switchLink {
-  color: #ff4554;
+:global([data-theme='dark']) .input:focus,
+:global([data-theme='dark']) .textarea:focus {
+  border-color: #74717c;
 }
 
+:global([data-theme='dark']) .submitBtn {
+  background: #ffffff;
+  color: #19192d;
+}
+
+:global([data-theme='dark']) .submitBtn:hover {
+  background: #5b2036;
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .switchLink,
 :global([data-theme='dark']) .utilityLink {
-  color: #ff4554;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .successMsg {
-  color: #4caf82;
-  background: rgba(76, 175, 130, 0.08);
-  border-color: rgba(76, 175, 130, 0.18);
+  color: #ffffff;
+  background: rgba(79, 61, 59, 0.34);
+  border-color: rgba(79, 61, 59, 0.56);
 }
 
 :global([data-theme='dark']) .errorMsg {
-  color: #ff4554;
-  background: rgba(255, 69, 84, 0.06);
-  border-color: rgba(255, 69, 84, 0.16);
+  color: #ffffff;
+  background: rgba(91, 32, 54, 0.34);
+  border-color: rgba(91, 32, 54, 0.56);
 }

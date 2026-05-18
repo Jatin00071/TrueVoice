@@ -42,7 +42,6 @@ function Register() {
   const [step, setStep] = useState(1);
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [bio, setBio] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -80,7 +79,7 @@ function Register() {
     setIsSubmitting(true);
 
     try {
-      const response = await authApi.register(username.trim(), email.trim(), password, displayName.trim(), bio.trim());
+      const response = await authApi.register(username.trim(), email.trim(), password, displayName.trim(), '');
       setVerificationEmail(email.trim());
       setVerificationUrl(response?.verificationUrl || '');
       setStep(2);
@@ -138,6 +137,14 @@ function Register() {
 
       <main className={styles.rightPanel}>
         <div className={styles.formCard}>
+          <div className={styles.mobileBrand}>
+            <span className={styles.mobileLogo} aria-hidden="true">TV</span>
+            <div>
+              <p className={styles.mobileBrandName}>TrueVoice</p>
+              <p className={styles.mobileBrandTagline}>Your content. Your credit.</p>
+            </div>
+          </div>
+
           <Progress step={step} />
 
           <h1 className={styles.formTitle}>Create your account</h1>
@@ -173,22 +180,6 @@ function Register() {
                   onChange={(event) => setDisplayName(event.target.value)}
                   placeholder="Your full name or nickname"
                   maxLength={80}
-                />
-              </div>
-
-              <div className={styles.field}>
-                <label className={styles.fieldLabel} htmlFor="register-bio">
-                  <span>Bio</span>
-                  <span className={styles.fieldOptional}>optional</span>
-                </label>
-                <textarea
-                  id="register-bio"
-                  className={styles.textarea}
-                  value={bio}
-                  onChange={(event) => setBio(event.target.value)}
-                  placeholder="Tell people a little about yourself"
-                  maxLength={300}
-                  rows={2}
                 />
               </div>
 
