@@ -201,25 +201,30 @@
 }
 
 :global([data-theme='dark']) .navLink:hover {
-  background: #24182d;
+  background: rgba(91, 32, 54, 0.18);
   color: #ffffff;
+  box-shadow: 0 0 24px rgba(91, 32, 54, 0.16);
 }
 
 :global([data-theme='dark']) .navLinkActive {
-  background: rgba(91, 32, 54, 0.12);
-  color: #5b2036;
+  background: rgba(91, 32, 54, 0.28);
+  color: #ffffff;
   border: none;
   outline: none;
+  box-shadow:
+    inset 3px 0 0 #5b2036,
+    0 0 30px rgba(91, 32, 54, 0.34);
 }
 
 :global([data-theme='dark']) .logoArea,
 :global([data-theme='dark']) .me {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .createButton {
   background: #ffffff;
   color: #19192d;
+  box-shadow: 0 0 34px rgba(91, 32, 54, 0.24);
 }
 
 :global([data-theme='dark']) .createButton:hover {
@@ -228,15 +233,19 @@
 }
 
 :global([data-theme='dark']) .me {
-  background: #19192d;
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.92), rgba(25, 25, 45, 0.86)),
+    #19192d;
+  box-shadow: 0 0 26px rgba(91, 32, 54, 0.12);
 }
 
 :global([data-theme='dark']) .me:hover {
-  background: #24182d;
+  background: rgba(91, 32, 54, 0.18);
 }
 
 :global([data-theme='dark']) .meActive {
-  background: rgba(91, 32, 54, 0.12);
+  background: rgba(91, 32, 54, 0.22);
+  box-shadow: 0 0 30px rgba(91, 32, 54, 0.2);
 }
 
 :global([data-theme='dark']) .meName {
@@ -244,5 +253,5 @@
 }
 
 :global([data-theme='dark']) .meHandle {
-  color: #74717c;
+  color: #a88fa0;
 }

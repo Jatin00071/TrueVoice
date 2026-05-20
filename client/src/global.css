@@ -29,14 +29,14 @@
   --gold: #4f3d3b;
   --sage: #4f3d3b;
   --mist: #24182d;
-  --border: rgba(116, 113, 124, 0.34);
-  --muted: #74717c;
+  --border: rgba(168, 143, 160, 0.26);
+  --muted: #a88fa0;
   --card-bg: #19192d;
   --shadow: 0 1px 6px rgba(25, 25, 45, 0.6);
   --shadow-lg: 0 20px 56px rgba(25, 25, 45, 0.72);
-  --surface: rgba(13, 13, 13, 0.92);
-  --surface-strong: rgba(25, 25, 45, 0.96);
-  --surface-muted: rgba(17, 17, 17, 0.84);
+  --surface: rgba(25, 25, 45, 0.82);
+  --surface-strong: rgba(36, 24, 45, 0.94);
+  --surface-muted: rgba(91, 32, 54, 0.16);
 }
 
 [data-fontsize='large'] {
@@ -75,11 +75,30 @@ body {
 
 [data-theme='dark'] body {
   background:
-    radial-gradient(circle at 10% 8%, rgba(91, 32, 54, 0.1), transparent 22%),
-    radial-gradient(circle at 84% 10%, rgba(79, 61, 59, 0.07), transparent 18%),
+    radial-gradient(circle at 18% 18%, rgba(91, 32, 54, 0.32), transparent 28%),
+    radial-gradient(circle at 78% 72%, rgba(79, 61, 59, 0.26), transparent 24%),
+    radial-gradient(circle at 50% 0%, rgba(91, 32, 54, 0.16), transparent 26%),
     radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.02), transparent 28%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 20%),
     var(--paper);
+}
+
+[data-theme='dark'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 34%, rgba(91, 32, 54, 0.2), transparent 30%),
+    radial-gradient(circle at 82% 18%, rgba(91, 32, 54, 0.12), transparent 24%),
+    radial-gradient(circle at 54% 72%, rgba(79, 61, 59, 0.14), transparent 28%);
+  filter: blur(10px);
+}
+
+[data-theme='dark'] #root {
+  position: relative;
+  z-index: 1;
 }
 
 #root {
@@ -143,12 +162,12 @@ select {
 }
 
 [data-theme='dark'] ::-webkit-scrollbar-thumb {
-  background: #74717c;
+  background: #a88fa0;
   border-radius: 3px;
 }
 
 [data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
-  background: #74717c;
+  background: #a88fa0;
 }
 
 [data-theme='dark'] ::selection {

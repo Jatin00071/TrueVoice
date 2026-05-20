@@ -221,7 +221,7 @@
 :global([data-theme='dark']) .header,
 :global([data-theme='dark']) .panel {
   background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .title {
@@ -230,12 +230,12 @@
 
 :global([data-theme='dark']) .subtitle,
 :global([data-theme='dark']) .emptyText {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .secondaryButton {
   color: #5b2036;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   background: transparent;
 }
 
@@ -265,5 +265,5 @@
 :global([data-theme='dark']) .time,
 :global([data-theme='dark']) .sectionTitle,
 :global([data-theme='dark']) .status {
-  color: #74717c;
+  color: #a88fa0;
 }

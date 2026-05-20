@@ -67,7 +67,7 @@
 .decorLine {
   position: absolute;
   height: 1px;
-  background: rgba(116, 113, 124, 0.52);
+  background: rgba(168, 143, 160, 0.36);
 }
 
 .decorLineOne {
@@ -109,7 +109,7 @@
   background:
     linear-gradient(180deg, rgba(36, 24, 45, 0.96), rgba(25, 25, 45, 0.94)),
     #19192d;
-  border: 1px solid rgba(116, 113, 124, 0.34);
+  border: 1px solid rgba(168, 143, 160, 0.26);
   box-shadow: 0 18px 48px rgba(25, 25, 45, 0.18);
   backdrop-filter: blur(18px);
 }
@@ -124,7 +124,7 @@
   background:
     radial-gradient(circle at 16% 24%, rgba(91, 32, 54, 0.42), transparent 34%),
     rgba(25, 25, 45, 0.96);
-  border: 1px solid rgba(116, 113, 124, 0.44);
+  border: 1px solid rgba(168, 143, 160, 0.3);
 }
 
 .mobileLogo {
@@ -165,7 +165,7 @@
   padding: 12px 14px;
   border-radius: 18px;
   background: #24182d;
-  border: 1px solid rgba(116, 113, 124, 0.34);
+  border: 1px solid rgba(168, 143, 160, 0.26);
 }
 
 .progressItem {
@@ -191,19 +191,19 @@
 }
 
 .pending {
-  border: 1px solid rgba(116, 113, 124, 0.34);
+  border: 1px solid rgba(168, 143, 160, 0.26);
   background: transparent;
 }
 
 .progressLine {
   flex: 1;
   height: 1px;
-  background: rgba(116, 113, 124, 0.34);
+  background: rgba(168, 143, 160, 0.26);
 }
 
 .progressLabel {
   font-size: 12px;
-  color: #74717c;
+  color: #a88fa0;
 }
 
 .formTitle {
@@ -215,7 +215,7 @@
 .formSubtitle {
   margin-top: 6px;
   font-size: 14px;
-  color: #74717c;
+  color: #a88fa0;
 }
 
 .form {
@@ -237,14 +237,14 @@
 
 .fieldOptional {
   font-size: 11px;
-  color: #74717c;
+  color: #a88fa0;
   font-weight: 400;
   margin-left: 6px;
 }
 
 .input {
   width: 100%;
-  border: 1px solid rgba(116, 113, 124, 0.34);
+  border: 1px solid rgba(168, 143, 160, 0.26);
   border-radius: 14px;
   background: #24182d;
   color: #ffffff;
@@ -256,12 +256,12 @@
 }
 
 .input:focus {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 .textarea {
   width: 100%;
-  border: 1px solid rgba(116, 113, 124, 0.34);
+  border: 1px solid rgba(168, 143, 160, 0.26);
   border-radius: 14px;
   padding: 12px 14px;
   font-family: var(--font-body);
@@ -275,7 +275,7 @@
 }
 
 .textarea:focus {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 .submitBtn {
@@ -305,7 +305,7 @@
 
 .helperText {
   font-size: 14px;
-  color: #74717c;
+  color: #a88fa0;
 }
 
 .emphasis {
@@ -323,7 +323,7 @@
 .secondaryBtn {
   width: 100%;
   border-radius: 14px;
-  border: 1px solid rgba(116, 113, 124, 0.34);
+  border: 1px solid rgba(168, 143, 160, 0.26);
   background: #24182d;
   color: #ffffff;
   padding: 13px;
@@ -366,7 +366,7 @@
 .switchText {
   margin-top: 18px;
   font-size: 14px;
-  color: #74717c;
+  color: #a88fa0;
 }
 
 .switchLink {
@@ -452,7 +452,7 @@
 :global([data-theme='dark']) .switchText,
 :global([data-theme='dark']) .helperText,
 :global([data-theme='dark']) .fieldOptional {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .decorCircle1 {
@@ -464,7 +464,7 @@
 }
 
 :global([data-theme='dark']) .decorLine {
-  background: rgba(116, 113, 124, 0.52);
+  background: rgba(168, 143, 160, 0.36);
 }
 
 :global([data-theme='dark']) .rightPanel {
@@ -475,7 +475,7 @@
   background:
     linear-gradient(180deg, rgba(36, 24, 45, 0.96), rgba(25, 25, 45, 0.94)),
     #19192d;
-  border: 1px solid rgba(116, 113, 124, 0.34);
+  border: 1px solid rgba(168, 143, 160, 0.26);
   box-shadow: 0 8px 32px rgba(25, 25, 45, 0.72);
 }
 
@@ -483,7 +483,7 @@
 :global([data-theme='dark']) .progress,
 :global([data-theme='dark']) .secondaryBtn {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .mobileLogo {
@@ -501,17 +501,17 @@
 :global([data-theme='dark']) .input,
 :global([data-theme='dark']) .textarea {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .input::placeholder {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .input:focus,
 :global([data-theme='dark']) .textarea:focus {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .submitBtn {

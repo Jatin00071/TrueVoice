@@ -106,13 +106,17 @@
 }
 
 :global([data-theme='dark']) .bar {
-  background: #19192d;
-  border-bottom-color: rgba(116, 113, 124, 0.34);
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.96), rgba(25, 25, 45, 0.92)),
+    #19192d;
+  border-bottom-color: rgba(168, 143, 160, 0.26);
+  box-shadow: 0 14px 42px rgba(91, 32, 54, 0.2);
 }
 
 :global([data-theme='dark']) .logoMark {
   color: #ffffff;
-  background: linear-gradient(135deg, rgba(91, 32, 54, 0.22), rgba(244, 162, 97, 0.14));
+  background: linear-gradient(135deg, rgba(91, 32, 54, 0.92), rgba(79, 61, 59, 0.58));
+  box-shadow: 0 0 24px rgba(91, 32, 54, 0.3);
 }
 
 :global([data-theme='dark']) .logo {
@@ -120,7 +124,7 @@
 }
 
 :global([data-theme='dark']) .eyebrow {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .pageTitle {

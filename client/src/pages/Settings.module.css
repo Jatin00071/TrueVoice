@@ -102,11 +102,11 @@
 }
 
 :global([data-theme="dark"]) .profileRedirectHandle {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme="dark"]) .profileRedirectInitial {
-  background: #74717c;
+  background: #a88fa0;
   color: #ffffff;
 }
 
@@ -622,20 +622,20 @@
 }
 
 :global([data-theme='dark']) .pageSubtitle {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .sectionLabel {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .header {
-  border-bottom-color: rgba(116, 113, 124, 0.34);
+  border-bottom-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .sectionCard {
   background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .fieldLabel,
@@ -655,38 +655,38 @@
 :global([data-theme='dark']) .sectionNote,
 :global([data-theme='dark']) .toggleDesc,
 :global([data-theme='dark']) .dangerDesc {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .charCount {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .divider,
 :global([data-theme='dark']) .toggleRow {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .input,
 :global([data-theme='dark']) .textarea {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .input:focus,
 :global([data-theme='dark']) .textarea:focus {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .readOnly {
   background: #19192d;
-  color: #74717c;
-  border-color: rgba(116, 113, 124, 0.34);
+  color: #a88fa0;
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .pwToggle {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .pwToggle:hover {
@@ -706,7 +706,7 @@
 }
 
 :global([data-theme='dark']) .toggle {
-  background: #74717c;
+  background: #a88fa0;
 }
 
 :global([data-theme='dark']) .toggleOn {
@@ -718,7 +718,7 @@
 }
 
 :global([data-theme='dark']) .logoutBtn {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
 }
 
@@ -729,7 +729,7 @@
 
 :global([data-theme='dark']) .infoBadge {
   background: #24182d;
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .badgeGreen {
@@ -762,8 +762,8 @@
 }
 
 :global([data-theme='dark']) .cancelBtn {
-  border-color: rgba(116, 113, 124, 0.34);
-  color: #74717c;
+  border-color: rgba(168, 143, 160, 0.26);
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .cancelBtn:hover {

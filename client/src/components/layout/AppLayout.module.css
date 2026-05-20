@@ -2,7 +2,10 @@
   display: grid;
   grid-template-columns: 220px 1fr 280px;
   min-height: 100vh;
-  background: var(--paper);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(230, 57, 70, 0.08), transparent 24%),
+    radial-gradient(circle at 84% 72%, rgba(244, 162, 97, 0.12), transparent 26%),
+    var(--paper);
 }
 
 .sidebar {
@@ -12,6 +15,10 @@
   height: 100vh;
   overflow-y: auto;
   border-right: 1px solid var(--border);
+  z-index: 2;
+  background: var(--surface-strong);
+  box-shadow: 14px 0 42px rgba(26, 26, 46, 0.08);
+  backdrop-filter: blur(18px);
 }
 
 .main {
@@ -21,6 +28,11 @@
   max-width: 680px;
   margin: 0 auto;
   width: 100%;
+  min-height: 100vh;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 18px 0 48px rgba(26, 26, 46, 0.04),
+    inset -18px 0 48px rgba(26, 26, 46, 0.04);
 }
 
 .rightPanel {
@@ -31,6 +43,10 @@
   overflow-y: auto;
   border-left: 1px solid var(--border);
   padding: 24px 16px;
+  z-index: 2;
+  background: var(--surface-strong);
+  box-shadow: -14px 0 42px rgba(26, 26, 46, 0.08);
+  backdrop-filter: blur(18px);
 }
 
 .messagesLayout {
@@ -96,17 +112,42 @@
 }
 
 :global([data-theme='dark']) .sidebar {
-  border-right-color: rgba(116, 113, 124, 0.34);
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.96), rgba(25, 25, 45, 0.9)),
+    #19192d;
+  border-right-color: rgba(168, 143, 160, 0.26);
+  box-shadow:
+    16px 0 52px rgba(91, 32, 54, 0.22),
+    0 0 38px rgba(91, 32, 54, 0.18);
 }
 
 :global([data-theme='dark']) .rightPanel {
-  border-left-color: rgba(116, 113, 124, 0.34);
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.96), rgba(25, 25, 45, 0.9)),
+    #19192d;
+  border-left-color: rgba(168, 143, 160, 0.26);
+  box-shadow:
+    -16px 0 52px rgba(91, 32, 54, 0.22),
+    0 0 38px rgba(91, 32, 54, 0.18);
+}
+
+:global([data-theme='dark']) .main {
+  background:
+    linear-gradient(180deg, rgba(15, 15, 30, 0.3), rgba(25, 25, 45, 0.26)),
+    rgba(25, 25, 45, 0.2);
+  border-left: 1px solid rgba(168, 143, 160, 0.12);
+  border-right: 1px solid rgba(168, 143, 160, 0.12);
+  box-shadow:
+    inset 24px 0 64px rgba(8, 8, 18, 0.24),
+    inset -24px 0 64px rgba(8, 8, 18, 0.24),
+    0 0 70px rgba(91, 32, 54, 0.12);
 }
 
 :global([data-theme='dark']) .layout {
   background:
-    radial-gradient(circle at 24% 22%, rgba(91, 32, 54, 0.34), transparent 28%),
-    radial-gradient(circle at 78% 70%, rgba(79, 61, 59, 0.26), transparent 24%),
+    radial-gradient(circle at 18% 18%, rgba(91, 32, 54, 0.38), transparent 28%),
+    radial-gradient(circle at 78% 70%, rgba(79, 61, 59, 0.28), transparent 24%),
+    radial-gradient(circle at 48% 8%, rgba(91, 32, 54, 0.16), transparent 26%),
     radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.02), transparent 28%),
     #19192d;
 }

@@ -342,7 +342,7 @@
 
 :global([data-theme='dark']) .card {
   background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   box-shadow: 0 1px 6px rgba(25, 25, 45, 0.5);
 }
 
@@ -364,7 +364,7 @@
 :global([data-theme='dark']) .chainMeta,
 :global([data-theme='dark']) .sectionTitle,
 :global([data-theme='dark']) .status {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .content,
@@ -376,11 +376,11 @@
 :global([data-theme='dark']) .actions,
 :global([data-theme='dark']) .chainNode,
 :global([data-theme='dark']) .commentCard {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .chain::before {
-  background: #74717c;
+  background: #a88fa0;
 }
 
 :global([data-theme='dark']) .chainNode,
@@ -390,16 +390,16 @@
 
 :global([data-theme='dark']) .textarea {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .textarea::placeholder {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .textarea:focus {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   outline: none;
 }
 
@@ -415,14 +415,14 @@
 
 :global([data-theme='dark']) .secondaryButton {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .actionButton {
-  color: #74717c;
+  color: #a88fa0;
   background: transparent;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .actionButton:hover {

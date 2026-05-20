@@ -221,7 +221,7 @@
 
 :global([data-theme='dark']) .leftPanel {
   background: #19192d;
-  border-right: 1px solid rgba(116, 113, 124, 0.34);
+  border-right: 1px solid rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .brandName {
@@ -229,7 +229,7 @@
 }
 
 :global([data-theme='dark']) .brandTagline {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .decorCircle1 {
@@ -241,7 +241,7 @@
 }
 
 :global([data-theme='dark']) .decorLine {
-  background: #74717c;
+  background: #a88fa0;
 }
 
 :global([data-theme='dark']) .rightPanel {
@@ -252,7 +252,7 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
     #19192d;
-  border: 1px solid rgba(116, 113, 124, 0.34);
+  border: 1px solid rgba(168, 143, 160, 0.26);
   box-shadow: 0 8px 32px rgba(25, 25, 45, 0.6);
 }
 
@@ -276,11 +276,11 @@
 }
 
 :global([data-theme='dark']) .message {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .loader {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   border-top-color: #ffffff;
 }
 
@@ -291,6 +291,6 @@
 
 :global([data-theme='dark']) .secondaryLink {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
 }

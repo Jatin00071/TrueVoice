@@ -296,9 +296,13 @@
 }
 
 :global([data-theme='dark']) .section {
-  background: #19192d;
-  border: 1px solid rgba(116, 113, 124, 0.34);
-  box-shadow: 0 1px 6px rgba(25, 25, 45, 0.5);
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.88), rgba(25, 25, 45, 0.82)),
+    #19192d;
+  border: 1px solid rgba(168, 143, 160, 0.26);
+  box-shadow:
+    0 18px 46px rgba(8, 8, 18, 0.28),
+    0 0 32px rgba(91, 32, 54, 0.12);
 }
 
 :global([data-theme='dark']) .section::before {
@@ -306,12 +310,12 @@
 }
 
 :global([data-theme='dark']) .heading {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .storyCard {
-  background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  background: rgba(36, 24, 45, 0.72);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .storyCard:hover {
@@ -326,7 +330,7 @@
 :global([data-theme='dark']) .bannerLabel,
 :global([data-theme='dark']) .placeholder,
 :global([data-theme='dark']) .metricLabel {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .signal {
@@ -340,13 +344,14 @@
 }
 
 :global([data-theme='dark']) .personCard {
-  background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  background: rgba(36, 24, 45, 0.72);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .personCard:hover,
 :global([data-theme='dark']) .storyCard:hover {
-  background: #24182d;
+  background: rgba(91, 32, 54, 0.18);
+  box-shadow: 0 0 26px rgba(91, 32, 54, 0.16);
 }
 
 :global([data-theme='dark']) .personName,
@@ -357,28 +362,29 @@
 
 :global([data-theme='dark']) .personMeta,
 :global([data-theme='dark']) .personNote {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .followChip {
-  border: 1px solid rgba(116, 113, 124, 0.34);
+  border: 1px solid rgba(168, 143, 160, 0.26);
   color: #ffffff;
   background: transparent;
 }
 
 :global([data-theme='dark']) .followChip:hover {
-  background: #ffffff;
-  color: #19192d;
+  background: rgba(91, 32, 54, 0.24);
+  color: #ffffff;
+  box-shadow: 0 0 22px rgba(91, 32, 54, 0.2);
 }
 
 :global([data-theme='dark']) .metric {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .activityBanner {
   background: linear-gradient(135deg, rgba(91, 32, 54, 0.08), rgba(36, 24, 45, 0.94));
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 @media (min-width: 1024px) {
@@ -403,5 +409,6 @@
   :global([data-theme='dark']) .followChip {
     border: none;
     color: #ffffff;
+    text-shadow: 0 0 16px rgba(91, 32, 54, 0.5);
   }
 }

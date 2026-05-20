@@ -326,7 +326,7 @@
 :global([data-theme='dark']) .section,
 :global([data-theme='dark']) .searchWrap {
   background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   box-shadow: 0 1px 6px rgba(25, 25, 45, 0.5);
 }
 
@@ -346,16 +346,16 @@
 
 :global([data-theme='dark']) .searchInput {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .searchInput::placeholder {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .searchInput:focus {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   outline: none;
 }
 
@@ -363,11 +363,11 @@
 :global([data-theme='dark']) .userMeta,
 :global([data-theme='dark']) .timestamp,
 :global([data-theme='dark']) .status {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .retryButton {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   background: #24182d;
   color: #ffffff;
 }
@@ -375,7 +375,7 @@
 :global([data-theme='dark']) .userCard,
 :global([data-theme='dark']) .postCard {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   box-shadow: 0 1px 6px rgba(25, 25, 45, 0.4);
 }
 
@@ -395,13 +395,13 @@
 :global([data-theme='dark']) .media,
 :global([data-theme='dark']) .postFooter,
 :global([data-theme='dark']) .commentBox {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .actionButton {
-  color: #74717c;
+  color: #a88fa0;
   background: transparent;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .actionButton:hover {
@@ -426,16 +426,16 @@
 
 :global([data-theme='dark']) .commentInput {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .commentInput::placeholder {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .commentInput:focus {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   outline: none;
 }
 

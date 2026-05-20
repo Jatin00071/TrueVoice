@@ -23,6 +23,6 @@
 }
 
 :global([data-theme='dark']) .avatar {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   box-shadow: 0 12px 28px rgba(25, 25, 45, 0.38);
 }

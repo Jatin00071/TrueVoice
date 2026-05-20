@@ -135,12 +135,12 @@
 
 :global([data-theme='dark']) .dropdown {
   background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   box-shadow: 0 8px 32px rgba(25, 25, 45, 0.8);
 }
 
 :global([data-theme='dark']) .header {
-  border-bottom-color: rgba(116, 113, 124, 0.34);
+  border-bottom-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .title {
@@ -171,5 +171,5 @@
 :global([data-theme='dark']) .meta,
 :global([data-theme='dark']) .time,
 :global([data-theme='dark']) .status {
-  color: #74717c;
+  color: #a88fa0;
 }

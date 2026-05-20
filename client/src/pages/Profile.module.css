@@ -442,8 +442,14 @@
 }
 
 :global([data-theme='dark']) .header {
-  background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  background:
+    radial-gradient(circle at top right, rgba(91, 32, 54, 0.24), transparent 28%),
+    linear-gradient(180deg, rgba(36, 24, 45, 0.92), rgba(25, 25, 45, 0.86)),
+    #19192d;
+  border-color: rgba(168, 143, 160, 0.26);
+  box-shadow:
+    0 20px 56px rgba(8, 8, 18, 0.34),
+    0 0 42px rgba(91, 32, 54, 0.18);
 }
 
 :global([data-theme='dark']) .displayName {
@@ -451,16 +457,29 @@
 }
 
 :global([data-theme='dark']) .username {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .bio {
-  color: #AAAAAA;
+  color: #c7b8c1;
 }
 
 :global([data-theme='dark']) .stats {
-  background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.9), rgba(25, 25, 45, 0.82)),
+    #19192d;
+  border-color: rgba(168, 143, 160, 0.26);
+  box-shadow:
+    0 18px 48px rgba(8, 8, 18, 0.28),
+    0 0 34px rgba(91, 32, 54, 0.14);
+}
+
+:global([data-theme='dark']) .statItem {
+  background:
+    linear-gradient(180deg, rgba(91, 32, 54, 0.32), rgba(36, 24, 45, 0.78)),
+    #24182d;
+  border: 1px solid rgba(168, 143, 160, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 :global([data-theme='dark']) .statValue {
@@ -471,7 +490,7 @@
 :global([data-theme='dark']) .sectionTitle,
 :global([data-theme='dark']) .postMeta,
 :global([data-theme='dark']) .miniPostTime {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .sage {
@@ -479,7 +498,7 @@
 }
 
 :global([data-theme='dark']) .secondaryAction {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
   background: transparent;
 }
@@ -491,23 +510,23 @@
 
 :global([data-theme='dark']) .editForm {
   background: #24182d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .editInput,
 :global([data-theme='dark']) .editTextarea {
   background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .editInput:focus,
 :global([data-theme='dark']) .editTextarea:focus {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .editLabel {
-  color: #74717c;
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .saveEditBtn {
@@ -521,31 +540,35 @@
 }
 
 :global([data-theme='dark']) .cancelEditBtn {
-  border-color: rgba(116, 113, 124, 0.34);
-  color: #74717c;
+  border-color: rgba(168, 143, 160, 0.26);
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .cancelEditBtn:hover {
-  border-color: rgba(116, 113, 124, 0.34);
-  color: #74717c;
+  border-color: rgba(168, 143, 160, 0.26);
+  color: #a88fa0;
 }
 
 :global([data-theme='dark']) .postMiniCard {
-  background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.9), rgba(25, 25, 45, 0.84)),
+    #19192d;
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .postMiniCard:hover {
-  border-color: rgba(116, 113, 124, 0.34);
+  border-color: rgba(168, 143, 160, 0.26);
 }
 
 :global([data-theme='dark']) .miniPostContent {
-  color: #E0E0E0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .postCard,
 :global([data-theme='dark']) .section,
 :global([data-theme='dark']) .messageCard {
-  background: #19192d;
-  border-color: rgba(116, 113, 124, 0.34);
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.9), rgba(25, 25, 45, 0.84)),
+    #19192d;
+  border-color: rgba(168, 143, 160, 0.26);
 }
