@@ -134,30 +134,30 @@
 }
 
 :global([data-theme='dark']) .dropdown {
-  background: #0d0d0d;
-  border-color: #1a1a1a;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
+  box-shadow: 0 8px 32px rgba(25, 25, 45, 0.8);
 }
 
 :global([data-theme='dark']) .header {
-  border-bottom-color: #1a1a1a;
+  border-bottom-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .title {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .markAll,
 :global([data-theme='dark']) .secondaryAction {
-  color: #ff4554;
+  color: #5b2036;
 }
 
 :global([data-theme='dark']) .item {
-  border-bottom-color: #111111;
+  border-bottom-color: #24182d;
 }
 
 :global([data-theme='dark']) .item:hover {
-  background: #111111;
+  background: #24182d;
 }
 
 :global([data-theme='dark']) .unread {
@@ -165,11 +165,11 @@
 }
 
 :global([data-theme='dark']) .message {
-  color: #e0e0e0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .meta,
 :global([data-theme='dark']) .time,
 :global([data-theme='dark']) .status {
-  color: #555555;
+  color: #74717c;
 }

@@ -438,20 +438,20 @@
 }
 
 :global([data-theme='dark']) .profilePage {
-  background: #000000;
+  background: #19192d;
 }
 
 :global([data-theme='dark']) .header {
-  background: #0d0d0d;
-  border-color: #1a1a1a;
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .displayName {
-  color: #F0F0F0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .username {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .bio {
@@ -459,84 +459,84 @@
 }
 
 :global([data-theme='dark']) .stats {
-  background: #000000;
-  border-color: #1a1a1a;
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .statValue {
-  color: #F0F0F0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .statLabel,
 :global([data-theme='dark']) .sectionTitle,
 :global([data-theme='dark']) .postMeta,
 :global([data-theme='dark']) .miniPostTime {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .sage {
-  color: #4CAF82;
+  color: #4f3d3b;
 }
 
 :global([data-theme='dark']) .secondaryAction {
-  border-color: #333333;
-  color: #f0f0f0;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
   background: transparent;
 }
 
 :global([data-theme='dark']) .secondaryAction:hover {
-  background: #f0f0f0;
-  color: #000000;
+  background: #ffffff;
+  color: #19192d;
 }
 
 :global([data-theme='dark']) .editForm {
-  background: #111111;
-  border-color: #1a1a1a;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .editInput,
 :global([data-theme='dark']) .editTextarea {
-  background: #0D0D0D;
-  border-color: #222222;
-  color: #F0F0F0;
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .editInput:focus,
 :global([data-theme='dark']) .editTextarea:focus {
-  border-color: #444444;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .editLabel {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .saveEditBtn {
-  background: #F0F0F0;
-  color: #000000;
+  background: #ffffff;
+  color: #19192d;
 }
 
 :global([data-theme='dark']) .saveEditBtn:hover {
-  background: #FF4554;
+  background: #5b2036;
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .cancelEditBtn {
-  border-color: #222222;
-  color: #555555;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .cancelEditBtn:hover {
-  border-color: #444444;
-  color: #888888;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .postMiniCard {
-  background: #0d0d0d;
-  border-color: #1a1a1a;
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .postMiniCard:hover {
-  border-color: #333333;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .miniPostContent {
@@ -546,6 +546,6 @@
 :global([data-theme='dark']) .postCard,
 :global([data-theme='dark']) .section,
 :global([data-theme='dark']) .messageCard {
-  background: #0d0d0d;
-  border-color: #1a1a1a;
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
 }

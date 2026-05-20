@@ -258,7 +258,7 @@
 }
 
 .input:focus {
-  border-color: #74717c;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 .passwordWrapper {
@@ -489,7 +489,7 @@
 }
 
 :global([data-theme='dark']) .input:focus {
-  border-color: #74717c;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .submitBtn {

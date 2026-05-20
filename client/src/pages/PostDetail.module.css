@@ -341,21 +341,21 @@
 }
 
 :global([data-theme='dark']) .card {
-  background: #0d0d0d;
-  border-color: #1a1a1a;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
+  box-shadow: 0 1px 6px rgba(25, 25, 45, 0.5);
 }
 
 :global([data-theme='dark']) .avatar {
-  background: rgba(76, 175, 130, 0.14);
-  color: #f0f0f0;
+  background: rgba(79, 61, 59, 0.14);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .author,
 :global([data-theme='dark']) .chainTitle,
 :global([data-theme='dark']) .commentAuthor,
 :global([data-theme='dark']) .commentLabel {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .meta,
@@ -364,77 +364,77 @@
 :global([data-theme='dark']) .chainMeta,
 :global([data-theme='dark']) .sectionTitle,
 :global([data-theme='dark']) .status {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .content,
 :global([data-theme='dark']) .commentText {
-  color: #e0e0e0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .media,
 :global([data-theme='dark']) .actions,
 :global([data-theme='dark']) .chainNode,
 :global([data-theme='dark']) .commentCard {
-  border-color: #1a1a1a;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .chain::before {
-  background: #1a1a1a;
+  background: #74717c;
 }
 
 :global([data-theme='dark']) .chainNode,
 :global([data-theme='dark']) .commentCard {
-  background: #111111;
+  background: #24182d;
 }
 
 :global([data-theme='dark']) .textarea {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .textarea::placeholder {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .textarea:focus {
-  border-color: #444444;
+  border-color: rgba(116, 113, 124, 0.34);
   outline: none;
 }
 
 :global([data-theme='dark']) .primaryButton {
-  background: #f0f0f0;
-  color: #000000;
+  background: #ffffff;
+  color: #19192d;
 }
 
 :global([data-theme='dark']) .primaryButton:hover {
-  background: #ff4554;
+  background: #5b2036;
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .secondaryButton {
-  background: #111111;
-  border-color: #333333;
-  color: #f0f0f0;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .actionButton {
-  color: #888888;
+  color: #74717c;
   background: transparent;
-  border-color: #333333;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .actionButton:hover {
-  background: #111111;
-  color: #f0f0f0;
+  background: #24182d;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .actionButtonLiked {
-  color: #ff4554;
+  color: #5b2036;
 }
 
 :global([data-theme='dark']) .actionButtonDanger {
-  border-color: rgba(255, 69, 84, 0.28);
-  color: #ff4554;
+  border-color: rgba(91, 32, 54, 0.28);
+  color: #5b2036;
 }

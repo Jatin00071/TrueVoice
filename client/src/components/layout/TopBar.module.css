@@ -106,23 +106,23 @@
 }
 
 :global([data-theme='dark']) .bar {
-  background: #0d0d0d;
-  border-bottom-color: #1a1a1a;
+  background: #19192d;
+  border-bottom-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .logoMark {
-  color: #f0f0f0;
-  background: linear-gradient(135deg, rgba(255, 69, 84, 0.22), rgba(244, 162, 97, 0.14));
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(91, 32, 54, 0.22), rgba(244, 162, 97, 0.14));
 }
 
 :global([data-theme='dark']) .logo {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .eyebrow {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .pageTitle {
-  color: #f0f0f0;
+  color: #ffffff;
 }

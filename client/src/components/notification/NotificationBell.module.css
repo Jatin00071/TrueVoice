@@ -139,5 +139,5 @@
 
 :global([data-theme='dark']) .bellIcon,
 :global([data-theme='dark']) .icon {
-  color: #f0f0f0;
+  color: #ffffff;
 }

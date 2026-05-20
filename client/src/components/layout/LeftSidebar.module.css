@@ -197,52 +197,52 @@
 }
 
 :global([data-theme='dark']) .logoText {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .navLink:hover {
-  background: #111111;
-  color: #f0f0f0;
+  background: #24182d;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .navLinkActive {
-  background: rgba(255, 69, 84, 0.12);
-  color: #ff4554;
+  background: rgba(91, 32, 54, 0.12);
+  color: #5b2036;
   border: none;
   outline: none;
 }
 
 :global([data-theme='dark']) .logoArea,
 :global([data-theme='dark']) .me {
-  border-color: #1a1a1a;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .createButton {
-  background: #f0f0f0;
-  color: #000000;
+  background: #ffffff;
+  color: #19192d;
 }
 
 :global([data-theme='dark']) .createButton:hover {
-  background: #ff4554;
+  background: #5b2036;
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .me {
-  background: #0d0d0d;
+  background: #19192d;
 }
 
 :global([data-theme='dark']) .me:hover {
-  background: #111111;
+  background: #24182d;
 }
 
 :global([data-theme='dark']) .meActive {
-  background: rgba(255, 69, 84, 0.12);
+  background: rgba(91, 32, 54, 0.12);
 }
 
 :global([data-theme='dark']) .meName {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .meHandle {
-  color: #888888;
+  color: #74717c;
 }

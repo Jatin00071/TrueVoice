@@ -715,144 +715,144 @@
 
 :global([data-theme='dark']) .bar,
 :global([data-theme='dark']) .feedTopbar {
-  background: #000000;
-  border-color: #1a1a1a;
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .wordmark,
 :global([data-theme='dark']) .feedLogo {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .greeting {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .composer,
 :global([data-theme='dark']) .postCard,
 :global([data-theme='dark']) .feedbackCard,
 :global([data-theme='dark']) .emptyState {
-  background: #0d0d0d;
-  border-color: #1a1a1a;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
+  box-shadow: 0 1px 6px rgba(25, 25, 45, 0.5);
 }
 
 :global([data-theme='dark']) .postCard:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 4px 16px rgba(25, 25, 45, 0.7);
 }
 
 :global([data-theme='dark']) .textarea {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .textarea::placeholder {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .textarea:focus,
 :global([data-theme='dark']) .textareaActive {
-  border-color: #444444;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .uploadButton {
-  border-color: #333333;
-  color: #888888;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #74717c;
   background: transparent;
 }
 
 :global([data-theme='dark']) .uploadButton:hover {
-  border-color: #f0f0f0;
-  color: #f0f0f0;
+  border-color: #ffffff;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .clearMediaButton {
-  background: #111111;
-  border-color: #333333;
-  color: #888888;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .uploadMeta,
 :global([data-theme='dark']) .composerHint,
 :global([data-theme='dark']) .emptySubtitle {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .shieldToggleLabel {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .shieldToggleDesc {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .submitButton,
 :global([data-theme='dark']) .discoverBtn,
 :global([data-theme='dark']) .loadMoreButton {
-  background: #f0f0f0;
-  color: #000000;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  background: #ffffff;
+  color: #19192d;
+  box-shadow: 0 12px 28px rgba(25, 25, 45, 0.4);
 }
 
 :global([data-theme='dark']) .submitButton:hover,
 :global([data-theme='dark']) .discoverBtn:hover,
 :global([data-theme='dark']) .loadMoreButton:hover {
-  background: #ff4554;
+  background: #5b2036;
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .retryButton {
-  background: #111111;
-  border-color: #333333;
-  color: #f0f0f0;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .emptyTitle,
 :global([data-theme='dark']) .postName {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .postSubline,
 :global([data-theme='dark']) .timestamp {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .postContent {
-  color: #e0e0e0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .previewWrap,
 :global([data-theme='dark']) .media,
 :global([data-theme='dark']) .commentBox,
 :global([data-theme='dark']) .postFooter {
-  border-color: #1a1a1a;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .commentInput {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .actionButton {
-  color: #888888;
+  color: #74717c;
   background: transparent;
-  border-color: #333333;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .actionButton:hover {
-  background: #111111;
-  color: #f0f0f0;
+  background: #24182d;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .actionButtonLiked {
-  color: #ff4554;
+  color: #5b2036;
 }
 
 :global([data-theme='dark']) .detailLink,
 :global([data-theme='dark']) .commentDetailLink {
-  background: rgba(76, 175, 130, 0.08);
-  border-color: rgba(76, 175, 130, 0.2);
-  color: #4caf82;
+  background: rgba(79, 61, 59, 0.08);
+  border-color: rgba(79, 61, 59, 0.2);
+  color: #4f3d3b;
 }

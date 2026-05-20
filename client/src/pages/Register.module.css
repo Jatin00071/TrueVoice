@@ -256,7 +256,7 @@
 }
 
 .input:focus {
-  border-color: #74717c;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 .textarea {
@@ -275,7 +275,7 @@
 }
 
 .textarea:focus {
-  border-color: #74717c;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 .submitBtn {
@@ -511,7 +511,7 @@
 
 :global([data-theme='dark']) .input:focus,
 :global([data-theme='dark']) .textarea:focus {
-  border-color: #74717c;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .submitBtn {

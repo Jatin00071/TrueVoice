@@ -4,7 +4,7 @@
   --ink: #1a1a2e;
   --paper: #f5f0e8;
   --accent: #e63946;
-  --gold: #f4a261;
+  --gold: #4f3d3b;
   --sage: #2d6a4f;
   --mist: #e8edf2;
   --border: #d4c5a9;
@@ -23,19 +23,19 @@
 }
 
 [data-theme='dark'] {
-  --ink: #f0f0f0;
-  --paper: #000000;
-  --accent: #ff4554;
-  --gold: #f4a261;
-  --sage: #4caf82;
-  --mist: #111111;
-  --border: #222222;
-  --muted: #888888;
-  --card-bg: #0d0d0d;
-  --shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.72);
+  --ink: #ffffff;
+  --paper: #19192d;
+  --accent: #5b2036;
+  --gold: #4f3d3b;
+  --sage: #4f3d3b;
+  --mist: #24182d;
+  --border: rgba(116, 113, 124, 0.34);
+  --muted: #74717c;
+  --card-bg: #19192d;
+  --shadow: 0 1px 6px rgba(25, 25, 45, 0.6);
+  --shadow-lg: 0 20px 56px rgba(25, 25, 45, 0.72);
   --surface: rgba(13, 13, 13, 0.92);
-  --surface-strong: rgba(0, 0, 0, 0.96);
+  --surface-strong: rgba(25, 25, 45, 0.96);
   --surface-muted: rgba(17, 17, 17, 0.84);
 }
 
@@ -75,8 +75,8 @@ body {
 
 [data-theme='dark'] body {
   background:
-    radial-gradient(circle at 10% 8%, rgba(255, 69, 84, 0.1), transparent 22%),
-    radial-gradient(circle at 84% 10%, rgba(76, 175, 130, 0.07), transparent 18%),
+    radial-gradient(circle at 10% 8%, rgba(91, 32, 54, 0.1), transparent 22%),
+    radial-gradient(circle at 84% 10%, rgba(79, 61, 59, 0.07), transparent 18%),
     radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.02), transparent 28%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 20%),
     var(--paper);
@@ -139,21 +139,21 @@ select {
 }
 
 [data-theme='dark'] ::-webkit-scrollbar-track {
-  background: #000000;
+  background: #19192d;
 }
 
 [data-theme='dark'] ::-webkit-scrollbar-thumb {
-  background: #222222;
+  background: #74717c;
   border-radius: 3px;
 }
 
 [data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
-  background: #333333;
+  background: #74717c;
 }
 
 [data-theme='dark'] ::selection {
-  background: rgba(255, 69, 84, 0.3);
-  color: #f0f0f0;
+  background: rgba(91, 32, 54, 0.3);
+  color: #ffffff;
 }
 
 /* Focus ring */

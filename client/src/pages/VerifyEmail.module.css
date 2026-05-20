@@ -216,24 +216,24 @@
 }
 
 :global([data-theme='dark']) .page {
-  background: #000000;
+  background: #19192d;
 }
 
 :global([data-theme='dark']) .leftPanel {
-  background: #000000;
-  border-right: 1px solid #1a1a1a;
+  background: #19192d;
+  border-right: 1px solid rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .brandName {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .brandTagline {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .decorCircle1 {
-  background: rgba(255, 69, 84, 0.15);
+  background: rgba(91, 32, 54, 0.15);
 }
 
 :global([data-theme='dark']) .decorCircle2 {
@@ -241,56 +241,56 @@
 }
 
 :global([data-theme='dark']) .decorLine {
-  background: #1a1a1a;
+  background: #74717c;
 }
 
 :global([data-theme='dark']) .rightPanel {
-  background: #000000;
+  background: #19192d;
 }
 
 :global([data-theme='dark']) .card {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
-    #0d0d0d;
-  border: 1px solid #1a1a1a;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    #19192d;
+  border: 1px solid rgba(116, 113, 124, 0.34);
+  box-shadow: 0 8px 32px rgba(25, 25, 45, 0.6);
 }
 
 :global([data-theme='dark']) .badgeLoading {
-  background: #111111;
-  color: #f0f0f0;
+  background: #24182d;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .badgeSuccess {
-  background: rgba(76, 175, 130, 0.08);
-  color: #4caf82;
+  background: rgba(79, 61, 59, 0.08);
+  color: #4f3d3b;
 }
 
 :global([data-theme='dark']) .badgeError {
-  background: rgba(255, 69, 84, 0.06);
-  color: #ff4554;
+  background: rgba(91, 32, 54, 0.06);
+  color: #5b2036;
 }
 
 :global([data-theme='dark']) .title {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .message {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .loader {
-  border-color: #222222;
-  border-top-color: #f0f0f0;
+  border-color: rgba(116, 113, 124, 0.34);
+  border-top-color: #ffffff;
 }
 
 :global([data-theme='dark']) .primaryLink {
-  background: #f0f0f0;
-  color: #000000;
+  background: #ffffff;
+  color: #19192d;
 }
 
 :global([data-theme='dark']) .secondaryLink {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }

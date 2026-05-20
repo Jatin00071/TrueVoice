@@ -96,13 +96,17 @@
 }
 
 :global([data-theme='dark']) .sidebar {
-  border-right-color: #1a1a1a;
+  border-right-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .rightPanel {
-  border-left-color: #1a1a1a;
+  border-left-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .layout {
-  background: #000000;
+  background:
+    radial-gradient(circle at 24% 22%, rgba(91, 32, 54, 0.34), transparent 28%),
+    radial-gradient(circle at 78% 70%, rgba(79, 61, 59, 0.26), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.02), transparent 28%),
+    #19192d;
 }

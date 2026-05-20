@@ -292,93 +292,93 @@
 }
 
 :global([data-theme='dark']) .panel {
-  background: #000000;
+  background: #19192d;
 }
 
 :global([data-theme='dark']) .section {
-  background: #0d0d0d;
-  border: 1px solid #1a1a1a;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  background: #19192d;
+  border: 1px solid rgba(116, 113, 124, 0.34);
+  box-shadow: 0 1px 6px rgba(25, 25, 45, 0.5);
 }
 
 :global([data-theme='dark']) .section::before {
-  background: linear-gradient(90deg, #ff4554, transparent);
+  background: linear-gradient(90deg, #5b2036, transparent);
 }
 
 :global([data-theme='dark']) .heading {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .storyCard {
-  background: #111111;
-  border-color: #1a1a1a;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .storyCard:hover {
-  background: #161616;
+  background: #24182d;
 }
 
 :global([data-theme='dark']) .storyTitle {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .storyMeta,
 :global([data-theme='dark']) .bannerLabel,
 :global([data-theme='dark']) .placeholder,
 :global([data-theme='dark']) .metricLabel {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .signal {
-  background: rgba(255, 69, 84, 0.15);
-  color: #ff4554;
+  background: rgba(91, 32, 54, 0.15);
+  color: #5b2036;
 }
 
 :global([data-theme='dark']) .inlineLink {
-  color: #4caf82;
-  background: rgba(76, 175, 130, 0.08);
+  color: #4f3d3b;
+  background: rgba(79, 61, 59, 0.08);
 }
 
 :global([data-theme='dark']) .personCard {
-  background: #111111;
-  border-color: #1a1a1a;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .personCard:hover,
 :global([data-theme='dark']) .storyCard:hover {
-  background: #161616;
+  background: #24182d;
 }
 
 :global([data-theme='dark']) .personName,
 :global([data-theme='dark']) .bannerTitle,
 :global([data-theme='dark']) .metricValue {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .personMeta,
 :global([data-theme='dark']) .personNote {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .followChip {
-  border: 1px solid #333333;
-  color: #f0f0f0;
+  border: 1px solid rgba(116, 113, 124, 0.34);
+  color: #ffffff;
   background: transparent;
 }
 
 :global([data-theme='dark']) .followChip:hover {
-  background: #f0f0f0;
-  color: #000000;
+  background: #ffffff;
+  color: #19192d;
 }
 
 :global([data-theme='dark']) .metric {
-  background: #111111;
-  border-color: #1a1a1a;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .activityBanner {
-  background: linear-gradient(135deg, rgba(255, 69, 84, 0.08), rgba(17, 17, 17, 0.94));
-  border-color: #1a1a1a;
+  background: linear-gradient(135deg, rgba(91, 32, 54, 0.08), rgba(36, 24, 45, 0.94));
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 @media (min-width: 1024px) {
@@ -402,6 +402,6 @@
 
   :global([data-theme='dark']) .followChip {
     border: none;
-    color: #8ea2ff;
+    color: #ffffff;
   }
 }

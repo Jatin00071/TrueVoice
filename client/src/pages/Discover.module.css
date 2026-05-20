@@ -325,37 +325,37 @@
 :global([data-theme='dark']) .bar,
 :global([data-theme='dark']) .section,
 :global([data-theme='dark']) .searchWrap {
-  background: #0d0d0d;
-  border-color: #1a1a1a;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
+  box-shadow: 0 1px 6px rgba(25, 25, 45, 0.5);
 }
 
 :global([data-theme='dark']) .title {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .badge {
   background: rgba(244, 162, 97, 0.14);
-  color: #f4a261;
+  color: #4f3d3b;
 }
 
 :global([data-theme='dark']) .searchLabel,
 :global([data-theme='dark']) .userName {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .searchInput {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .searchInput::placeholder {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .searchInput:focus {
-  border-color: #444444;
+  border-color: rgba(116, 113, 124, 0.34);
   outline: none;
 }
 
@@ -363,88 +363,88 @@
 :global([data-theme='dark']) .userMeta,
 :global([data-theme='dark']) .timestamp,
 :global([data-theme='dark']) .status {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .retryButton {
-  border-color: #333333;
-  background: #111111;
-  color: #f0f0f0;
+  border-color: rgba(116, 113, 124, 0.34);
+  background: #24182d;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .userCard,
 :global([data-theme='dark']) .postCard {
-  background: #111111;
-  border-color: #1a1a1a;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  box-shadow: 0 1px 6px rgba(25, 25, 45, 0.4);
 }
 
 :global([data-theme='dark']) .userCard:hover,
 :global([data-theme='dark']) .postCard:hover {
-  background: #161616;
+  background: #24182d;
 }
 
 :global([data-theme='dark']) .avatarSmall {
-  background: rgba(76, 175, 130, 0.14);
+  background: rgba(79, 61, 59, 0.14);
 }
 
 :global([data-theme='dark']) .postContent {
-  color: #e0e0e0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .media,
 :global([data-theme='dark']) .postFooter,
 :global([data-theme='dark']) .commentBox {
-  border-color: #1a1a1a;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .actionButton {
-  color: #888888;
+  color: #74717c;
   background: transparent;
-  border-color: #333333;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .actionButton:hover {
-  background: #111111;
-  color: #f0f0f0;
+  background: #24182d;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .actionButtonLiked {
-  color: #ff4554;
+  color: #5b2036;
 }
 
 :global([data-theme='dark']) .detailLink,
 :global([data-theme='dark']) .commentDetailLink {
-  background: rgba(76, 175, 130, 0.08);
-  border-color: rgba(76, 175, 130, 0.2);
-  color: #4caf82;
+  background: rgba(79, 61, 59, 0.08);
+  border-color: rgba(79, 61, 59, 0.2);
+  color: #4f3d3b;
 }
 
 :global([data-theme='dark']) .commentLabel {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .commentInput {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .commentInput::placeholder {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .commentInput:focus {
-  border-color: #444444;
+  border-color: rgba(116, 113, 124, 0.34);
   outline: none;
 }
 
 :global([data-theme='dark']) .commentSubmit {
-  background: #f0f0f0;
-  color: #000000;
+  background: #ffffff;
+  color: #19192d;
 }
 
 :global([data-theme='dark']) .commentSubmit:hover {
-  background: #ff4554;
+  background: #5b2036;
   color: #ffffff;
 }

@@ -98,16 +98,16 @@
 }
 
 :global([data-theme="dark"]) .profileRedirectName {
-  color: #F0F0F0;
+  color: #ffffff;
 }
 
 :global([data-theme="dark"]) .profileRedirectHandle {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme="dark"]) .profileRedirectInitial {
-  background: #1a1a1a;
-  color: #F0F0F0;
+  background: #74717c;
+  color: #ffffff;
 }
 
 .sectionNote {
@@ -618,24 +618,24 @@
 }
 
 :global([data-theme='dark']) .pageTitle {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .pageSubtitle {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .sectionLabel {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .header {
-  border-bottom-color: #1a1a1a;
+  border-bottom-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .sectionCard {
-  background: #0d0d0d;
-  border-color: #1a1a1a;
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .fieldLabel,
@@ -645,7 +645,7 @@
 :global([data-theme='dark']) .infoLabel,
 :global([data-theme='dark']) .subSectionTitle,
 :global([data-theme='dark']) .deleteConfirmText {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .avatarHandle,
@@ -655,62 +655,62 @@
 :global([data-theme='dark']) .sectionNote,
 :global([data-theme='dark']) .toggleDesc,
 :global([data-theme='dark']) .dangerDesc {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .charCount {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .divider,
 :global([data-theme='dark']) .toggleRow {
-  border-color: #1a1a1a;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .input,
 :global([data-theme='dark']) .textarea {
-  background: #111111;
-  border-color: #222222;
-  color: #f0f0f0;
+  background: #24182d;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .input:focus,
 :global([data-theme='dark']) .textarea:focus {
-  border-color: #444444;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .readOnly {
-  background: #0d0d0d;
-  color: #555555;
-  border-color: #1a1a1a;
+  background: #19192d;
+  color: #74717c;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .pwToggle {
-  color: #888888;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .pwToggle:hover {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .saveBtn,
 :global([data-theme='dark']) .avatarEditBtn {
-  background: #f0f0f0;
-  color: #000000;
+  background: #ffffff;
+  color: #19192d;
 }
 
 :global([data-theme='dark']) .saveBtn:hover,
 :global([data-theme='dark']) .avatarEditBtn:hover {
-  background: #ff4554;
+  background: #5b2036;
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .toggle {
-  background: #333333;
+  background: #74717c;
 }
 
 :global([data-theme='dark']) .toggleOn {
-  background: #4caf82;
+  background: #4f3d3b;
 }
 
 :global([data-theme='dark']) .toggleWarning {
@@ -718,55 +718,55 @@
 }
 
 :global([data-theme='dark']) .logoutBtn {
-  border-color: #222222;
-  color: #F0F0F0;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .logoutBtn:hover {
-  border-color: #FF4554;
-  color: #FF4554;
+  border-color: #5b2036;
+  color: #5b2036;
 }
 
 :global([data-theme='dark']) .infoBadge {
-  background: #111111;
-  color: #888888;
+  background: #24182d;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .badgeGreen {
-  background: rgba(76, 175, 130, 0.12);
-  color: #4caf82;
+  background: rgba(79, 61, 59, 0.12);
+  color: #4f3d3b;
 }
 
 :global([data-theme='dark']) .dangerCard {
-  border-color: #ff4554;
-  background: rgba(255, 69, 84, 0.04);
+  border-color: #5b2036;
+  background: rgba(91, 32, 54, 0.04);
 }
 
 :global([data-theme='dark']) .dangerTitle,
 :global([data-theme='dark']) .dangerBtn {
-  color: #ff4554;
+  color: #5b2036;
 }
 
 :global([data-theme='dark']) .dangerBtn {
-  border-color: #ff4554;
+  border-color: #5b2036;
 }
 
 :global([data-theme='dark']) .dangerBtn:hover,
 :global([data-theme='dark']) .dangerBtnFilled {
-  background: #ff4554;
+  background: #5b2036;
   color: #ffffff;
 }
 
 :global([data-theme='dark']) .deleteConfirmBox {
-  background: #111111;
+  background: #24182d;
 }
 
 :global([data-theme='dark']) .cancelBtn {
-  border-color: #333333;
-  color: #888888;
+  border-color: rgba(116, 113, 124, 0.34);
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .cancelBtn:hover {
-  border-color: #f0f0f0;
-  color: #f0f0f0;
+  border-color: #ffffff;
+  color: #ffffff;
 }

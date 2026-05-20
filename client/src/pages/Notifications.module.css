@@ -220,36 +220,36 @@
 
 :global([data-theme='dark']) .header,
 :global([data-theme='dark']) .panel {
-  background: #0d0d0d;
-  border-color: #1a1a1a;
+  background: #19192d;
+  border-color: rgba(116, 113, 124, 0.34);
 }
 
 :global([data-theme='dark']) .title {
-  color: #f0f0f0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .subtitle,
 :global([data-theme='dark']) .emptyText {
-  color: #555555;
+  color: #74717c;
 }
 
 :global([data-theme='dark']) .secondaryButton {
-  color: #ff4554;
-  border-color: #333333;
+  color: #5b2036;
+  border-color: rgba(116, 113, 124, 0.34);
   background: transparent;
 }
 
 :global([data-theme='dark']) .item {
-  border-bottom-color: #111111;
+  border-bottom-color: #24182d;
 }
 
 :global([data-theme='dark']) .requestSection,
 :global([data-theme='dark']) .requestItem {
-  border-bottom-color: #111111;
+  border-bottom-color: #24182d;
 }
 
 :global([data-theme='dark']) .item:hover {
-  background: #111111;
+  background: #24182d;
 }
 
 :global([data-theme='dark']) .unread {
@@ -258,12 +258,12 @@
 
 :global([data-theme='dark']) .message,
 :global([data-theme='dark']) .emptyTitle {
-  color: #e0e0e0;
+  color: #ffffff;
 }
 
 :global([data-theme='dark']) .meta,
 :global([data-theme='dark']) .time,
 :global([data-theme='dark']) .sectionTitle,
 :global([data-theme='dark']) .status {
-  color: #555555;
+  color: #74717c;
 }
