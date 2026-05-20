@@ -738,23 +738,33 @@
 }
 
 :global([data-theme='dark']) .dangerCard {
-  border-color: #5b2036;
-  background: rgba(91, 32, 54, 0.04);
+  border-color: rgba(217, 138, 160, 0.42);
+  background:
+    radial-gradient(circle at top left, rgba(91, 32, 54, 0.26), transparent 36%),
+    linear-gradient(180deg, rgba(36, 24, 45, 0.88), rgba(25, 25, 45, 0.82)),
+    #19192d;
+  box-shadow: 0 0 34px rgba(91, 32, 54, 0.16);
 }
 
 :global([data-theme='dark']) .dangerTitle,
 :global([data-theme='dark']) .dangerBtn {
-  color: #5b2036;
+  color: #f0b2c2;
 }
 
 :global([data-theme='dark']) .dangerBtn {
-  border-color: #5b2036;
+  border-color: rgba(217, 138, 160, 0.54);
+  background: rgba(91, 32, 54, 0.12);
 }
 
 :global([data-theme='dark']) .dangerBtn:hover,
 :global([data-theme='dark']) .dangerBtnFilled {
   background: #5b2036;
   color: #ffffff;
+  border-color: #5b2036;
+}
+
+:global([data-theme='dark']) .dangerDesc {
+  color: #d8c8d1;
 }
 
 :global([data-theme='dark']) .deleteConfirmBox {

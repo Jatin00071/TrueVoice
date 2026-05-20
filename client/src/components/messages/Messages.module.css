@@ -1209,3 +1209,162 @@
     transition: none !important;
   }
 }
+
+:global([data-theme='dark']) .layout {
+  --color-primary: #ffffff;
+  --color-secondary: #24182d;
+  --color-accent: #5b2036;
+  --color-success: #4f3d3b;
+  --color-warning: #4f3d3b;
+  --color-danger: #d98aa0;
+  --color-neutral-bg: #24182d;
+  --color-neutral-border: rgba(168, 143, 160, 0.26);
+  --color-neutral-text: #ffffff;
+  --color-neutral-muted: #a88fa0;
+  --color-neutral-disabled: #7f6a79;
+  --color-encryption: #d6adc0;
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.9), rgba(25, 25, 45, 0.84)),
+    #19192d;
+  border-color: rgba(168, 143, 160, 0.26);
+  box-shadow:
+    0 20px 56px rgba(8, 8, 18, 0.34),
+    0 0 42px rgba(91, 32, 54, 0.16);
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .sidebar,
+:global([data-theme='dark']) .chat,
+:global([data-theme='dark']) .conversationPanel,
+:global([data-theme='dark']) .window,
+:global([data-theme='dark']) .placeholder,
+:global([data-theme='dark']) .messages {
+  background: transparent;
+}
+
+:global([data-theme='dark']) .sidebar {
+  border-right-color: rgba(168, 143, 160, 0.22);
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.86), rgba(25, 25, 45, 0.7)),
+    #19192d;
+}
+
+:global([data-theme='dark']) .searchWrap,
+:global([data-theme='dark']) .chatHeader,
+:global([data-theme='dark']) .inputArea {
+  background:
+    linear-gradient(180deg, rgba(36, 24, 45, 0.86), rgba(25, 25, 45, 0.72)),
+    #19192d;
+  border-color: rgba(168, 143, 160, 0.22);
+}
+
+:global([data-theme='dark']) .messageSearch,
+:global([data-theme='dark']) .searchWrap input,
+:global([data-theme='dark']) .composerRow textarea {
+  background: #24182d;
+  border-color: rgba(168, 143, 160, 0.26);
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .messageSearch::placeholder,
+:global([data-theme='dark']) .searchWrap input::placeholder,
+:global([data-theme='dark']) .composerRow textarea::placeholder {
+  color: #a88fa0;
+}
+
+:global([data-theme='dark']) .conversationScroll {
+  background: transparent;
+}
+
+:global([data-theme='dark']) .conversationItem {
+  background: transparent;
+  border-bottom-color: rgba(168, 143, 160, 0.16);
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .conversationItem:hover,
+:global([data-theme='dark']) .active {
+  background: rgba(91, 32, 54, 0.18);
+}
+
+:global([data-theme='dark']) .active {
+  border-left-color: #5b2036;
+  box-shadow: inset 3px 0 0 #5b2036, 0 0 22px rgba(91, 32, 54, 0.18);
+}
+
+:global([data-theme='dark']) .conversationTopRow strong,
+:global([data-theme='dark']) .placeholder h2,
+:global([data-theme='dark']) .chatIdentity h2,
+:global([data-theme='dark']) .backButton,
+:global([data-theme='dark']) .chatActions button {
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .conversationTopRow time,
+:global([data-theme='dark']) .previewRow,
+:global([data-theme='dark']) .placeholder p,
+:global([data-theme='dark']) .chatIdentity p,
+:global([data-theme='dark']) .encryptionNote {
+  color: #a88fa0;
+}
+
+:global([data-theme='dark']) .avatar,
+:global([data-theme='dark']) .headerAvatar,
+:global([data-theme='dark']) .largeAvatar {
+  background: linear-gradient(135deg, #5b2036, #4f3d3b);
+  box-shadow: 0 0 24px rgba(91, 32, 54, 0.22);
+}
+
+:global([data-theme='dark']) .status {
+  border-color: #19192d;
+}
+
+:global([data-theme='dark']) .bubble {
+  background: #24182d;
+  border: 1px solid rgba(168, 143, 160, 0.2);
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .mine .bubble {
+  background: #5b2036;
+  color: #ffffff;
+  box-shadow: 0 0 24px rgba(91, 32, 54, 0.22);
+}
+
+:global([data-theme='dark']) .messageActions,
+:global([data-theme='dark']) .moreMenu,
+:global([data-theme='dark']) .actionDialog,
+:global([data-theme='dark']) .infoPanel {
+  background: #19192d;
+  border-color: rgba(168, 143, 160, 0.26);
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .typing,
+:global([data-theme='dark']) .attachments a,
+:global([data-theme='dark']) .pendingBanner,
+:global([data-theme='dark']) .deleteConfirmBox {
+  background: #24182d;
+  border-color: rgba(168, 143, 160, 0.26);
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .sendButton {
+  background: #ffffff;
+  color: #19192d;
+}
+
+:global([data-theme='dark']) .sendButton:hover:not(:disabled) {
+  background: #5b2036;
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .encryption {
+  border-color: rgba(168, 143, 160, 0.34);
+  background: rgba(91, 32, 54, 0.18);
+  color: #ffffff;
+}
+
+:global([data-theme='dark']) .placeholderIcon {
+  color: #a88fa0;
+}
